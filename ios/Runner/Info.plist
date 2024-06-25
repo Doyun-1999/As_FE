@@ -29,6 +29,28 @@
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UISupportedInterfaceOrientations</key>
+	<key>LSApplicationQueriesSchemes</key>
+	<!-- 카카오 로그인 설정 코드(삭제X) -->
+	<array>
+		<!-- 카카오톡으로 로그인 -->
+		<string>kakaokompassauth</string>
+		<!-- 카카오톡 공유 -->
+		<string>kakaolink</string>
+		<!-- 카카오톡 채널 -->
+		<string>kakaoplus</string>
+	</array>
+	<!-- 카카오 커스텀 url 스키마 설정 및 추가 코드 (삭제할 수도 있음)-->
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>kakaoc92a45b533bbbd46bbfed054aa8ed339</string>
+			</array>
+		</dict>
+	</array>
+
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
