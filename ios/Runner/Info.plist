@@ -32,6 +32,9 @@
 	<key>LSApplicationQueriesSchemes</key>
 	<!-- 카카오 로그인 설정 코드(삭제X) -->
 	<array>
+		<!-- 네이버로 로그인 -->
+		<string>naversearchapp</string>
+        <string>naversearchthirdlogin</string>
 		<!-- 카카오톡으로 로그인 -->
 		<string>kakaokompassauth</string>
 		<!-- 카카오톡 공유 -->
@@ -39,17 +42,54 @@
 		<!-- 카카오톡 채널 -->
 		<string>kakaoplus</string>
 	</array>
-	<!-- 카카오 커스텀 url 스키마 설정 및 추가 코드 (삭제할 수도 있음)-->
-	<array>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>kakaoc92a45b533bbbd46bbfed054aa8ed339</string>
-			</array>
-		</dict>
-	</array>
+	<!-- 네이버로그인 -->
+	<key>naverServiceAppUrlScheme</key>
+    <string>auctionShopurlscheme</string>
+    <key>naverConsumerKey</key>
+    <string>mM6xnsnae5MCpC_PWp_i</string>
+    <key>naverConsumerSecret</key>
+    <string>Mg11Nw3wrX</string>
+    <key>naverServiceAppName</key>
+    <string>auction-shop</string>
+
+	<!-- 네이버 로그인 코드 -->
+    <!-- http allows configurations -->
+	<key>NSAppTransportSecurity</key>
+        <dict>
+           <key>NSAllowsArbitraryLoads</key>
+           <true/>
+           <key>NSExceptionDomains</key>
+           <dict>
+              <key>naver.com</key>
+              <dict>
+                 <key>NSExceptionRequiresForwardSecrecy</key>
+                 <false/>
+                 <key>NSIncludesSubdomains</key>
+                 <true/>
+              </dict>
+              <key>naver.net</key>
+              <dict>
+                 <key>NSExceptionRequiresForwardSecrecy</key>
+                 <false/>
+                 <key>NSIncludesSubdomains</key>
+                 <true/>
+              </dict>
+           </dict>
+        </dict>
+
+	<!-- 카카오, 네이버 커스텀 url 스키마 설정 및 추가 코드 (삭제할 수도 있음)-->
+	<key>CFBundleURLTypes</key>
+        <array>
+            <dict>
+                <key>CFBundleTypeRole</key>
+                <string>Editor</string>
+                <key>CFBundleURLSchemes</key>
+                <array>
+					<string>kakaoc92a45b533bbbd46bbfed054aa8ed339</string>
+                    <string>auctionShopurlscheme</string>
+                </array>
+            </dict>
+        </array>
 
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

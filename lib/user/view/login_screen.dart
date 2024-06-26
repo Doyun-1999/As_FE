@@ -1,8 +1,12 @@
 import 'package:auction_shop/common/view/default_layout.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_naver_login/flutter_naver_login.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_naver_login/flutter_naver_login.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -20,6 +24,28 @@ class LoginScreen extends StatelessWidget {
           child: Image.asset(
             'assets/img/kakao_login.png',
             fit: BoxFit.none,
+          ),
+        ),
+        GestureDetector(
+          onTap: googleLogin,
+          child: Container(
+            width: double.infinity,
+            height: 50,
+            decoration: BoxDecoration(
+              border: Border.all()
+            ),
+            child: Text('구글 로그인'),
+          ),
+        ),
+        GestureDetector(
+          onTap: naverLogin,
+          child: Container(
+            width: double.infinity,
+            height: 50,
+            decoration: BoxDecoration(
+              border: Border.all()
+            ),
+            child: Text('네이버 로그인'),
           ),
         )
       ],
@@ -92,3 +118,34 @@ Future<void> kakaoLogin() async {
     }
   }
 }
+
+Future<firebase_auth.UserCredential> googleLogin() async {
+  // Trigger the authentication flow
+  final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+  // Obtain the auth details from the request
+  final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+
+  // Create a new credential
+  final credential = firebase_auth.GoogleAuthProvider.credential(
+    accessToken: googleAuth?.accessToken,
+    idToken: googleAuth?.idToken,
+  );
+
+  // Once signed in, return the UserCredential
+  return await firebase_auth.FirebaseAuth.instance.signInWithCredential(credential);
+}
+
+Future<void> naverLogin() async{
+ 	try{
+    final NaverLoginResult result = await FlutterNaverLogin.logIn();
+    NaverAccessToken res = await FlutterNaverLogin.currentAccessToken;
+    var accesToken = res.accessToken;
+    var tokenType = res.tokenType;
+    print(accesToken);
+    print(tokenType);
+    } catch(error){
+    	print(error);
+    }
+ }
+

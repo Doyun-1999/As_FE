@@ -1,8 +1,10 @@
 import 'package:auction_shop/user/view/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
   // 웹 환경에서 카카오 로그인을 정상적으로 완료하려면 runApp() 호출 전 아래 메서드 호출 필요
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -10,6 +12,10 @@ void main() {
   KakaoSdk.init(
     nativeAppKey: 'c92a45b533bbbd46bbfed054aa8ed339',
     javaScriptAppKey: 'ef6bf12025345a27381048f028f0f836',
+  );
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
   );
 
   runApp(const MyApp());

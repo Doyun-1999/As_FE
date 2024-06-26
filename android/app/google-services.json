@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "333022048155",
+    "project_id": "auction-shop-a3d28",
+    "storage_bucket": "auction-shop-a3d28.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:333022048155:android:7b5ec41604e82c6abd7b3e",
+        "android_client_info": {
+          "package_name": "com.example.auction_shop"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMlOwtbY5kELa3LgTpO6hjpSWL-tGslgQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
