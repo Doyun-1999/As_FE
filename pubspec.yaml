@@ -40,6 +40,10 @@ dependencies:
   firebase_auth: ^5.1.0
   google_sign_in: ^6.2.1
   flutter_naver_login: ^1.8.0
+  flutter_riverpod: ^2.5.1
+  flutter_secure_storage: ^9.2.2
+  freezed_annotation: ^2.4.1
+  json_annotation: ^4.9.0
   # crypto: ^3.0.3
   # shared_preferences: ^2.2.3
   # platform: ^3.1.5
@@ -56,6 +60,9 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^3.0.0
+  build_runner: ^2.4.9
+  freezed: ^2.5.2
+  json_serializable: ^6.8.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

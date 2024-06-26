@@ -1,18 +1,23 @@
 import 'package:auction_shop/common/view/default_layout.dart';
+import 'package:auction_shop/user/provider/auth_provider.dart';
+import 'package:auction_shop/user/repository/auth_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter_naver_login/flutter_naver_login.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends ConsumerWidget {
   const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    
+    final state = ref.watch(authProvider);
+
     return DefaultLayout(
       child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -20,14 +25,18 @@ class LoginScreen extends StatelessWidget {
       children: [
         Text('로그인'),
         GestureDetector(
-          onTap: kakaoLogin,
+          onTap: () async {
+            await ref.read(authProvider.notifier).login(platform: LoginPlatform.kakao);
+          },
           child: Image.asset(
             'assets/img/kakao_login.png',
             fit: BoxFit.none,
           ),
         ),
         GestureDetector(
-          onTap: googleLogin,
+          onTap: () async {
+            await ref.read(authProvider.notifier).login(platform: LoginPlatform.google);
+          },
           child: Container(
             width: double.infinity,
             height: 50,
@@ -38,7 +47,9 @@ class LoginScreen extends StatelessWidget {
           ),
         ),
         GestureDetector(
-          onTap: naverLogin,
+          onTap: () async {
+            await ref.read(authProvider.notifier).login(platform: LoginPlatform.naver);
+          },
           child: Container(
             width: double.infinity,
             height: 50,
@@ -46,6 +57,19 @@ class LoginScreen extends StatelessWidget {
               border: Border.all()
             ),
             child: Text('네이버 로그인'),
+          ),
+        ),
+        GestureDetector(
+          onTap: () async {
+            await ref.read(authProvider.notifier).logout();
+          },
+          child: Container(
+            width: double.infinity,
+            height: 50,
+            decoration: BoxDecoration(
+              border: Border.all()
+            ),
+            child: Text('로그아웃'),
           ),
         )
       ],
@@ -149,3 +173,34 @@ Future<void> naverLogin() async{
     }
  }
 
+Future<void> logoutNaver() async {
+  try{
+    await FlutterNaverLogin.logOut();
+    print("로그아웃 성공");
+  }catch(e){
+    print(e);
+  }
+}
+
+Future<void> logoutKakao() async {
+  try{
+    var code = await UserApi.instance.unlink();
+    print("로그아웃 / 연결 끊기 성공 / 토큰 삭제");
+  }catch(e){
+    print(e);
+  }
+}
+
+Future<void> logoutGoogle() async {
+  try{
+    await GoogleSignIn().signOut();
+    print("로그아웃 성공");
+  }catch(e){
+    print(e);
+  }
+}
+
+
+Future<void> socialLogin() async {
+
+}
