@@ -1,9 +1,12 @@
 import 'package:auction_shop/user/view/login_screen.dart';
+import 'package:auction_shop/user/view/signup_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+
+late Size ratio;
 
 void main() async {
   // 웹 환경에서 카카오 로그인을 정상적으로 완료하려면 runApp() 호출 전 아래 메서드 호출 필요
@@ -28,8 +31,13 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    ratio = Size(
+      MediaQuery.of(context).size.width / 412,
+      MediaQuery.of(context).size.height / 892,
+    );
     return MaterialApp(
-      home: LoginScreen()
+      debugShowCheckedModeBanner: false,
+      home: SignupScreen(),
     );
   }
 }
