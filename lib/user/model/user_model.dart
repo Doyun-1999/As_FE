@@ -1,14 +1,27 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'user_model.freezed.dart';
+import 'package:json_annotation/json_annotation.dart';
+
 part 'user_model.g.dart';
 
-@freezed
-class UserModel with _$UserModel {
+abstract class UserModelBase{}
 
-  factory UserModel({
-    required String name,
-  }) = _UserModel;
+class UserModelError extends UserModelBase{
+  final String msg;
+
+  UserModelError({
+    required this.msg,
+  });
+}
+
+class UserModelLoading extends UserModelBase{}
+
+@JsonSerializable()
+class UserModel extends UserModelBase{
+  final String nickname;
+
+  UserModel({
+    required this.nickname,
+  });
 
   factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
 }

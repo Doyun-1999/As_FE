@@ -78,8 +78,7 @@ class AuthRepository {
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
     // Obtain the auth details from the request
-    final GoogleSignInAuthentication? googleAuth =
-        await googleUser?.authentication;
+    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
 
     await secureStorage.write(key: 'google_access_token', value: googleAuth?.accessToken);
     await secureStorage.write(key: 'google_id_token', value: googleAuth?.idToken);
@@ -88,11 +87,11 @@ class AuthRepository {
     print("id Token : ${googleAuth?.idToken}");
 
     
-    // // Create a new credential
-    // final credential = firebase_auth.GoogleAuthProvider.credential(
-    //   accessToken: googleAuth?.accessToken,
-    //   idToken: googleAuth?.idToken,
-    // );
+    // Create a new credential
+    final credential = firebase_auth.GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
 
 
     // // Once signed in, return the UserCredential
@@ -102,15 +101,16 @@ class AuthRepository {
   // 네이버 로그인 함수
   Future<void> naverLogin() async {
     try {
+      NaverLoginResult res = await FlutterNaverLogin.logIn();
       final NaverLoginResult result = await FlutterNaverLogin.logIn();
-      NaverAccessToken res = await FlutterNaverLogin.currentAccessToken;
+      NaverAccessToken token = await FlutterNaverLogin.currentAccessToken;
       
-      await secureStorage.write(key: 'naver_refresh_token', value: res.refreshToken);
-      await secureStorage.write(key: 'naver_access_token', value: res.accessToken);
+      await secureStorage.write(key: 'naver_refresh_token', value: token.refreshToken);
+      await secureStorage.write(key: 'naver_access_token', value: token.accessToken);
       
       print("로그인 성공");
-      print("refresh Token : ${res.refreshToken}");
-      print("access Token : ${res.accessToken}");
+      print("refresh Token : ${token.refreshToken}");
+      print("access Token : ${token.accessToken}");
 
     } catch (error) {
       print(error);
@@ -120,7 +120,7 @@ class AuthRepository {
   // 네이버 로그아웃 함수
   Future<void> naverLogout() async {
     try {
-      await FlutterNaverLogin.logOut();
+      await FlutterNaverLogin.logOutAndDeleteToken();
       await secureStorage.delete(key: "naver_refresh_token");
       await secureStorage.delete(key: "naver_access_token");
       print("로그아웃 성공");

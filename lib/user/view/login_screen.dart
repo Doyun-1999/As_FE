@@ -1,7 +1,11 @@
+import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/view/default_layout.dart';
+import 'package:auction_shop/main.dart';
 import 'package:auction_shop/user/provider/auth_provider.dart';
 import 'package:auction_shop/user/repository/auth_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -15,93 +19,139 @@ class LoginScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    
     final state = ref.watch(authProvider);
 
     return DefaultLayout(
-      child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text('로그인'),
-        GestureDetector(
-          onTap: () async {
-            await ref.read(authProvider.notifier).login(platform: LoginPlatform.kakao);
-          },
-          child: Image.asset(
-            'assets/img/kakao_login.png',
-            fit: BoxFit.none,
-          ),
-        ),
-        GestureDetector(
-          onTap: () async {
-            await ref.read(authProvider.notifier).login(platform: LoginPlatform.google);
-          },
-          child: Container(
-            width: double.infinity,
-            height: 50,
-            decoration: BoxDecoration(
-              border: Border.all()
-            ),
-            child: Text('구글 로그인'),
-          ),
-        ),
-        GestureDetector(
-          onTap: () async {
-            await ref.read(authProvider.notifier).login(platform: LoginPlatform.naver);
-          },
-          child: Container(
-            width: double.infinity,
-            height: 50,
-            decoration: BoxDecoration(
-              border: Border.all()
-            ),
-            child: Text('네이버 로그인'),
-          ),
-        ),
-        GestureDetector(
-          onTap: () async {
-            await ref.read(authProvider.notifier).logout();
-          },
-          child: Container(
-            width: double.infinity,
-            height: 50,
-            decoration: BoxDecoration(
-              border: Border.all()
-            ),
-            child: Text('로그아웃'),
-          ),
-        )
-      ],
-    ));
-  }
-
-  Widget _loginButton({
-    required VoidCallback func,
-    required Color color,
-    required String text,
-    required String imgPath,
-  }) {
-    return GestureDetector(
-      onTap: func,
+      bgColor: auctionColor.mainColor,
       child: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
+        //width: double.infinity,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image.asset(
-              imgPath,
-              width: 50,
+            SizedBox(
+              height: MediaQuery.of(context).size.height / 3 * 1,
             ),
-            Text(text),
+            Text(
+              '경매로 중고거래를 더 새롭게!',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+                fontFamily: 'NotoSansKR',
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(
+              height: ratio.height * 142,
+            ),
+            loginContainer(
+              imgPath: 'assets/logo/kakao_logo.png',
+              text: "카카오톡으로 로그인",
+              func: () async {
+                await ref.read(authProvider.notifier).login(platform: LoginPlatform.kakao);
+              },
+              bgColor: Color(0xFFFCDC55),
+              textColor: auctionColor.subBlackColor,
+            ),
+            loginContainer(
+              imgPath: 'assets/logo/naver_logo.png',
+              text: "네이버로 로그인",
+              func: () async {
+                await ref.read(authProvider.notifier).login(platform: LoginPlatform.naver);
+              },
+              bgColor: Color(0xFF45B649),
+              textColor: Colors.white,
+            ),
+            loginContainer(
+              imgPath: 'assets/logo/google_logo.png',
+              text: "구글로 로그인",
+              func: () async {
+                await ref.read(authProvider.notifier).login(platform: LoginPlatform.google);
+              },
+              bgColor: Colors.white,
+              textColor: auctionColor.subBlackColor,
+            ),
+            Spacer(),
+            Text(
+              "로그인 오류시 cs@juyo.com",
+              style: TextStyle(
+                fontWeight: FontWeight.w300,
+                fontSize: 12,
+                fontFamily: 'Pretendard',
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(
+              height: ratio.height * 60,
+            )
+
+            // GestureDetector(
+            //   onTap: () async {
+            //     await ref.read(authProvider.notifier).logout();
+            //   },
+            //   child: Container(
+            //     width: double.infinity,
+            //     height: 50,
+            //     decoration: BoxDecoration(border: Border.all()),
+            //     child: Text('로그아웃'),
+            //   ),
+            // ),
+            // GestureDetector(
+            //   onTap: () async {
+            //     await ref.read(userRepositoryProvider).googleGetMe();
+            //   },
+            //   child: Container(
+            //     width: double.infinity,
+            //     height: 50,
+            //     decoration: BoxDecoration(border: Border.all()),
+            //     child: Text('사용자 정보'),
+            //   ),
+            // )
           ],
         ),
       ),
     );
   }
+}
+
+GestureDetector loginContainer({
+  required String imgPath,
+  required String text,
+  required VoidCallback func,
+  required Color bgColor,
+  required Color textColor,
+}) {
+  return GestureDetector(
+    onTap: func,
+    child: Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 21, vertical: 15),
+      decoration:
+          BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(5)),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Align(
+              alignment: Alignment.centerLeft,
+              child: Image.asset(
+                imgPath,
+                width: 30,
+              )),
+          Align(
+            alignment: Alignment.center,
+            child: Text(
+              text,
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 16,
+                fontFamily: 'NotoSansKR',
+                color: textColor,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
 Future<void> kakaoLogin() async {
@@ -148,7 +198,8 @@ Future<firebase_auth.UserCredential> googleLogin() async {
   final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
   // Obtain the auth details from the request
-  final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+  final GoogleSignInAuthentication? googleAuth =
+      await googleUser?.authentication;
 
   // Create a new credential
   final credential = firebase_auth.GoogleAuthProvider.credential(
@@ -157,50 +208,48 @@ Future<firebase_auth.UserCredential> googleLogin() async {
   );
 
   // Once signed in, return the UserCredential
-  return await firebase_auth.FirebaseAuth.instance.signInWithCredential(credential);
+  return await firebase_auth.FirebaseAuth.instance
+      .signInWithCredential(credential);
 }
 
-Future<void> naverLogin() async{
- 	try{
+Future<void> naverLogin() async {
+  try {
     final NaverLoginResult result = await FlutterNaverLogin.logIn();
     NaverAccessToken res = await FlutterNaverLogin.currentAccessToken;
     var accesToken = res.accessToken;
     var tokenType = res.tokenType;
     print(accesToken);
     print(tokenType);
-    } catch(error){
-    	print(error);
-    }
- }
+  } catch (error) {
+    print(error);
+  }
+}
 
 Future<void> logoutNaver() async {
-  try{
+  try {
     await FlutterNaverLogin.logOut();
     print("로그아웃 성공");
-  }catch(e){
+  } catch (e) {
     print(e);
   }
 }
 
 Future<void> logoutKakao() async {
-  try{
+  try {
     var code = await UserApi.instance.unlink();
     print("로그아웃 / 연결 끊기 성공 / 토큰 삭제");
-  }catch(e){
+  } catch (e) {
     print(e);
   }
 }
 
 Future<void> logoutGoogle() async {
-  try{
+  try {
     await GoogleSignIn().signOut();
     print("로그아웃 성공");
-  }catch(e){
+  } catch (e) {
     print(e);
   }
 }
 
-
-Future<void> socialLogin() async {
-
-}
+Future<void> socialLogin() async {}
