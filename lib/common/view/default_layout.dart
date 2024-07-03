@@ -5,7 +5,7 @@ class DefaultLayout extends StatelessWidget {
   final Color? bgColor;
   const DefaultLayout({
     required this.child,
-    this.bgColor = null,
+    this.bgColor = Colors.white,
     super.key,
   });
 
@@ -13,7 +13,9 @@ class DefaultLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: bgColor,
-      body: child,
+      body: SafeArea(
+        child: child,
+      ),
     );
   }
 }

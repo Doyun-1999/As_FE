@@ -18,9 +18,11 @@ enum LoginPlatform { none, kakao, naver, google }
 
 class AuthRepository {
   final FlutterSecureStorage secureStorage;
+  final LoginPlatform platform;
 
   AuthRepository({
     required this.secureStorage,
+    this.platform = LoginPlatform.none
   });
 
   // 카카오 로그인
@@ -86,7 +88,13 @@ class AuthRepository {
     print("access Token : $googleAuth?.accessToken");
     print("id Token : ${googleAuth?.idToken}");
 
-    
+    firebase_auth.FirebaseAuth.instance.authStateChanges().listen((firebase_auth.User? user) {
+    if (user != null) {
+        print(user);
+        print(user.uid);
+      }
+    });
+
     // Create a new credential
     final credential = firebase_auth.GoogleAuthProvider.credential(
       accessToken: googleAuth?.accessToken,
@@ -111,6 +119,7 @@ class AuthRepository {
       print("로그인 성공");
       print("refresh Token : ${token.refreshToken}");
       print("access Token : ${token.accessToken}");
+      print(result);
 
     } catch (error) {
       print(error);

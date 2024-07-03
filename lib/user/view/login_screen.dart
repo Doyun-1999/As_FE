@@ -1,25 +1,24 @@
 import 'package:auction_shop/common/variable/color.dart';
+import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/view/default_layout.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/user/provider/auth_provider.dart';
 import 'package:auction_shop/user/repository/auth_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginScreen extends ConsumerWidget {
+  static String get routeName => "login";
   const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(authProvider);
+    //final state = ref.watch(authProvider);
 
     return DefaultLayout(
       bgColor: auctionColor.mainColor,
@@ -33,12 +32,9 @@ class LoginScreen extends ConsumerWidget {
             ),
             Text(
               '경매로 중고거래를 더 새롭게!',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
+              style: tsNotoSansKR(fontWeight: FontWeight.bold,
                 fontSize: 24,
-                fontFamily: 'NotoSansKR',
-                color: Colors.white,
-              ),
+                color: Colors.white,)
             ),
             SizedBox(
               height: ratio.height * 142,
@@ -73,28 +69,25 @@ class LoginScreen extends ConsumerWidget {
             Spacer(),
             Text(
               "로그인 오류시 cs@juyo.com",
-              style: TextStyle(
-                fontWeight: FontWeight.w300,
+              style: tsPretendard(fontWeight: FontWeight.w300,
                 fontSize: 12,
-                fontFamily: 'Pretendard',
-                color: Colors.white,
-              ),
+                color: Colors.white,)
             ),
             SizedBox(
               height: ratio.height * 60,
-            )
+            ),
 
-            // GestureDetector(
-            //   onTap: () async {
-            //     await ref.read(authProvider.notifier).logout();
-            //   },
-            //   child: Container(
-            //     width: double.infinity,
-            //     height: 50,
-            //     decoration: BoxDecoration(border: Border.all()),
-            //     child: Text('로그아웃'),
-            //   ),
-            // ),
+            GestureDetector(
+              onTap: () async {
+                await ref.read(authProvider.notifier).logout();
+              },
+              child: Container(
+                width: double.infinity,
+                height: 50,
+                decoration: BoxDecoration(border: Border.all()),
+                child: Text('로그아웃'),
+              ),
+            ),
             // GestureDetector(
             //   onTap: () async {
             //     await ref.read(userRepositoryProvider).googleGetMe();
@@ -140,12 +133,9 @@ GestureDetector loginContainer({
             alignment: Alignment.center,
             child: Text(
               text,
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
+              style: tsNotoSansKR(fontWeight: FontWeight.w500,
                 fontSize: 16,
-                fontFamily: 'NotoSansKR',
-                color: textColor,
-              ),
+                color: textColor,)
             ),
           ),
         ],
