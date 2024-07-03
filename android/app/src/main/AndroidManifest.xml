@@ -3,7 +3,8 @@
     <application
         android:label="auction_shop"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true">
         <!-- 네이버 로그인 코드 -->
         <meta-data
             android:name="com.naver.sdk.clientId"

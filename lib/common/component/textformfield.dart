@@ -1,3 +1,4 @@
+import 'package:auction_shop/common/variable/color.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -7,10 +8,12 @@ class CustomTextFormField extends StatelessWidget {
   final bool obsecure;
   final void Function(String)? onChanged;
   final String? Function(String?)? validator;
+  final bool readOnly;
   const CustomTextFormField({
     required this.controller,
     required this.hintText,
     this.onChanged,
+    this.readOnly = false,
     this.obsecure = false,
     this.validator = null,
     super.key,
@@ -19,12 +22,15 @@ class CustomTextFormField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      readOnly: readOnly,
       obscureText: obsecure,
       validator: validator == null ? null : validator,
       textAlignVertical: TextAlignVertical.top,
       style: TextStyle(
         fontSize: 16,
-        color: Colors.black,
+        fontWeight: FontWeight.w500,
+        fontFamily: "NotoSansKR",
+        color: auctionColor.textfieldColor,
       ),
       onChanged: onChanged,
       controller: controller,

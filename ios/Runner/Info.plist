@@ -52,6 +52,13 @@
     <key>naverServiceAppName</key>
     <string>auction-shop</string>
 
+	<!-- 도로명 주소  -->
+	<key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+    </dict>
+
 	<!-- 네이버 로그인 코드 -->
     <!-- http allows configurations -->
 	<key>NSAppTransportSecurity</key>
