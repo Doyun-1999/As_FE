@@ -1,4 +1,4 @@
-import 'package:auction_shop/common/view/home_screen.dart';
+import 'package:auction_shop/common/view/root_tab.dart';
 import 'package:auction_shop/user/provider/auth_provider.dart';
 import 'package:auction_shop/user/view/login_screen.dart';
 import 'package:auction_shop/user/view/signup_screen.dart';
@@ -10,8 +10,8 @@ final routerProvider = Provider<GoRouter>((ref) {
     List<GoRoute> routes = [
       GoRoute(
         path: '/',
-        name: HomeScreen.routeName,
-        builder: (_, __) => HomeScreen()
+        name: RootTab.routeName,
+        builder: (_, __) => RootTab()
       ),
       GoRoute(
         path: '/login',
