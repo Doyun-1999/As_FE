@@ -6,7 +6,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
-  static String get routeName => 'home';
   const HomeScreen({super.key});
 
   @override
@@ -15,11 +14,17 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
-  late TabController tabController = TabController(
-    length: 4,
-    vsync: this,
-    initialIndex: 0,
-  );
+  late TabController tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    tabController = TabController(
+      length: 4,
+      vsync: this,
+      initialIndex: 0,
+    );
+  }
 
   @override
   void dispose() {
@@ -65,63 +70,85 @@ class _HomeScreenState extends State<HomeScreen>
     "수집",
   ];
 
-  List<Tab> tabs = [
-    Tab(
-      text: "HOME",
-    ),
-    Tab(
-      text: "추천경매",
-    ),
-    Tab(
-      text: "HOT경매",
-    ),
-    Tab(
-      text: "NEW경매",
-    ),
-  ];
+  // List<Tab> tabs = [
+  //   Tab(
+  //     text: "HOME",
+  //   ),
+  //   Tab(
+  //     text: "추천경매",
+  //   ),
+  //   Tab(
+  //     text: "HOT경매",
+  //   ),
+  //   Tab(
+  //     text: "NEW경매",
+  //   ),
+  // ];
 
   @override
   Widget build(BuildContext context) {
     return DefaultLayout(
-      child: Column(
-        children: [
-          SizedBox(
-            height: MediaQuery.of(context).size.height / 16,
-          ),
-          TabBar(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            labelStyle: tsNotoSansKR(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+      child: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Column(
+              children: [
+                SizedBox(
+                  height: MediaQuery.of(context).size.height / 16,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("로고"),
+                      Row(
+                        children: [
+                          Icon(Icons.search,),
+                          Icon(Icons.notifications,),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(bottom: 60, top: 30,),
+                  height: MediaQuery.of(context).size.height / 6,
+                  color: auctionColor.subGreyColor,
+                )
+                // TabBar(
+                //   padding: const EdgeInsets.symmetric(vertical: 8),
+                //   labelStyle: tsNotoSansKR(
+                //     fontSize: 16,
+                //     fontWeight: FontWeight.bold,
+                //   ),
+                //   indicatorPadding: const EdgeInsets.symmetric(vertical: 4),
+                //   indicatorColor: auctionColor.mainColor,
+                //   indicatorWeight: 3,
+                //   controller: tabController,
+                //   tabs: tabs,
+                // ),
+                // TabBarView(controller: tabController, children: [
+                //   Container(
+                //     color: auctionColor.subGreyColor,
+                //   ),
+                //   Container(
+                //     color: auctionColor.subGreyColor,
+                //   ),
+                //   Container(
+                //     color: auctionColor.subGreyColor,
+                //   ),
+                //   Container(
+                //     color: auctionColor.subGreyColor,
+                //   ),
+                // ]),
+                // SizedBox(
+                //   height: 30,
+                // ),
+              ],
             ),
-            indicatorPadding: const EdgeInsets.symmetric(vertical: 4),
-            indicatorColor: auctionColor.mainColor,
-            indicatorWeight: 3,
-            controller: tabController,
-            tabs: tabs,
           ),
-          Expanded(
-            child: TabBarView(controller: tabController, children: [
-              Container(
-                color: auctionColor.subGreyColor,
-              ),
-              Container(
-                color: auctionColor.subGreyColor,
-              ),
-              Container(
-                color: auctionColor.subGreyColor,
-              ),
-              Container(
-                color: auctionColor.subGreyColor,
-              ),
-            ]),
-          ),
-          SizedBox(
-            height: 30,
-          ),
-          GridView.builder(
-            physics: NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
+          SliverGrid.builder(
             itemCount: images.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 4,
@@ -146,7 +173,7 @@ class _HomeScreenState extends State<HomeScreen>
                 ],
               );
             },
-          )
+          ),
         ],
       ),
     );
