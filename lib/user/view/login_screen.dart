@@ -3,7 +3,9 @@ import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/view/default_layout.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/user/provider/auth_provider.dart';
+import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:auction_shop/user/repository/auth_repository.dart';
+import 'package:auction_shop/user/repository/user_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -43,7 +45,8 @@ class LoginScreen extends ConsumerWidget {
               imgPath: 'assets/logo/kakao_logo.png',
               text: "카카오톡으로 로그인",
               func: () async {
-                await ref.read(authProvider.notifier).login(platform: LoginPlatform.kakao);
+                // await ref.read(userProvider.notifier).login(ref: ref, platform: LoginPlatform.kakao);
+                await ref.read(userProvider.notifier).login(platform: LoginPlatform.kakao);
               },
               bgColor: Color(0xFFFCDC55),
               textColor: auctionColor.subBlackColor,
@@ -52,7 +55,7 @@ class LoginScreen extends ConsumerWidget {
               imgPath: 'assets/logo/naver_logo.png',
               text: "네이버로 로그인",
               func: () async {
-                await ref.read(authProvider.notifier).login(platform: LoginPlatform.naver);
+                await ref.read(userProvider.notifier).login(platform: LoginPlatform.naver);
               },
               bgColor: Color(0xFF45B649),
               textColor: Colors.white,
@@ -61,7 +64,7 @@ class LoginScreen extends ConsumerWidget {
               imgPath: 'assets/logo/google_logo.png',
               text: "구글로 로그인",
               func: () async {
-                await ref.read(authProvider.notifier).login(platform: LoginPlatform.google);
+                await ref.read(userProvider.notifier).login(platform: LoginPlatform.google);
               },
               bgColor: Colors.white,
               textColor: auctionColor.subBlackColor,
@@ -73,13 +76,25 @@ class LoginScreen extends ConsumerWidget {
                 fontSize: 12,
                 color: Colors.white,)
             ),
-            SizedBox(
-              height: ratio.height * 60,
+            // SizedBox(
+            //   height: ratio.height * 60,
+            // ),
+            GestureDetector(
+              onTap: () async {
+                await ref.read(userProvider.notifier).socialGetMe();
+              },
+              child: Container(
+                width: double.infinity,
+                height: 50,
+                decoration: BoxDecoration(border: Border.all()),
+                child: Text('내정보'),
+              ),
             ),
 
             GestureDetector(
               onTap: () async {
-                await ref.read(authProvider.notifier).logout();
+                
+                await ref.read(userProvider.notifier).logout();
               },
               child: Container(
                 width: double.infinity,
@@ -88,6 +103,7 @@ class LoginScreen extends ConsumerWidget {
                 child: Text('로그아웃'),
               ),
             ),
+            
             // GestureDetector(
             //   onTap: () async {
             //     await ref.read(userRepositoryProvider).googleGetMe();

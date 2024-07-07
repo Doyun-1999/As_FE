@@ -10,34 +10,45 @@ final userRepositoryProvider = Provider<UserRepository>((ref) {
 });
 
 class UserRepository {
-  
+
+
+
+  // 추후 서버에 사용자 정보 요청하는 로직 구현해야함
+
+
+
   // 카카오 사용자 정보 불러오기
   Future<UserModel> kakaoGetMe() async {
     User user = await UserApi.instance.me();
     print('사용자 정보 요청 성공\n닉네임: ${user.kakaoAccount?.profile?.nickname}');
+    //print('${user}');
     return UserModel(nickname: (user.kakaoAccount?.profile?.nickname).toString());
   }
 
   // 구글 사용자 정보 불러오기
-  // 비동기 처리 방식 completer
   Future<UserModelBase> googleGetMe() async {
-    Completer<UserModelBase> completer = Completer();
+    try {
+      firebase_auth.User? user = firebase_auth.FirebaseAuth.instance.currentUser;
 
-    firebase_auth.FirebaseAuth.instance.authStateChanges().listen((firebase_auth.User? user) {
       if (user != null) {
-        completer.complete(UserModel(nickname: user.displayName!));
+        print('사용자 닉네임: ${user.displayName}');
+        print('사용자 이메일: ${user.email}');
+        return UserModel(nickname: user.displayName!);
       } else {
-        completer.complete(UserModelError(msg: "에러가 발생하였습니다."));
+        print('사용자 정보 없음');
+        return UserModelError(msg: '사용자 정보가 없습니다.');
       }
-    });
-
-    return completer.future;
+    } catch (e) {
+      print("사용자 정보 가져오기 에러: $e");
+      throw e; // 에러 처리
+      
+    }
   }
-
 
   // 네이버 사용자 정보 불러오기
   Future<UserModel> naverGetMe() async {
     final NaverLoginResult result = await FlutterNaverLogin.logIn();
+    print(result);
     return UserModel(nickname: result.account.name);
   }
 }

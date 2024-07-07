@@ -1,3 +1,4 @@
+import 'package:auction_shop/common/provider/router_provider.dart';
 import 'package:auction_shop/common/view/home_screen.dart';
 import 'package:auction_shop/common/view/root_tab.dart';
 import 'package:auction_shop/user/view/login_screen.dart';
@@ -27,19 +28,20 @@ void main() async {
   runApp(ProviderScope(child: const MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
     ratio = Size(
       MediaQuery.of(context).size.width / 412,
       MediaQuery.of(context).size.height / 892,
     );
-    return MaterialApp(
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      home: RootTab(),
+      routerConfig: router,
     );
   }
 }
