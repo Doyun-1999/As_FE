@@ -1,12 +1,15 @@
-import 'package:auction_shop/user/model/token_model.dart';
+import 'package:auction_shop/chat/view/chat_list_screen.dart';
+import 'package:auction_shop/product/view/product_info_screen.dart';
 import 'package:auction_shop/user/model/user_model.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:auction_shop/common/view/root_tab.dart';
+import 'package:auction_shop/user/view/login_screen.dart';
+import 'package:auction_shop/user/view/signup_screen.dart';
 
 final authProvider = ChangeNotifierProvider<AuthNotifier>((ref) {
-
   return AuthNotifier(ref: ref);
   
 });
@@ -25,27 +28,61 @@ class AuthNotifier extends ChangeNotifier{
     });
   }
 
+  List<GoRoute> get routes => [
+      GoRoute(
+        path: '/',
+        name: RootTab.routeName,
+        builder: (_, __) => RootTab(),
+      ),
+      GoRoute(
+        path: '/login',
+        name: LoginScreen.routeName,
+        builder: (_, __) => LoginScreen(),
+      ),
+      GoRoute(
+        path: '/signup',
+        name: SignupScreen.routeName,
+        builder: (_, __) => SignupScreen(),
+      ),
+      GoRoute(
+        path: '/chat',
+        name: ChatListScreen.routeName,
+        builder: (_, __) => ChatListScreen(),
+      ),
+      GoRoute(
+        path: '/detail',
+        name: ProductInfoScreen.routeName,
+        builder: (_, __) => ProductInfoScreen(),
+      ),
+    ];
+
   // 앱을 처음 시작했을 때
   // 토큰이 존재하는지 확인하고
   // 로그인 스크린으로 보내줄지
   // 홈 스크린으로 보내줄지 확인하는 과정
   String? redirectLogic(GoRouterState gState){
-    print('redirect');
+    print('redirect 실행');
     final UserModelBase? user = ref.read(userProvider);
     final logginIn = gState.fullPath == '/login';
+
+    print(gState.fullPath);
+    print(user);
 
     // 유저 정보가 없고 로그인 중이라면
     // 로그인 화면로 이동
     if(user == null){
       print('유저 정보가 없음');
-      return '/login';
+      if(gState.fullPath == '/signup'){
+        return '/signup';
+      }
+      return logginIn ? null : '/login';
     }
 
     // 유저 정보가 존재하고 로그인 상태라면
     // 홈 화면으로 이동
-    if(user is UserModel && logginIn){
-      print('홈 화면');
-      return '/';
+    if(user is UserModel){
+      print('로그인 상태');
+      return logginIn ? '/' : null;
     }
 
     // 유저 정보에 에러가 존재하고 로그인 상태가 아니라면

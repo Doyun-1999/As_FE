@@ -9,13 +9,19 @@ class CustomTextFormField extends StatelessWidget {
   final void Function(String)? onChanged;
   final String? Function(String?)? validator;
   final bool readOnly;
+  final bool enabled;
+  final Widget? suffixIcon;
+  final Widget? prefixIcon;
   const CustomTextFormField({
     required this.controller,
     required this.hintText,
     this.onChanged,
+    this.enabled = true,
     this.readOnly = false,
     this.obsecure = false,
-    this.validator = null,
+    this.validator,
+    this.suffixIcon,
+    this.prefixIcon,
     super.key,
   });
 
@@ -23,6 +29,7 @@ class CustomTextFormField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextFormField(
       readOnly: readOnly,
+      enabled: enabled,
       obscureText: obsecure,
       validator: validator == null ? null : validator,
       textAlignVertical: TextAlignVertical.top,
@@ -30,11 +37,13 @@ class CustomTextFormField extends StatelessWidget {
         fontSize: 16,
         fontWeight: FontWeight.w500,
         fontFamily: "NotoSansKR",
-        color: auctionColor.textfieldColor,
+        color: auctionColor.subBlackColor2,
       ),
       onChanged: onChanged,
       controller: controller,
       decoration: InputDecoration(
+        suffixIcon: suffixIcon,
+        prefixIcon: prefixIcon,
         disabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(

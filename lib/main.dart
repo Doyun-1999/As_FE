@@ -1,8 +1,4 @@
 import 'package:auction_shop/common/provider/router_provider.dart';
-import 'package:auction_shop/common/view/home_screen.dart';
-import 'package:auction_shop/common/view/root_tab.dart';
-import 'package:auction_shop/user/view/login_screen.dart';
-import 'package:auction_shop/user/view/signup_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
@@ -17,8 +13,8 @@ void main() async {
 
   // runApp() 호출 전 Flutter SDK 초기화
   KakaoSdk.init(
-    nativeAppKey: 'c92a45b533bbbd46bbfed054aa8ed339',
-    javaScriptAppKey: 'ef6bf12025345a27381048f028f0f836',
+    nativeAppKey: '15d66122fbd678ea76c0651f92f55233',
+    javaScriptAppKey: 'b99a3f3f3294082043cd71ff9aa00255',
   );
 
   await Firebase.initializeApp(
@@ -35,10 +31,12 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
+
     ratio = Size(
       MediaQuery.of(context).size.width / 412,
       MediaQuery.of(context).size.height / 892,
     );
+
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       routerConfig: router,

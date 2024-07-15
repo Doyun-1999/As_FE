@@ -4,6 +4,7 @@ import 'package:auction_shop/common/view/default_layout.dart';
 import 'package:auction_shop/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -33,22 +34,22 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   List<String> images = [
-    "assets/logo/it_digital.png",
-    "assets/logo/furniture.png",
-    "assets/logo/book.png",
-    "assets/logo/ticket.png",
-    "assets/logo/kitchen.png",
-    "assets/logo/cloth.png",
-    "assets/logo/art.png",
-    "assets/logo/beauty.png",
-    "assets/logo/sports.png",
-    "assets/logo/car.png",
-    "assets/logo/hobby.png",
-    "assets/logo/baby_care.png",
-    "assets/logo/camping.png",
-    "assets/logo/animal.png",
-    "assets/logo/jewellery.png",
-    "assets/logo/collection.png",
+    "assets/icon/it_digital.png",
+    "assets/icon/furniture.png",
+    "assets/icon/book.png",
+    "assets/icon/ticket.png",
+    "assets/icon/kitchen.png",
+    "assets/icon/cloth.png",
+    "assets/icon/art.png",
+    "assets/icon/beauty.png",
+    "assets/icon/sports.png",
+    "assets/icon/car.png",
+    "assets/icon/hobby.png",
+    "assets/icon/baby_care.png",
+    "assets/icon/camping.png",
+    "assets/icon/animal.png",
+    "assets/icon/jewellery.png",
+    "assets/icon/collection.png",
   ];
 
   List<String> texts = [
@@ -92,6 +93,7 @@ class _HomeScreenState extends State<HomeScreen>
         slivers: [
           SliverToBoxAdapter(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
                   height: MediaQuery.of(context).size.height / 16,
@@ -102,49 +104,26 @@ class _HomeScreenState extends State<HomeScreen>
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text("로고"),
-                      Row(
-                        children: [
-                          Icon(Icons.search,),
-                          Icon(Icons.notifications,),
-                        ],
-                      )
+                      Icon(
+                        Icons.search,
+                        size: 34,
+                        color: auctionColor.mainColor,
+                      ),
                     ],
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.only(bottom: 60, top: 30,),
-                  height: MediaQuery.of(context).size.height / 6,
-                  color: auctionColor.subGreyColor,
+                  margin: const EdgeInsets.only(
+                    bottom: 60,
+                    top: 20,
+                  ),
+                  height: ratio.height * 265,
+                  color: auctionColor.subGreyColorD9,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16, bottom: 8,),
+                  child: Text("메뉴", style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.bold, color: auctionColor.subBlackColor2),),
                 )
-                // TabBar(
-                //   padding: const EdgeInsets.symmetric(vertical: 8),
-                //   labelStyle: tsNotoSansKR(
-                //     fontSize: 16,
-                //     fontWeight: FontWeight.bold,
-                //   ),
-                //   indicatorPadding: const EdgeInsets.symmetric(vertical: 4),
-                //   indicatorColor: auctionColor.mainColor,
-                //   indicatorWeight: 3,
-                //   controller: tabController,
-                //   tabs: tabs,
-                // ),
-                // TabBarView(controller: tabController, children: [
-                //   Container(
-                //     color: auctionColor.subGreyColor,
-                //   ),
-                //   Container(
-                //     color: auctionColor.subGreyColor,
-                //   ),
-                //   Container(
-                //     color: auctionColor.subGreyColor,
-                //   ),
-                //   Container(
-                //     color: auctionColor.subGreyColor,
-                //   ),
-                // ]),
-                // SizedBox(
-                //   height: 30,
-                // ),
               ],
             ),
           ),
@@ -174,8 +153,68 @@ class _HomeScreenState extends State<HomeScreen>
               );
             },
           ),
+          auctionRowBox(text: '추천경매', firstText: "10만원 시작", secondText: "5만원 시작", firstSubText: "원목 캐주얼 가구 판매", secondSubText: "청동 사슴 야외용 장식"),
+          auctionRowBox(text: 'HOT경매', firstText: "10만원 시작", secondText: "5만원 시작", firstSubText: "원목 캐주얼 가구 판매", secondSubText: "청동 사슴 야외용 장식"),
+          auctionRowBox(text: 'NEW경매', firstText: "10만원 시작", secondText: "5만원 시작", firstSubText: "원목 캐주얼 가구 판매", secondSubText: "청동 사슴 야외용 장식"),
         ],
       ),
     );
+  }
+
+  SliverPadding auctionRowBox({
+    required String text,
+    required String firstText,
+    required String secondText,
+    required String firstSubText,
+    required String secondSubText,
+  }) {
+    return SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            sliver: SliverToBoxAdapter(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 30, bottom: 12),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("$text", style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.bold, color: auctionColor.subBlackColor2),),
+                        Text("더보기 >", style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.bold, color: auctionColor.subGreyColor9E),),
+                      ],
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      Column(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 14),
+                            color: Colors.grey,
+                            height: ratio.height * 220,
+                            width: (MediaQuery.of(context).size.width - 44) / 2,
+                          ),
+                          Text(firstText, style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.bold, color: auctionColor.subBlackColor2),),
+                          Text(firstSubText, style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.normal, color: auctionColor.subBlackColor2),),
+                        ],
+                      ),
+                      SizedBox(width: 12,),
+                      Column(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 14),
+                            color: Colors.grey,
+                            height: ratio.height * 220,
+                            width: (MediaQuery.of(context).size.width - 44) / 2,
+                          ),
+                          Text(secondText, style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.bold, color: auctionColor.subBlackColor2),),
+                          Text(secondSubText, style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.normal, color: auctionColor.subBlackColor2),),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
   }
 }

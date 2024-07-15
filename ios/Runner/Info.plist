@@ -30,6 +30,15 @@
 	<string>Main</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<key>LSApplicationQueriesSchemes</key>
+	
+	<!-- Image Picker -->
+	<key>NSCameraUsageDescription</key>
+	<string>Used to demonstrate image picker plugin</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Used to capture audio for image picker plugin</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Used to demonstrate image picker plugin</string>
+	
 	<!-- 카카오 로그인 설정 코드(삭제X) -->
 	<array>
 		<!-- 네이버로 로그인 -->
@@ -92,7 +101,7 @@
                 <string>Editor</string>
                 <key>CFBundleURLSchemes</key>
                 <array>
-					<string>kakaoc92a45b533bbbd46bbfed054aa8ed339</string>
+					<string>kakao15d66122fbd678ea76c0651f92f55233</string>
                     <string>auctionShopurlscheme</string>
                 </array>
             </dict>
