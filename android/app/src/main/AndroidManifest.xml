@@ -1,5 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET"/>
+    
+    <!-- Image Picker -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
     <application
         android:label="auction_shop"
         android:name="${applicationName}"
@@ -51,7 +57,7 @@
 
                 <!-- "kakao${YOUR_NATIVE_APP_KEY}://oauth" 형식의 앱 실행 스킴 설정 -->
                 <!-- 카카오 로그인 Redirect URI -->
-                <data android:scheme='kakaoc92a45b533bbbd46bbfed054aa8ed339' android:host="oauth"/>
+                <data android:scheme='kakao15d66122fbd678ea76c0651f92f55233' android:host="oauth"/>
             </intent-filter>
         </activity>
 

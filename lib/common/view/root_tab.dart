@@ -1,3 +1,4 @@
+import 'package:auction_shop/chat/view/chat_list_screen.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:flutter/material.dart';
 import 'package:auction_shop/common/view/home_screen.dart';
@@ -42,7 +43,7 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
         controller: controller,
         children: [
           HomeScreen(),
-          Center(child: Text('2'),),
+          ChatListScreen(),
           Center(child: Text('3'),),
           Center(child: Text('4'),),
           Center(child: Text('5'),),
@@ -52,7 +53,7 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
         
         selectedItemColor: auctionColor.mainColor,
         unselectedItemColor: Colors.black,
-        unselectedIconTheme: IconThemeData(color: auctionColor.subGreyColor,),
+        unselectedIconTheme: IconThemeData(color: auctionColor.subGreyColorD9,),
         selectedFontSize: 16,
         unselectedFontSize: 16,
         type: BottomNavigationBarType.fixed,
@@ -64,8 +65,8 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
           BottomNavigationBarItem(icon: Icon(Icons.circle), label: '홈'),
           BottomNavigationBarItem(icon: Icon(Icons.circle), label: '채팅'),
           BottomNavigationBarItem(icon: Icon(Icons.circle), label: '상품등록'),
-          BottomNavigationBarItem(icon: Icon(Icons.circle), label: '알림'),
-          BottomNavigationBarItem(icon: Icon(Icons.circle), label: '내정보'),
+          BottomNavigationBarItem(icon: Icon(Icons.add_circle), label: '알림'),
+          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: '내정보'),
         ],
       ),
     );

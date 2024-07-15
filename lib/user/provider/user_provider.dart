@@ -1,5 +1,4 @@
 import 'package:auction_shop/user/model/user_model.dart';
-import 'package:auction_shop/user/provider/auth_provider.dart';
 import 'package:auction_shop/user/repository/auth_repository.dart';
 import 'package:auction_shop/user/repository/user_repository.dart';
 import 'package:auction_shop/user/secure_storage/secure_storage.dart';
