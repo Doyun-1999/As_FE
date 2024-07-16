@@ -37,7 +37,7 @@ class CustomTextFormField extends StatelessWidget {
         fontSize: 16,
         fontWeight: FontWeight.w500,
         fontFamily: "NotoSansKR",
-        color: auctionColor.subBlackColor2,
+        color: auctionColor.subBlackColor49,
       ),
       onChanged: onChanged,
       controller: controller,

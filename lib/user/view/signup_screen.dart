@@ -122,7 +122,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 Text(
                   "이름",
                   style: tsNotoSansKR(
-                    color: auctionColor.subBlackColor2,
+                    color: auctionColor.subBlackColor49,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
@@ -141,7 +141,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 Text(
                   "주소",
                   style: tsNotoSansKR(
-                    color: auctionColor.subBlackColor2,
+                    color: auctionColor.subBlackColor49,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),

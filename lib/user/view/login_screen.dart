@@ -45,7 +45,7 @@ class LoginScreen extends ConsumerWidget {
                 await ref.read(userProvider.notifier).login(platform: LoginPlatform.kakao);
               },
               bgColor: Color(0xFFFCDC55),
-              textColor: auctionColor.subBlackColor,
+              textColor: auctionColor.subBlackColor3E24,
             ),
             loginContainer(
               imgPath: 'assets/logo/naver_logo.png',
@@ -63,7 +63,7 @@ class LoginScreen extends ConsumerWidget {
                 await ref.read(userProvider.notifier).login(platform: LoginPlatform.google);
               },
               bgColor: Colors.white,
-              textColor: auctionColor.subBlackColor,
+              textColor: auctionColor.subBlackColor3E24,
             ),
             loginContainer(
               icon: Icon(Icons.mail_outline, color: Colors.white,),

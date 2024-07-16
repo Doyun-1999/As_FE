@@ -122,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 16, bottom: 8,),
-                  child: Text("메뉴", style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.bold, color: auctionColor.subBlackColor2),),
+                  child: Text("메뉴", style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.bold, color: auctionColor.subBlackColor49),),
                 )
               ],
             ),
@@ -178,7 +178,7 @@ class _HomeScreenState extends State<HomeScreen>
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("$text", style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.bold, color: auctionColor.subBlackColor2),),
+                        Text("$text", style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.bold, color: auctionColor.subBlackColor49),),
                         Text("더보기 >", style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.bold, color: auctionColor.subGreyColor9E),),
                       ],
                     ),
@@ -186,6 +186,7 @@ class _HomeScreenState extends State<HomeScreen>
                   Row(
                     children: [
                       Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
                             margin: const EdgeInsets.only(bottom: 14),
@@ -193,12 +194,13 @@ class _HomeScreenState extends State<HomeScreen>
                             height: ratio.height * 220,
                             width: (MediaQuery.of(context).size.width - 44) / 2,
                           ),
-                          Text(firstText, style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.bold, color: auctionColor.subBlackColor2),),
-                          Text(firstSubText, style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.normal, color: auctionColor.subBlackColor2),),
+                          Text(firstText, style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.bold, color: auctionColor.subBlackColor49),),
+                          Text(firstSubText, style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.normal, color: auctionColor.subBlackColor49),),
                         ],
                       ),
                       SizedBox(width: 12,),
                       Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
                             margin: const EdgeInsets.only(bottom: 14),
@@ -206,8 +208,8 @@ class _HomeScreenState extends State<HomeScreen>
                             height: ratio.height * 220,
                             width: (MediaQuery.of(context).size.width - 44) / 2,
                           ),
-                          Text(secondText, style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.bold, color: auctionColor.subBlackColor2),),
-                          Text(secondSubText, style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.normal, color: auctionColor.subBlackColor2),),
+                          Text(secondText, style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.bold, color: auctionColor.subBlackColor49),),
+                          Text(secondSubText, style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.normal, color: auctionColor.subBlackColor49),),
                         ],
                       ),
                     ],

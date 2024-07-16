@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 class auctionColor{
   static const Color mainColor = Color(0xFF9747FF);
   static const Color mainColor2 = Color(0xFFEFE4FF);
-  static const Color subBlackColor = Color(0xFF3E2423);
-  static const Color subBlackColor2 = Color(0xFF494949);
+  static const Color subBlackColor3E24 = Color(0xFF3E2423);
+  static const Color subBlackColor49 = Color(0xFF494949);
   static const Color subGreyColorD9 = Color(0xFFD9D9D9);
   static const Color subGreyColorAC = Color(0xFFACACAC);
   static const Color subGreyColorBF = Color(0xFFBFBFBF);

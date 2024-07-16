@@ -1,3 +1,4 @@
+import 'package:auction_shop/chat/view/chat_info_screen.dart';
 import 'package:auction_shop/chat/view/chat_list_screen.dart';
 import 'package:auction_shop/product/view/product_info_screen.dart';
 import 'package:auction_shop/user/model/user_model.dart';
@@ -33,6 +34,20 @@ class AuthNotifier extends ChangeNotifier{
         path: '/',
         name: RootTab.routeName,
         builder: (_, __) => RootTab(),
+        routes: [
+          GoRoute(
+            path: 'chat',
+            name: ChatListScreen.routeName,
+            builder: (_, __) => ChatListScreen(),
+            routes: [
+              GoRoute(
+                path: 'info/:cid',
+                name: ChatInfoScreen.routeName,
+                builder: (_, __) => ChatInfoScreen(id: __.pathParameters['cid']!,),
+              ),
+            ],
+          ),
+        ],
       ),
       GoRoute(
         path: '/login',
@@ -45,14 +60,12 @@ class AuthNotifier extends ChangeNotifier{
         builder: (_, __) => SignupScreen(),
       ),
       GoRoute(
-        path: '/chat',
-        name: ChatListScreen.routeName,
-        builder: (_, __) => ChatListScreen(),
-      ),
-      GoRoute(
         path: '/detail',
         name: ProductInfoScreen.routeName,
         builder: (_, __) => ProductInfoScreen(),
+        routes: [
+          
+        ],
       ),
     ];
 

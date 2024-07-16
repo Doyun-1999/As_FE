@@ -5,10 +5,12 @@ class DefaultLayout extends StatelessWidget {
   final Color? bgColor;
   final BottomNavigationBar? bottomNavigationBar;
   final AppBar? appBar;
+  final bool resizeToAvoidBottomInset;
   const DefaultLayout({
     required this.child,
     this.bgColor = Colors.white,
     this.bottomNavigationBar = null,
+    this.resizeToAvoidBottomInset = false,
     this.appBar,
     super.key,
   });
@@ -16,6 +18,7 @@ class DefaultLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       appBar: appBar,
       backgroundColor: bgColor,
       body: SafeArea(

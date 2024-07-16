@@ -49,6 +49,7 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
           Center(child: Text('5'),),
         ]
       ),
+      
       bottomNavigationBar: BottomNavigationBar(
         
         selectedItemColor: auctionColor.mainColor,

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 TextStyle tsNotoSansKR({
   required double fontSize,
   required FontWeight fontWeight,
-  Color color = auctionColor.subBlackColor,
+  Color color = auctionColor.subBlackColor3E24,
 }) {
   return TextStyle(
     fontFamily: 'NotoSansKR',
@@ -18,7 +18,7 @@ TextStyle tsNotoSansKR({
 TextStyle tsPretendard({
   required double fontSize,
   required FontWeight fontWeight,
-  Color color = auctionColor.subBlackColor,
+  Color color = auctionColor.subBlackColor3E24,
 }) {
   return TextStyle(
     fontFamily: 'Pretendard',
