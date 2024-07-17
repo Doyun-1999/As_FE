@@ -5,34 +5,16 @@ import 'package:auction_shop/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    tabController = TabController(
-      length: 4,
-      vsync: this,
-      initialIndex: 0,
-    );
-  }
-
-  @override
-  void dispose() {
-    tabController.dispose();
-    super.dispose();
-  }
-
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   List<String> images = [
     "assets/icon/it_digital.png",
     "assets/icon/furniture.png",
@@ -71,21 +53,6 @@ class _HomeScreenState extends State<HomeScreen>
     "수집",
   ];
 
-  // List<Tab> tabs = [
-  //   Tab(
-  //     text: "HOME",
-  //   ),
-  //   Tab(
-  //     text: "추천경매",
-  //   ),
-  //   Tab(
-  //     text: "HOT경매",
-  //   ),
-  //   Tab(
-  //     text: "NEW경매",
-  //   ),
-  // ];
-
   @override
   Widget build(BuildContext context) {
     return DefaultLayout(
@@ -104,10 +71,15 @@ class _HomeScreenState extends State<HomeScreen>
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text("로고"),
-                      Icon(
-                        Icons.search,
-                        size: 34,
-                        color: auctionColor.mainColor,
+                      IconButton(
+                        onPressed: () {
+                          
+                        },
+                        icon: Icon(
+                          Icons.search,
+                          size: 34,
+                          color: auctionColor.mainColor,
+                        ),
                       ),
                     ],
                   ),
@@ -121,8 +93,17 @@ class _HomeScreenState extends State<HomeScreen>
                   color: auctionColor.subGreyColorD9,
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 16, bottom: 8,),
-                  child: Text("메뉴", style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.bold, color: auctionColor.subBlackColor2),),
+                  padding: const EdgeInsets.only(
+                    left: 16,
+                    bottom: 8,
+                  ),
+                  child: Text(
+                    "메뉴",
+                    style: tsNotoSansKR(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: auctionColor.subBlackColor49),
+                  ),
                 )
               ],
             ),
@@ -153,9 +134,24 @@ class _HomeScreenState extends State<HomeScreen>
               );
             },
           ),
-          auctionRowBox(text: '추천경매', firstText: "10만원 시작", secondText: "5만원 시작", firstSubText: "원목 캐주얼 가구 판매", secondSubText: "청동 사슴 야외용 장식"),
-          auctionRowBox(text: 'HOT경매', firstText: "10만원 시작", secondText: "5만원 시작", firstSubText: "원목 캐주얼 가구 판매", secondSubText: "청동 사슴 야외용 장식"),
-          auctionRowBox(text: 'NEW경매', firstText: "10만원 시작", secondText: "5만원 시작", firstSubText: "원목 캐주얼 가구 판매", secondSubText: "청동 사슴 야외용 장식"),
+          auctionRowBox(
+              text: '추천경매',
+              firstText: "10만원 시작",
+              secondText: "5만원 시작",
+              firstSubText: "원목 캐주얼 가구 판매",
+              secondSubText: "청동 사슴 야외용 장식"),
+          auctionRowBox(
+              text: 'HOT경매',
+              firstText: "10만원 시작",
+              secondText: "5만원 시작",
+              firstSubText: "원목 캐주얼 가구 판매",
+              secondSubText: "청동 사슴 야외용 장식"),
+          auctionRowBox(
+              text: 'NEW경매',
+              firstText: "10만원 시작",
+              secondText: "5만원 시작",
+              firstSubText: "원목 캐주얼 가구 판매",
+              secondSubText: "청동 사슴 야외용 장식"),
         ],
       ),
     );
@@ -169,52 +165,92 @@ class _HomeScreenState extends State<HomeScreen>
     required String secondSubText,
   }) {
     return SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-            sliver: SliverToBoxAdapter(
-              child: Column(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      sliver: SliverToBoxAdapter(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 30, bottom: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 30, bottom: 12),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("$text", style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.bold, color: auctionColor.subBlackColor2),),
-                        Text("더보기 >", style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.bold, color: auctionColor.subGreyColor9E),),
-                      ],
-                    ),
+                  Text(
+                    "$text",
+                    style: tsNotoSansKR(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: auctionColor.subBlackColor49),
                   ),
-                  Row(
-                    children: [
-                      Column(
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(bottom: 14),
-                            color: Colors.grey,
-                            height: ratio.height * 220,
-                            width: (MediaQuery.of(context).size.width - 44) / 2,
-                          ),
-                          Text(firstText, style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.bold, color: auctionColor.subBlackColor2),),
-                          Text(firstSubText, style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.normal, color: auctionColor.subBlackColor2),),
-                        ],
-                      ),
-                      SizedBox(width: 12,),
-                      Column(
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(bottom: 14),
-                            color: Colors.grey,
-                            height: ratio.height * 220,
-                            width: (MediaQuery.of(context).size.width - 44) / 2,
-                          ),
-                          Text(secondText, style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.bold, color: auctionColor.subBlackColor2),),
-                          Text(secondSubText, style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.normal, color: auctionColor.subBlackColor2),),
-                        ],
-                      ),
-                    ],
+                  Text(
+                    "더보기 >",
+                    style: tsNotoSansKR(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: auctionColor.subGreyColor9E),
                   ),
                 ],
               ),
             ),
-          );
+            Row(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 14),
+                      color: Colors.grey,
+                      height: ratio.height * 220,
+                      width: (MediaQuery.of(context).size.width - 44) / 2,
+                    ),
+                    Text(
+                      firstText,
+                      style: tsNotoSansKR(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: auctionColor.subBlackColor49),
+                    ),
+                    Text(
+                      firstSubText,
+                      style: tsNotoSansKR(
+                          fontSize: 16,
+                          fontWeight: FontWeight.normal,
+                          color: auctionColor.subBlackColor49),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  width: 12,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 14),
+                      color: Colors.grey,
+                      height: ratio.height * 220,
+                      width: (MediaQuery.of(context).size.width - 44) / 2,
+                    ),
+                    Text(
+                      secondText,
+                      style: tsNotoSansKR(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: auctionColor.subBlackColor49),
+                    ),
+                    Text(
+                      secondSubText,
+                      style: tsNotoSansKR(
+                          fontSize: 16,
+                          fontWeight: FontWeight.normal,
+                          color: auctionColor.subBlackColor49),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

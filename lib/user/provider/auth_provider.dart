@@ -1,7 +1,10 @@
+import 'package:auction_shop/chat/view/chat_info_screen.dart';
 import 'package:auction_shop/chat/view/chat_list_screen.dart';
 import 'package:auction_shop/product/view/product_info_screen.dart';
 import 'package:auction_shop/user/model/user_model.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
+import 'package:auction_shop/user/secure_storage/secure_storage.dart';
+import 'package:auction_shop/user/view/mypage_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -28,11 +31,31 @@ class AuthNotifier extends ChangeNotifier{
     });
   }
 
+  // 라우터 리스트
   List<GoRoute> get routes => [
       GoRoute(
         path: '/',
         name: RootTab.routeName,
         builder: (_, __) => RootTab(),
+        routes: [
+          GoRoute(
+            path: 'chat',
+            name: ChatListScreen.routeName,
+            builder: (_, __) => ChatListScreen(),
+            routes: [
+              GoRoute(
+                path: 'info/:cid',
+                name: ChatInfoScreen.routeName,
+                builder: (_, __) => ChatInfoScreen(id: __.pathParameters['cid']!,),
+              ),
+              GoRoute(
+                path: 'mypage',
+                name: MyPageScreen.routeName,
+                builder: (_, __) => MyPageScreen(),
+              ),
+            ],
+          ),
+        ],
       ),
       GoRoute(
         path: '/login',
@@ -45,14 +68,12 @@ class AuthNotifier extends ChangeNotifier{
         builder: (_, __) => SignupScreen(),
       ),
       GoRoute(
-        path: '/chat',
-        name: ChatListScreen.routeName,
-        builder: (_, __) => ChatListScreen(),
-      ),
-      GoRoute(
         path: '/detail',
         name: ProductInfoScreen.routeName,
         builder: (_, __) => ProductInfoScreen(),
+        routes: [
+          
+        ],
       ),
     ];
 
@@ -60,7 +81,7 @@ class AuthNotifier extends ChangeNotifier{
   // 토큰이 존재하는지 확인하고
   // 로그인 스크린으로 보내줄지
   // 홈 스크린으로 보내줄지 확인하는 과정
-  String? redirectLogic(GoRouterState gState){
+  String? redirectLogic(GoRouterState gState) {
     print('redirect 실행');
     final UserModelBase? user = ref.read(userProvider);
     final logginIn = gState.fullPath == '/login';
@@ -76,6 +97,12 @@ class AuthNotifier extends ChangeNotifier{
         return '/signup';
       }
       return logginIn ? null : '/login';
+    }
+
+    // 만약 유저가 앱내에서 회원가입이 진행되지 않은 회원이라면
+    // 회원가입 화면으로 이동
+    if(user is UserModelSignup){
+      return '/signup';
     }
 
     // 유저 정보가 존재하고 로그인 상태라면
