@@ -37,7 +37,6 @@ class AuthRepository {
     print('성공---------------');
     print(resp.data);
     print(resp.statusCode);
-    print(resp.headers);
 
     final data = TokenModel.fromJson(resp.data);
     return data;

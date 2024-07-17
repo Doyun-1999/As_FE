@@ -15,14 +15,34 @@ class UserModelError extends UserModelBase{
 
 class UserModelLoading extends UserModelBase{}
 
-class UserModelSignup extends UserModelBase{}
+class UserModelSignup extends UserModelBase{
+  final int id;
+
+  UserModelSignup({
+    required this.id,
+  });
+}
 
 @JsonSerializable()
 class UserModel extends UserModelBase{
-  final String nickname;
+  final int id;
+  final String username;
+  final String name;
+  final List<String> address;
+  final String phone;
+  final int point;
+  final bool available;
+  final String role;
 
   UserModel({
-    required this.nickname,
+    required this.id,
+    required this.username,
+    required this.name,
+    required this.address,
+    required this.phone,
+    required this.point,
+    required this.available,
+    required this.role,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);

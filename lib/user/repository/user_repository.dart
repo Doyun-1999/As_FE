@@ -20,37 +20,34 @@ class UserRepository {
   });
 
   // 소셜이 아닌 서버로 사용자 데이터 요청
-  Future<void> getMe(String memberId) async {
-    try {
+  Future<UserModel> getMe(String memberId) async {
       final dio = Dio();
 
       final resp = await dio.get(
-        baseUrl + '$memberId',
+        baseUrl + '/member/$memberId',
       );
 
       print('성공---------------');
       print(resp.data);
       print(resp.statusCode);
       print(resp.headers);
-    } on DioException catch (e) {
-      print('실패');
-      print(e.message);
-      print(e.response);
-      print(e);
-    }
+
+      return UserModel.fromJson(resp.data);
+
   }
 
   // 서버와 회원가입
   // 애초에 소셜 로그인을 진행한 것부터 회원가입이 진행된 상태이지만,
   // 사용자에 대해 추가 정보를 수집하고 서버 데이터베이스에 저장하기 위해 다시 회원가입
   Future<void> signup(String memberId, SignupUser userData) async {
+    print("서버와 통신 시작");
     final dio = Dio();
-    print(userData);
-    final url = baseUrl + '/member/info/${memberId}';
-    print(url);
+    final url = baseUrl + '/member/${2}';
+    print("url : $url");
+    print("보낼 데이터 : ${userData.toJson()}");
     try {
       
-      final resp = await dio.put(
+      final resp = await dio.patch(
         url,
         data: userData.toJson(),
       );
