@@ -6,35 +6,41 @@ import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/variable/validator.dart';
 import 'package:auction_shop/common/view/default_layout.dart';
+import 'package:auction_shop/user/provider/user_provider.dart';
+import 'package:auction_shop/user/view/login_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kpostal/kpostal.dart';
 
-class SignupScreen extends StatefulWidget {
+class SignupScreen extends ConsumerStatefulWidget {
   static String get routeName => "signup";
   const SignupScreen({super.key});
 
   @override
-  State<SignupScreen> createState() => _SignupScreenState();
+  ConsumerState<SignupScreen> createState() => _SignupScreenState();
 }
 
-class _SignupScreenState extends State<SignupScreen> {
+class _SignupScreenState extends ConsumerState<SignupScreen> {
   XFile? _image;
   final ImagePicker picker = ImagePicker();
   final gkey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _postcodeController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _addressDetailController =
+  final TextEditingController _detailAddressController =
       TextEditingController();
   Map<String, String> formData = {};
 
   Future getImage() async {
-    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    if(pickedFile != null){
+    final XFile? pickedFile =
+        await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
       setState(() {
         _image = XFile(pickedFile.path);
       });
@@ -44,11 +50,13 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return DefaultLayout(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: Colors.white,
         leading: IconButton(
           onPressed: () {
-            context.pop();
+            ref.read(userProvider.notifier).resetState();
+            context.goNamed(LoginScreen.routeName);
           },
           icon: Icon(
             Icons.arrow_back_ios,
@@ -64,7 +72,7 @@ class _SignupScreenState extends State<SignupScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
-                  height: MediaQuery.of(context).size.height / 15,
+                  height: MediaQuery.of(context).size.height / 20,
                 ),
                 Text(
                   "환영합니다!",
@@ -89,7 +97,9 @@ class _SignupScreenState extends State<SignupScreen> {
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    image: _image == null ? null : DecorationImage(image: FileImage(File(_image!.path))),
+                    image: _image == null
+                        ? null
+                        : DecorationImage(image: FileImage(File(_image!.path))),
                     shape: BoxShape.circle,
                     color: auctionColor.subGreyColorD9,
                   ),
@@ -139,6 +149,30 @@ class _SignupScreenState extends State<SignupScreen> {
                   height: 40,
                 ),
                 Text(
+                  "전화번호",
+                  style: tsNotoSansKR(
+                    color: auctionColor.subBlackColor49,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(
+                  height: 12,
+                ),
+                CustomTextFormField(
+                  maxLength: 13,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    NumberFormat()
+                  ],
+                  validator: phoneValidator,
+                  controller: _phoneController,
+                  hintText: "전화번호를 입력해주세요.",
+                ),
+                const SizedBox(
+                  height: 40,
+                ),
+                Text(
                   "주소",
                   style: tsNotoSansKR(
                     color: auctionColor.subBlackColor49,
@@ -151,39 +185,46 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
                 GestureDetector(
                   onTap: () async {
-                    print('도로명 주소 찾기가 실행됨');
                     await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => KpostalView(
-                            callback: (Kpostal result) {
-                              setState(() {
-                                _postcodeController.text = result.postCode;
-                                _addressController.text = result.address;
-                              });
-                            },
-                          ),
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => KpostalView(
+                          callback: (Kpostal result) {
+                            setState(() {
+                              _postcodeController.text = result.postCode;
+                              _addressController.text = result.address;
+                            });
+                          },
                         ),
-                      );
+                      ),
+                    );
                   },
                   child: CustomTextFormField(
-                    prefixIcon: Icon(Icons.search_outlined,  color: auctionColor.subGreyColorBF,),
-                    validator: null,
+                    prefixIcon: Icon(
+                      Icons.search_outlined,
+                      color: auctionColor.subGreyColorBF,
+                    ),
+                    validator: addressValidator,
                     enabled: false,
                     controller: _addressController,
                     hintText: "도로명 주소를 입력해주세요.",
                   ),
                 ),
-                const SizedBox(height: 6,),
+                const SizedBox(
+                  height: 6,
+                ),
                 CustomTextFormField(
+                  readOnly: true,
                   validator: addressValidator,
                   controller: _postcodeController,
                   hintText: "자동 입력",
                 ),
-                const SizedBox(height: 6,),
+                const SizedBox(
+                  height: 6,
+                ),
                 CustomTextFormField(
-                  validator: addressValidator,
-                  controller: _addressDetailController,
+                  validator: detailAddressValidator,
+                  controller: _detailAddressController,
                   hintText: "상세 주소지를 입력해주세요.",
                 ),
                 SizedBox(
@@ -193,7 +234,12 @@ class _SignupScreenState extends State<SignupScreen> {
                   text: "다음",
                   func: () {
                     if (gkey.currentState!.validate()) {
-                      print("성공");
+                      ref.read(userProvider.notifier).signup(
+                            name: _nameController.text,
+                            phone: _phoneController.text,
+                            address: _addressController.text,
+                            detailAddress: _detailAddressController.text,
+                          );
                     }
                   },
                 ),

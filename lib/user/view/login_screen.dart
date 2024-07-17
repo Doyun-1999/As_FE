@@ -85,33 +85,6 @@ class LoginScreen extends ConsumerWidget {
               ),
             ),
             Spacer(),
-            // SizedBox(
-            //   height: ratio.height * 60,
-            // ),
-            // GestureDetector(
-            //   onTap: () async {
-            //     await ref.read(userProvider.notifier).socialGetMe();
-            //   },
-            //   child: Container(
-            //     width: double.infinity,
-            //     height: 50,
-            //     decoration: BoxDecoration(border: Border.all()),
-            //     child: Text('내정보'),
-            //   ),
-            // ),
-
-            // GestureDetector(
-            //   onTap: () async {
-                
-            //     await ref.read(userProvider.notifier).logout();
-            //   },
-            //   child: Container(
-            //     width: double.infinity,
-            //     height: 50,
-            //     decoration: BoxDecoration(border: Border.all()),
-            //     child: Text('로그아웃'),
-            //   ),
-            // ),
           ],
         ),
       ),

@@ -1,6 +1,7 @@
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomTextFormField extends StatelessWidget {
   final TextEditingController controller;
@@ -12,6 +13,8 @@ class CustomTextFormField extends StatelessWidget {
   final bool enabled;
   final Widget? suffixIcon;
   final Widget? prefixIcon;
+  final int? maxLength;
+  final List<TextInputFormatter>? inputFormatters;
   const CustomTextFormField({
     required this.controller,
     required this.hintText,
@@ -22,12 +25,16 @@ class CustomTextFormField extends StatelessWidget {
     this.validator,
     this.suffixIcon,
     this.prefixIcon,
+    this.maxLength,
+    this.inputFormatters,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      inputFormatters: inputFormatters,
+      maxLength: maxLength,
       readOnly: readOnly,
       enabled: enabled,
       obscureText: obsecure,
@@ -42,6 +49,7 @@ class CustomTextFormField extends StatelessWidget {
       onChanged: onChanged,
       controller: controller,
       decoration: InputDecoration(
+        counterText: '',
         suffixIcon: suffixIcon,
         prefixIcon: prefixIcon,
         disabledBorder: OutlineInputBorder(
@@ -79,5 +87,41 @@ class CustomTextFormField extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+
+// 전화번호 '-' 자동 입력 TextInputFormatter
+class NumberFormat extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    var text = newValue.text;
+
+    if (newValue.selection.baseOffset == 0) {
+      return newValue;
+    }
+
+    var buffer = StringBuffer();
+    for (int i = 0; i < text.length; i++) {
+      buffer.write(text[i]);
+      var nonZeroIndex = i + 1;
+      if (nonZeroIndex <= 3) {
+        if (nonZeroIndex % 3 == 0 && nonZeroIndex != text.length) {
+          buffer.write('-'); // Add double spaces.
+        }
+      } else {
+        if (nonZeroIndex % 7 == 0 &&
+            nonZeroIndex != text.length &&
+            nonZeroIndex > 4) {
+          buffer.write('-');
+        }
+      }
+    }
+
+    var string = buffer.toString();
+    return newValue.copyWith(
+        text: string,
+        selection: TextSelection.collapsed(offset: string.length));
   }
 }

@@ -1,5 +1,6 @@
 import 'package:auction_shop/chat/view/chat_list_screen.dart';
 import 'package:auction_shop/common/variable/color.dart';
+import 'package:auction_shop/user/view/mypage_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:auction_shop/common/view/home_screen.dart';
 import 'package:auction_shop/common/view/default_layout.dart';
@@ -46,7 +47,7 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
           ChatListScreen(),
           Center(child: Text('3'),),
           Center(child: Text('4'),),
-          Center(child: Text('5'),),
+          MyPageScreen(),
         ]
       ),
       

@@ -15,6 +15,8 @@ class UserModelError extends UserModelBase{
 
 class UserModelLoading extends UserModelBase{}
 
+class UserModelSignup extends UserModelBase{}
+
 @JsonSerializable()
 class UserModel extends UserModelBase{
   final String nickname;
@@ -24,4 +26,21 @@ class UserModel extends UserModelBase{
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
+}
+
+@JsonSerializable()
+class SignupUser{
+  final String name;
+  final String phone;
+  final String address;
+  final String detailAddress;
+
+  SignupUser({
+    required this.name,
+    required this.phone,
+    required this.address,
+    required this.detailAddress,
+  });
+
+  Map<String, dynamic> toJson() => _$SignupUserToJson(this);
 }
