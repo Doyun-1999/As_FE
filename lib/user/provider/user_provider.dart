@@ -26,9 +26,7 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
     required this.userRepository,
     required this.storage,
     this.loginPlatform = LoginPlatform.none,
-  }) : super(UserModelLoading()) {
-    
-  }
+  }) : super(UserModelLoading());
 
   
   // 통합 로그인 함수
@@ -96,7 +94,6 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
       if(resp.available){
         final userData = await userRepository.getMe(resp.id.toString());
         state = userData;
-        
       }
 
       print(loginPlatform);
@@ -175,10 +172,8 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
     required String detailAddress,
   }) async {
     
-    print("함수 들어가자마자 상태 : $state");
     // 회원가입 요청중
     // 만약 현재 state가 UserModelSignup이 아닐 경우에 null 반환
-    
     if(!(state is UserModelSignup)){
       print("회원가입 실패 state가 null로 반환됨");
       print(state);
@@ -192,9 +187,6 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
 
     final memberId = signupModel.id;
     final userData = SignupUser(name: name, phone: phone, address: address, detailAddress: detailAddress);
-    print("id : $memberId");
-    print("data : ${userData.toJson()}");
-    print("레포지토리 함수로 요청 이제 들어감");
     final resp = userRepository.signup(memberId.toString(), userData);
   }
   

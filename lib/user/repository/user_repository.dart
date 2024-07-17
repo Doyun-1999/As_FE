@@ -40,11 +40,8 @@ class UserRepository {
   // 애초에 소셜 로그인을 진행한 것부터 회원가입이 진행된 상태이지만,
   // 사용자에 대해 추가 정보를 수집하고 서버 데이터베이스에 저장하기 위해 다시 회원가입
   Future<void> signup(String memberId, SignupUser userData) async {
-    print("서버와 통신 시작");
     final dio = Dio();
     final url = baseUrl + '/member/${2}';
-    print("url : $url");
-    print("보낼 데이터 : ${userData.toJson()}");
     try {
       
       final resp = await dio.patch(
@@ -54,23 +51,16 @@ class UserRepository {
       
       print(resp.data);
       print(resp.statusCode);
+
     } on DioException catch (e) {
       print(e);
-      print("에러 : ${e.error}");
-      print("타입 : ${e.type}");
-      print("요청 : ${e.requestOptions}");
-      print("메시지 : ${e.message}");
-      print("결과 : ${e.response}");
     }
   }
 
   // 카카오 사용자 정보 불러오기
   Future<PkIdModel> kakaoGetMe() async {
     User user = await UserApi.instance.me();
-    print(user);
-    print('사용자 정보 요청 성공\n닉네임: ${user.kakaoAccount?.profile?.nickname}');
 
-    //print('${user}');
     return PkIdModel(
         pkId: (user.id).toString(),);
   }
@@ -82,17 +72,12 @@ class UserRepository {
           firebase_auth.FirebaseAuth.instance.currentUser;
 
       if (user != null) {
-        print('사용자 닉네임: ${user.displayName}');
-        print('사용자 이메일: ${user.email}');
-        print('사용자 이메일: ${user}');
         return PkIdModel(
             pkId: user.uid,);
       } else {
-        print('사용자 정보 없음');
         return null;
       }
     } catch (e) {
-      print("사용자 정보 가져오기 에러: $e");
       throw e;
     }
   }
@@ -100,7 +85,6 @@ class UserRepository {
   // 네이버 사용자 정보 불러오기
   Future<PkIdModel> naverGetMe() async {
     final NaverLoginResult result = await FlutterNaverLogin.logIn();
-    print(result);
     return PkIdModel(
         pkId: result.account.id,);
   }

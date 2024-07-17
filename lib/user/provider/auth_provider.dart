@@ -3,7 +3,6 @@ import 'package:auction_shop/chat/view/chat_list_screen.dart';
 import 'package:auction_shop/product/view/product_info_screen.dart';
 import 'package:auction_shop/user/model/user_model.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
-import 'package:auction_shop/user/secure_storage/secure_storage.dart';
 import 'package:auction_shop/user/view/mypage_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
