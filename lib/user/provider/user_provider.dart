@@ -2,7 +2,6 @@ import 'package:auction_shop/user/model/user_model.dart';
 import 'package:auction_shop/user/repository/auth_repository.dart';
 import 'package:auction_shop/user/repository/user_repository.dart';
 import 'package:auction_shop/user/secure_storage/secure_storage.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -28,7 +27,7 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
     required this.storage,
     this.loginPlatform = LoginPlatform.none,
   }) : super(UserModelLoading()) {
-    socialGetMe();
+    
   }
 
   
@@ -63,11 +62,10 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
       
       // 유저 정보를 불러오는 과정에서
       // 유저 고유의 id를 storage에 저장
-      await socialGetMe();
+      final pk = await socialGetMe();
       
       // 유저 정보를 성공적으로 불러오면
       // 정상적으로 서버로 다시 해당 id를 전송
-      final pk = await storage.read(key: PERSONAL_KEY);
       print("저장된 토큰 값 : $pk");
       // 만약 유저 정보를 정상적으로 불러오지 못했거나
       // 고유 id값이 저장이 안됐을 시에는
@@ -85,16 +83,21 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
       // => 앱내에서 회원가입이 진행되지 않은 회원이므로 userSignup 반환
       final resp = await authRepository.login(pk);
       if(resp == null){
+        print("로그인 실패");
         state = null;
         return;
       }
       await storage.write(key: ACCESS_TOKEN, value: resp.accessToken);
       if(!resp.available){
-        state = UserModelSignup();
+        state = UserModelSignup(id : resp.id);
+        return;
       }
 
-      
-
+      if(resp.available){
+        final userData = await userRepository.getMe(resp.id.toString());
+        state = userData;
+        
+      }
 
       print(loginPlatform);
     }catch(e){
@@ -128,41 +131,40 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
 
   // 소셜 로그인으로부터 고유 id값 받아서 저장
   // 유저 상태는 변경 X
-  Future<void> socialGetMe() async {
+  Future<String?> socialGetMe() async {
     if(loginPlatform == LoginPlatform.none){
       state = null;
-      return;
+      return null;
     }
     if(loginPlatform == LoginPlatform.kakao){
       final resp = await userRepository.kakaoGetMe();
-      storage.write(key: PERSONAL_KEY, value: resp.pkId);
+      return resp.pkId;
     }
     if(loginPlatform == LoginPlatform.naver){
       final resp = await userRepository.naverGetMe();
-      storage.write(key: PERSONAL_KEY, value: resp.pkId);
+      return resp.pkId;
     }
     if(loginPlatform == LoginPlatform.google){
       final resp = await userRepository.googleGetMe();
       if(resp == null){
-        return;
+        return null;
       }
-      storage.write(key: PERSONAL_KEY, value: resp.pkId);
+      return resp.pkId;
     }
-    print(state);
   }
 
   // 서버 통신으로 유저정보를 얻어오는 과정에서
   // 개인키가 없으면 다시 로그인 시킨다.
-  Future<void> getMe() async {
-    final memberId = await storage.read(key: PERSONAL_KEY);
-    if(memberId == null){
-      state = null;
-      return;
-    }
-    final resp = userRepository.getMe(memberId);
-    print(resp);
+  // Future<void> getMe() async {
+  //   final memberId = await storage.read(key: PERSONAL_KEY);
+  //   if(memberId == null){
+  //     state = null;
+  //     return;
+  //   }
+  //   final resp = userRepository.getMe(memberId);
+  //   print(resp);
     
-  }  
+  // }  
 
   // 서버 통신으로 회원가입하는 과정에서
   // 개인키가 없으면 다시 로그인 시킨다.
@@ -172,19 +174,28 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
     required String address,
     required String detailAddress,
   }) async {
-    final memberId = await storage.read(key: PERSONAL_KEY);
-    if(memberId == null){
+    
+    print("함수 들어가자마자 상태 : $state");
+    // 회원가입 요청중
+    // 만약 현재 state가 UserModelSignup이 아닐 경우에 null 반환
+    
+    if(!(state is UserModelSignup)){
+      print("회원가입 실패 state가 null로 반환됨");
+      print(state);
       state = null;
       return;
     }
+
+    // 만약 현재 state가 UserModelSignup일 경우에는
+    // 해당 state의 memberid를 반환
+    final signupModel = state as UserModelSignup;
+
+    final memberId = signupModel.id;
     final userData = SignupUser(name: name, phone: phone, address: address, detailAddress: detailAddress);
-    
-    print(userData.name);
-    print(userData.phone);
-    print(userData.address);
-    print(userData.detailAddress);
-    final resp = userRepository.signup(memberId, userData);
-    print(resp);
+    print("id : $memberId");
+    print("data : ${userData.toJson()}");
+    print("레포지토리 함수로 요청 이제 들어감");
+    final resp = userRepository.signup(memberId.toString(), userData);
   }
   
   // 회원가입에서 다시 로그인화면 넘어가기 위해
