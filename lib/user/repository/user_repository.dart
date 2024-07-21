@@ -39,14 +39,18 @@ class UserRepository {
   // 서버와 회원가입
   // 애초에 소셜 로그인을 진행한 것부터 회원가입이 진행된 상태이지만,
   // 사용자에 대해 추가 정보를 수집하고 서버 데이터베이스에 저장하기 위해 다시 회원가입
-  Future<void> signup(String memberId, SignupUser userData) async {
+  Future<void> signup(String memberId, FormData formdata) async {
     final dio = Dio();
-    final url = baseUrl + '/member/${2}';
+    final url = baseUrl + '/member/${memberId}';
+    print("서버 요청 전 데이터 점검");
     try {
       
       final resp = await dio.patch(
         url,
-        data: userData.toJson(),
+        data: formdata,
+        options: Options(
+          contentType: 'multipart/form-data',
+        ),
       );
       
       print(resp.data);

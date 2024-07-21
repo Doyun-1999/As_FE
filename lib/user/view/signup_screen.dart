@@ -1,5 +1,5 @@
+import 'dart:convert';
 import 'dart:io';
-
 import 'package:auction_shop/common/component/button.dart';
 import 'package:auction_shop/common/component/textformfield.dart';
 import 'package:auction_shop/common/variable/color.dart';
@@ -8,8 +8,8 @@ import 'package:auction_shop/common/variable/validator.dart';
 import 'package:auction_shop/common/view/default_layout.dart';
 import 'package:auction_shop/user/model/user_model.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
-import 'package:auction_shop/user/repository/user_repository.dart';
 import 'package:auction_shop/user/view/login_screen.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -28,7 +28,8 @@ class SignupScreen extends ConsumerStatefulWidget {
 }
 
 class _SignupScreenState extends ConsumerState<SignupScreen> {
-  XFile? _image;
+  File? _image;
+  String? fileName;
   final ImagePicker picker = ImagePicker();
   final gkey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
@@ -39,13 +40,15 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       TextEditingController();
   Map<String, String> formData = {};
 
-  Future getImage() async {
-    final XFile? pickedFile =
-        await picker.pickImage(source: ImageSource.gallery);
+  Future<void> _pickImage() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
     if (pickedFile != null) {
       setState(() {
-        _image = XFile(pickedFile.path);
+        _image = File(pickedFile.path);
+        fileName = pickedFile.name;
       });
+      
     }
   }
 
@@ -107,7 +110,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   ),
                   child: InkWell(
                     onTap: () async {
-                      getImage();
+                      _pickImage();
                     },
                     child: Container(
                       width: 24,
@@ -192,10 +195,12 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       MaterialPageRoute(
                         builder: (_) => KpostalView(
                           callback: (Kpostal result) {
-                            setState(() {
-                              _postcodeController.text = result.postCode;
-                              _addressController.text = result.address;
-                            });
+                            setState(
+                              () {
+                                _postcodeController.text = result.postCode;
+                                _addressController.text = result.address;
+                              },
+                            );
                           },
                         ),
                       ),
@@ -234,10 +239,11 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 ),
                 CustomButton(
                   text: "다음",
-                  func: () {
+                  func: () async {
                     if (gkey.currentState!.validate()) {
                       ref.read(userProvider.notifier).signup(
-
+                        fileName: fileName,
+                            fileData: _image,
                             name: _nameController.text,
                             phone: _phoneController.text,
                             address: _addressController.text,
