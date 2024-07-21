@@ -1,6 +1,6 @@
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
-import 'package:auction_shop/common/view/default_layout.dart';
+import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:auction_shop/user/repository/auth_repository.dart';

@@ -1,7 +1,7 @@
 import 'package:auction_shop/chat/view/chat_info_screen.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
-import 'package:auction_shop/common/view/default_layout.dart';
+import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';

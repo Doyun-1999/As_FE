@@ -5,7 +5,7 @@ import 'package:auction_shop/common/component/textformfield.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/variable/validator.dart';
-import 'package:auction_shop/common/view/default_layout.dart';
+import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/user/model/user_model.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:auction_shop/user/view/login_screen.dart';

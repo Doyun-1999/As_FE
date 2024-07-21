@@ -1,4 +1,4 @@
-import 'package:auction_shop/common/view/default_layout.dart';
+import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:flutter/widgets.dart';
 
 class ProductInfoScreen extends StatelessWidget {

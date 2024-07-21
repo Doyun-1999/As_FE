@@ -1,6 +1,6 @@
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
-import 'package:auction_shop/common/view/default_layout.dart';
+import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -70,7 +70,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("로고"),
+                      Image.asset('assets/logo/main_logo.png',height: ratio.height * 50,),
                       IconButton(
                         onPressed: () {
                           

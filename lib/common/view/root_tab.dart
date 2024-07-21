@@ -3,7 +3,7 @@ import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/user/view/mypage_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:auction_shop/common/view/home_screen.dart';
-import 'package:auction_shop/common/view/default_layout.dart';
+import 'package:auction_shop/common/layout/default_layout.dart';
 
 class RootTab extends StatefulWidget {
   static String get routeName => 'home';
@@ -52,23 +52,21 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
       ),
       
       bottomNavigationBar: BottomNavigationBar(
-        
-        selectedItemColor: auctionColor.mainColor,
-        unselectedItemColor: Colors.black,
-        unselectedIconTheme: IconThemeData(color: auctionColor.subGreyColorD9,),
-        selectedFontSize: 16,
-        unselectedFontSize: 16,
+        selectedIconTheme: IconThemeData(color: auctionColor.mainColor,),
+        unselectedIconTheme: IconThemeData(color: auctionColor.subGreyColor9E,),
+        selectedLabelStyle: TextStyle(fontSize: 12, color: auctionColor.subGreyColor9E,),
+        unselectedLabelStyle: TextStyle(fontSize: 12, color: auctionColor.subGreyColor9E,),
         type: BottomNavigationBarType.fixed,
         onTap: (int index){
           controller.animateTo(index);
         },
         currentIndex: index,
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.circle), label: '홈'),
-          BottomNavigationBarItem(icon: Icon(Icons.circle), label: '채팅'),
-          BottomNavigationBarItem(icon: Icon(Icons.circle), label: '상품등록'),
-          BottomNavigationBarItem(icon: Icon(Icons.add_circle), label: '알림'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: '내정보'),
+          BottomNavigationBarItem(icon: Icon(Icons.home, size: 30,), label: '홈'),
+          BottomNavigationBarItem(icon: Icon(Icons.chat_rounded, size: 30,), label: '채팅'),
+          BottomNavigationBarItem(icon: Icon(Icons.add_circle, size: 30,), label: '상품등록'),
+          BottomNavigationBarItem(icon: Icon(Icons.notifications_outlined, size: 30,), label: '알림'),
+          BottomNavigationBarItem(icon: Icon(Icons.person_outline, size: 30,), label: '내정보'),
         ],
       ),
     );
