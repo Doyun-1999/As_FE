@@ -10,8 +10,7 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
       id: (json['id'] as num).toInt(),
       username: json['username'] as String,
       name: json['name'] as String,
-      address:
-          (json['address'] as List<dynamic>).map((e) => e as String).toList(),
+      address: AddressModel.fromJson(json['address'] as Map<String, dynamic>),
       phone: json['phone'] as String,
       point: (json['point'] as num).toInt(),
       available: json['available'] as bool,
@@ -40,6 +39,17 @@ Map<String, dynamic> _$SignupUserToJson(SignupUser instance) =>
     <String, dynamic>{
       'name': instance.name,
       'phone': instance.phone,
+      'address': instance.address,
+      'detailAddress': instance.detailAddress,
+    };
+
+AddressModel _$AddressModelFromJson(Map<String, dynamic> json) => AddressModel(
+      address: json['address'] as String,
+      detailAddress: json['detailAddress'] as String,
+    );
+
+Map<String, dynamic> _$AddressModelToJson(AddressModel instance) =>
+    <String, dynamic>{
       'address': instance.address,
       'detailAddress': instance.detailAddress,
     };

@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {
   final String text;
-  final VoidCallback func;
+  final VoidCallback? func;
+  final Color bgColor;
   const CustomButton({
     required this.text,
     required this.func,
-    super.key,});
+    this.bgColor = auctionColor.mainColor,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +20,7 @@ class CustomButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 16),
         width: double.infinity,
         decoration: BoxDecoration(
-          color: auctionColor.mainColor,
+          color: bgColor,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Center(

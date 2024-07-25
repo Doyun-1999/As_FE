@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:auction_shop/common/component/button.dart';
 import 'package:auction_shop/common/component/textformfield.dart';
@@ -9,7 +8,6 @@ import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/user/model/user_model.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:auction_shop/user/view/login_screen.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -54,6 +52,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final state = ref.watch(userProvider);
+    print("최종 화면에서의 상태 : ${state}");
     return DefaultLayout(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
@@ -239,7 +239,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 ),
                 CustomButton(
                   text: "다음",
-                  func: () async {
+                  bgColor: (state is UserModelLoading) ? Colors.grey : auctionColor.mainColor,
+                  func: (state is UserModelLoading) ? null : () async {
                     if (gkey.currentState!.validate()) {
                       ref.read(userProvider.notifier).signup(
                         fileName: fileName,

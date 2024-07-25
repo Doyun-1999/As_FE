@@ -2,6 +2,7 @@ import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/main.dart';
+import 'package:auction_shop/user/model/user_model.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:auction_shop/user/repository/auth_repository.dart';
 import 'package:auction_shop/user/view/signup_screen.dart';
@@ -17,7 +18,7 @@ class LoginScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    //final state = ref.watch(authProvider);
+    final state = ref.watch(userProvider);
 
     return DefaultLayout(
       bgColor: auctionColor.mainColor,
@@ -41,39 +42,39 @@ class LoginScreen extends ConsumerWidget {
             loginContainer(
               imgPath: 'assets/logo/kakao_logo.png',
               text: "카카오톡으로 로그인",
-              func: () async {
+              func: (state is UserModelLoading) ? null : () async {
                 await ref.read(userProvider.notifier).login(platform: LoginPlatform.kakao);
               },
-              bgColor: Color(0xFFFCDC55),
+              bgColor: (state is UserModelLoading) ? auctionColor.subGreyColor94 : Color(0xFFFCDC55),
               textColor: auctionColor.subBlackColor3E24,
             ),
             loginContainer(
               imgPath: 'assets/logo/naver_logo.png',
               text: "네이버로 로그인",
-              func: () async {
+              func: (state is UserModelLoading) ? null : () async {
                 await ref.read(userProvider.notifier).login(platform: LoginPlatform.naver);
               },
-              bgColor: Color(0xFF45B649),
+              bgColor: (state is UserModelLoading) ? auctionColor.subGreyColor94 : Color(0xFF45B649),
               textColor: Colors.white,
             ),
             loginContainer(
               imgPath: 'assets/logo/google_logo.png',
               text: "구글로 로그인",
-              func: () async {
+              func: (state is UserModelLoading) ? null : () async {
                 await ref.read(userProvider.notifier).login(platform: LoginPlatform.google);
               },
-              bgColor: Colors.white,
+              bgColor: (state is UserModelLoading) ? auctionColor.subGreyColor94 : Colors.white,
               textColor: auctionColor.subBlackColor3E24,
             ),
             loginContainer(
               icon: Icon(Icons.mail_outline, color: Colors.white,),
               imgPath: null,
               text: "이메일 로그인∙회원가입",
-              func: () {
+              func: (state is UserModelLoading) ? null : () {
                 context.pushNamed(SignupScreen.routeName);
               },
-              borderColor: Colors.white,
-              bgColor: null,
+              borderColor: (state is UserModelLoading) ? auctionColor.subGreyColor94 : Colors.white,
+              bgColor: (state is UserModelLoading) ? auctionColor.subGreyColor94 : null,
               textColor: Colors.white
             ),
             Spacer(),
@@ -96,7 +97,7 @@ GestureDetector loginContainer({
   Icon? icon = null,
   required String? imgPath,
   required String text,
-  required VoidCallback func,
+  required VoidCallback? func,
   required Color? bgColor,
   Color? borderColor = null,
   required Color textColor,
