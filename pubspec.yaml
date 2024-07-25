@@ -47,6 +47,7 @@ dependencies:
   go_router: ^14.2.0
   dio: ^5.5.0+1
   image_picker: ^1.1.2
+  socket_io_client: ^2.0.3+1
   # crypto: ^3.0.3
   # shared_preferences: ^2.2.3
   # platform: ^3.1.5
@@ -81,6 +82,7 @@ flutter:
   assets:
     - assets/icon/
     - assets/logo/
+    - assets/img/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
@@ -134,6 +136,29 @@ flutter:
           weight: 800
         - asset: assets/fonts/Pretendard-Black.ttf
           weight: 900
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Black.ttf
+          weight: 900
+        - asset: assets/fonts/Inter-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Inter-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/Inter-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/Inter-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Inter-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Inter-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Inter-Thin.ttf
+          weight: 100
+    - family: Chatting
+      fonts:
+        - asset: assets/icon/chatting.ttf
 
   # fonts:
   #   - family: Schyler

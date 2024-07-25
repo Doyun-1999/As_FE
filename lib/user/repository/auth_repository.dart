@@ -9,18 +9,20 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:dio/dio.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>((ref){
+  final dio = ref.watch(dioProvider);
 
-  return AuthRepository(baseUrl: BASE_URL);
-
+  return AuthRepository(dio: dio, baseUrl: BASE_URL);
 });
 
 // 로그인 플랫폼 enum 정의
 enum LoginPlatform { none, kakao, naver, google }
 
 class AuthRepository {
+  final Dio dio;
   final String baseUrl;
 
   AuthRepository({
+    required this.dio,
     required this.baseUrl,
   });
 

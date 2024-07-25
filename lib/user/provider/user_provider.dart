@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:mime/mime.dart';
 import 'package:auction_shop/user/model/user_model.dart';
 import 'package:auction_shop/user/repository/auth_repository.dart';
 import 'package:auction_shop/user/repository/user_repository.dart';
@@ -21,7 +20,8 @@ final userProvider =
   return UserStateNotifier(
       authRepository: authRepository,
       userRepository: userRepository,
-      storage: storage);
+      storage: storage,
+    );
 });
 
 class UserStateNotifier extends StateNotifier<UserModelBase?> {
@@ -35,12 +35,13 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
     required this.userRepository,
     required this.storage,
     this.loginPlatform = LoginPlatform.none,
-  }) : super(UserModelLoading());
+  }) : super(null);
 
   // 통합 로그인 함수
   // 서버와 연동 후 userProvider로 옮긴 후에
   // 토큰 저장 및 user update 진행해야함 -> gorouter redirect 때문에
   Future<void> login({required LoginPlatform platform}) async {
+    state = UserModelLoading();
     try {
       // 플랫폼별로 로그인 수행후 변수값 변경
       if (platform == LoginPlatform.kakao) {
@@ -93,12 +94,18 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
       await storage.write(key: ACCESS_TOKEN, value: resp.accessToken);
       if (!resp.available) {
         state = UserModelSignup(id: resp.id);
+        print("회원가입 해야해요");
+        print("현재 상태 : ${state}");
         return;
       }
 
       if (resp.available) {
         final userData = await userRepository.getMe(resp.id.toString());
         state = userData;
+        if(!(state is UserModel)){
+          state = null;
+          return;
+        }
       }
 
       print(loginPlatform);
@@ -108,6 +115,8 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
   }
 
   // 로그아웃
+  // userProvider의 상태를 null로 바꾸고
+  // 저장된 토큰을 모두 삭제한다.
   Future<void> logout() async {
     try {
       if (loginPlatform == LoginPlatform.kakao) {
@@ -122,6 +131,7 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
       }
       loginPlatform = LoginPlatform.none;
       state = null;
+      await storage.deleteAll();
       print("로그아웃 성공");
       print(loginPlatform);
     } catch (e) {
@@ -153,19 +163,6 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
     }
   }
 
-  // 서버 통신으로 유저정보를 얻어오는 과정에서
-  // 개인키가 없으면 다시 로그인 시킨다.
-  // Future<void> getMe() async {
-  //   final memberId = await storage.read(key: PERSONAL_KEY);
-  //   if(memberId == null){
-  //     state = null;
-  //     return;
-  //   }
-  //   final resp = userRepository.getMe(memberId);
-  //   print(resp);
-
-  // }
-
   // 서버 통신으로 회원가입하는 과정에서
   // 개인키가 없으면 다시 로그인 시킨다.
   Future<void> signup({
@@ -176,7 +173,6 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
     required String address,
     required String detailAddress,
   }) async {
-    print("signup 1");
     // 회원가입 요청중
     // 만약 현재 state가 UserModelSignup이 아닐 경우에 null 반환
     if (!(state is UserModelSignup)) {
@@ -189,7 +185,10 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
     // 만약 현재 state가 UserModelSignup일 경우에는
     // 해당 state의 memberid를 반환
     final signupModel = state as UserModelSignup;
-
+    
+    // state 변경
+    state = UserModelLoading();
+    
     final memberId = signupModel.id;
     final userData = SignupUser(
         name: name,
@@ -198,6 +197,7 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
         detailAddress: detailAddress,
       );
 
+    // FormData 생성
     FormData formData = FormData();
     
     final jsonString = jsonEncode(userData.toJson());
@@ -220,7 +220,8 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
       );
     }
     print(memberId);
-    final resp = userRepository.signup(memberId.toString(), formData);
+    final resp = await userRepository.signup(memberId.toString(), formData);
+    state = resp;
   }
 
   // 회원가입에서 다시 로그인화면 넘어가기 위해

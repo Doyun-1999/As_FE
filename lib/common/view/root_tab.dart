@@ -1,8 +1,11 @@
 import 'package:auction_shop/chat/view/chat_list_screen.dart';
 import 'package:auction_shop/common/variable/color.dart';
+import 'package:auction_shop/common/variable/data.dart';
+import 'package:auction_shop/notification/view/notification_screen.dart';
+import 'package:auction_shop/product/view/register/register_product_screen.dart';
 import 'package:auction_shop/user/view/mypage_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:auction_shop/common/view/home_screen.dart';
+import 'package:auction_shop/product/view/home_screen.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 
 class RootTab extends StatefulWidget {
@@ -45,8 +48,8 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
         children: [
           HomeScreen(),
           ChatListScreen(),
-          Center(child: Text('3'),),
-          Center(child: Text('4'),),
+          RegisterProductScreen(),
+          NotificationScreen(),
           MyPageScreen(),
         ]
       ),
@@ -63,7 +66,7 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
         currentIndex: index,
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home, size: 30,), label: '홈'),
-          BottomNavigationBarItem(icon: Icon(Icons.chat_rounded, size: 30,), label: '채팅'),
+          BottomNavigationBarItem(icon: Icon(chattingIcon, size: 30,), label: '채팅'),
           BottomNavigationBarItem(icon: Icon(Icons.add_circle, size: 30,), label: '상품등록'),
           BottomNavigationBarItem(icon: Icon(Icons.notifications_outlined, size: 30,), label: '알림'),
           BottomNavigationBarItem(icon: Icon(Icons.person_outline, size: 30,), label: '내정보'),

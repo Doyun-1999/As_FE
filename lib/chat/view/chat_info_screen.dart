@@ -1,3 +1,4 @@
+import 'package:auction_shop/common/dio/dio.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
@@ -5,10 +6,12 @@ import 'package:auction_shop/common/view/root_tab.dart';
 import 'package:auction_shop/main.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+//import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class ChatInfoScreen extends StatelessWidget {
   static String get routeName => 'chatInfo';
   final String id;
+  //final IO.Socket socket = IO.io(BASE_URL + '/sub/room/', IO.OptionBuilder().setTransports(['websocket']).build());
   const ChatInfoScreen({
     required this.id,
     super.key,
@@ -49,7 +52,9 @@ class ChatInfoScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          SizedBox(height: 20,),
+          SizedBox(
+            height: 20,
+          ),
           auctionInfoRow(
             title: "입찰중 서류 가방",
             startPrice: "5만원 시작",
@@ -67,9 +72,7 @@ class ChatInfoScreen extends StatelessWidget {
             ),
           ),
           Row(
-            children: [
-              Icon(Icons.add)
-            ],
+            children: [Icon(Icons.add)],
           )
         ],
       ),
@@ -127,14 +130,15 @@ class ChatInfoScreen extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(width: 25,),
+          SizedBox(
+            width: 25,
+          ),
         ],
       ),
     );
   }
 
-  Align ChatBox(
-    BuildContext context, {
+  Align ChatBox(BuildContext context, {
     required String msg,
     required bool isMe,
   }) {
@@ -147,10 +151,60 @@ class ChatInfoScreen extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 13, left: 20, right: 20),
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 11),
         decoration: BoxDecoration(
-          color: auctionColor.subGreyColorDB,
+          color: isMe ? auctionColor.mainColor : auctionColor.subGreyColorDB,
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Text(msg),
+        child: Text(
+          msg,
+          style: tsNotoSansKR(
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
+            color: isMe ? Colors.white : auctionColor.subBlackColor49,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Align isFirstChatBox(BuildContext context, {
+    required String msg,
+  }) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 30,
+            height: 30,
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: NetworkImage('https://flexible.img.hani.co.kr/flexible/normal/970/777/imgdb/resize/2019/0926/00501881_20190926.JPG'),
+                fit: BoxFit.fill,
+              ),
+            ),
+          ),
+          Container(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.65,
+            ),
+            margin: const EdgeInsets.only(bottom: 13, left: 20, right: 20),
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 11),
+            decoration: BoxDecoration(
+              color: auctionColor.subGreyColorDB,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              msg,
+              style: tsNotoSansKR(
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+                color:auctionColor.subBlackColor49,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

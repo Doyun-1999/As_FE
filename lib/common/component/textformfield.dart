@@ -1,4 +1,5 @@
 import 'package:auction_shop/common/variable/color.dart';
+import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,6 +16,8 @@ class CustomTextFormField extends StatelessWidget {
   final Widget? prefixIcon;
   final int? maxLength;
   final List<TextInputFormatter>? inputFormatters;
+  final bool expands;
+  final int? maxLines;
   const CustomTextFormField({
     required this.controller,
     required this.hintText,
@@ -22,6 +25,8 @@ class CustomTextFormField extends StatelessWidget {
     this.enabled = true,
     this.readOnly = false,
     this.obsecure = false,
+    this.expands = false,
+    this.maxLines,
     this.validator,
     this.suffixIcon,
     this.prefixIcon,
@@ -33,6 +38,8 @@ class CustomTextFormField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      maxLines: maxLines,
+      expands: expands,
       inputFormatters: inputFormatters,
       maxLength: maxLength,
       readOnly: readOnly,
@@ -90,6 +97,32 @@ class CustomTextFormField extends StatelessWidget {
   }
 }
 
+class TextLable extends StatelessWidget {
+  final String text;
+  const TextLable({
+    required this.text,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return // TextField 위 text 라벨
+
+        Padding(
+      padding: const EdgeInsets.only(
+        top: 26,
+        bottom: 12,
+      ),
+      child: Text(
+        text,
+        style: tsNotoSansKR(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+}
 
 // 전화번호 '-' 자동 입력 TextInputFormatter
 class NumberFormat extends TextInputFormatter {

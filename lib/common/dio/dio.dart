@@ -40,4 +40,10 @@ class CustomInterceptor extends Interceptor{
 
     super.onRequest(options, handler);
   }
+
+  // @override
+  // void onError(DioException err, ErrorInterceptorHandler handler) {
+  //   final personalId = await storage.read(key: PERSONAL)
+  //   super.onError(err, handler);
+  // }
 }

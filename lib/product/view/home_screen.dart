@@ -1,11 +1,14 @@
 import 'package:auction_shop/common/variable/color.dart';
+import 'package:auction_shop/common/variable/data.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/main.dart';
+import 'package:auction_shop/product/view/product_category_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -15,43 +18,6 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  List<String> images = [
-    "assets/icon/it_digital.png",
-    "assets/icon/furniture.png",
-    "assets/icon/book.png",
-    "assets/icon/ticket.png",
-    "assets/icon/kitchen.png",
-    "assets/icon/cloth.png",
-    "assets/icon/art.png",
-    "assets/icon/beauty.png",
-    "assets/icon/sports.png",
-    "assets/icon/car.png",
-    "assets/icon/hobby.png",
-    "assets/icon/baby_care.png",
-    "assets/icon/camping.png",
-    "assets/icon/animal.png",
-    "assets/icon/jewellery.png",
-    "assets/icon/collection.png",
-  ];
-
-  List<String> texts = [
-    "IT 디지털",
-    "가구∙가전",
-    "도서",
-    "쿠폰∙티켓",
-    "생활∙주방",
-    "패션",
-    "예술작품",
-    "뷰티",
-    "스포츠",
-    "자동차",
-    "취미",
-    "키즈∙육아",
-    "캠핑∙트래블",
-    "반려동물",
-    "주얼리∙시계",
-    "수집",
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -118,17 +84,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             itemBuilder: (context, index) {
               return Column(
                 children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: auctionColor.mainColor2,
+                  GestureDetector(
+                    onTap: (){
+                      context.pushNamed(ProductCategoryScreen.routeName, pathParameters: {'cid' : index.toString(),},);
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: auctionColor.mainColor2,
+                      ),
+                      width: ratio.width * 80,
+                      height: ratio.height * 80,
+                      child: Image.asset(images[index]),
                     ),
-                    width: ratio.width * 80,
-                    height: ratio.height * 80,
-                    child: Image.asset(images[index]),
                   ),
                   Text(
-                    texts[index],
+                    category[index + 1],
                   ),
                 ],
               );

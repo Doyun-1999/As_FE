@@ -28,7 +28,7 @@ class UserModel extends UserModelBase{
   final int id;
   final String username;
   final String name;
-  final List<String> address;
+  final AddressModel address;
   final String phone;
   final int point;
   final bool available;
@@ -63,4 +63,17 @@ class SignupUser{
   });
 
   Map<String, dynamic> toJson() => _$SignupUserToJson(this);
+}
+
+@JsonSerializable()
+class AddressModel{
+  final String address;
+  final String detailAddress;
+
+  AddressModel({
+    required this.address,
+    required this.detailAddress,
+  });
+
+  factory AddressModel.fromJson(Map<String, dynamic> json) => _$AddressModelFromJson(json);
 }
