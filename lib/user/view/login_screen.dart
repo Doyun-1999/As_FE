@@ -5,6 +5,7 @@ import 'package:auction_shop/main.dart';
 import 'package:auction_shop/user/model/user_model.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:auction_shop/user/repository/auth_repository.dart';
+import 'package:auction_shop/user/secure_storage/secure_storage.dart';
 import 'package:auction_shop/user/view/signup_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,14 +13,27 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 
-class LoginScreen extends ConsumerWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   static String get routeName => "login";
   const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(userProvider);
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+}
 
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+
+  @override
+  void initState() {
+    //ref.read(userProvider);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final state = ref.watch(userProvider);
+    final storage = ref.watch(secureStorageProvider);
+    
     return DefaultLayout(
       bgColor: auctionColor.mainColor,
       child: Container(
@@ -70,9 +84,15 @@ class LoginScreen extends ConsumerWidget {
               icon: Icon(Icons.mail_outline, color: Colors.white,),
               imgPath: null,
               text: "이메일 로그인∙회원가입",
-              func: (state is UserModelLoading) ? null : () {
-                context.pushNamed(SignupScreen.routeName);
+              func: () async {
+                final refresh = await storage.read(key: REFRESH_TOKEN);
+                final access = await storage.read(key: ACCESS_TOKEN);
+                print(refresh);
+                print(access);
               },
+              // func: (state is UserModelLoading) ? null : () {
+              //   context.pushNamed(SignupScreen.routeName);
+              // },
               borderColor: (state is UserModelLoading) ? auctionColor.subGreyColor94 : Colors.white,
               bgColor: (state is UserModelLoading) ? auctionColor.subGreyColor94 : null,
               textColor: Colors.white

@@ -6,6 +6,7 @@ import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/product/view/register/register_product_screen2.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -22,8 +23,7 @@ class RegisterProductScreen extends StatefulWidget {
 
 class _RegisterProductScreenState extends State<RegisterProductScreen> {
   late List<bool> isSelected;
-  List<File> _image = [];
-  String? fileName;
+  List<File> _images = [];
   final ImagePicker picker = ImagePicker();
   final gkey = GlobalKey<FormState>();
 
@@ -46,14 +46,19 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
     }
   }
 
-  Future<void> _pickImage() async {
+  Future<void> _pickImage({int? index}) async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      setState(() {
-        _image!.add(File(pickedFile.path));
-        fileName = pickedFile.name;
-      });
+      if(index == null){
+        setState(() {
+          _images.add(File(pickedFile.path));
+        });
+      }else{
+        setState(() {
+          _images[index] = (File(pickedFile.path));
+        });
+      }
     }
   }
 
@@ -78,6 +83,24 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
       child: Form(
         child: CustomScrollView(
           slivers: [
+            SliverPadding(padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+              ),
+            sliver: SliverToBoxAdapter(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    ...List.generate(
+                      _images.length, (index) {
+                      return imageBox(image: _images[index], index: index);
+                    }),
+                    _images.length == 10 ? SizedBox() : imageBox(),
+                  ],
+                ),
+              ),
+            ),
+            ),
             SliverPadding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 16,
@@ -89,7 +112,7 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
                     TextLable(text: '상품명'),
                     CustomTextFormField(
                       controller: _nameController,
-                      hintText: "김철수",
+                      hintText: "상품명을 입력해 주세요.",
                     ),
                     TextLable(text: '상품명'),
                     Row(
@@ -147,8 +170,10 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
                     ),
                     CustomButton(
                       text: '다음',
-                      func: () {
-                        context.pushNamed(RegisterProductScreen2.routeName,);
+                      func: () async {
+                        final data = await MultipartFile.fromFile(_images[0].path,);
+                        print(data);
+                        //context.pushNamed(RegisterProductScreen2.routeName,);
                       },
                     ),
                   ],
@@ -162,38 +187,49 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
   }
 
   // 이미지 상자
-  Container imageBox() {
-    return Container(
-      padding: const EdgeInsets.only(
-        top: 21,
-        left: 15,
-        right: 15,
-        bottom: 7,
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: Colors.black.withOpacity(
-            0.3,
-          ),
+  InkWell imageBox({
+    File? image,
+    int? index,
+  }) {
+    return InkWell(
+      onTap: (){
+        _pickImage(index: index);
+      },
+      child: Container(
+        width: 85,
+        height: 85,
+        margin: const EdgeInsets.only(right: 12,),
+        padding: image !=null ? EdgeInsets.all(0) : EdgeInsets.only(
+          top: 21,
+          left: 15,
+          right: 15,
+          bottom: 7,
         ),
-      ),
-      child: Column(
-        children: [
-          Icon(
-            Icons.photo_camera_outlined,
-            color: auctionColor.subGreyColorB4,
-            size: 35,
-          ),
-          Text(
-            '10장까지',
-            style: tsInter(
-              fontSize: 12,
-              fontWeight: FontWeight.w400,
-              color: auctionColor.subGreyColorAE,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: Colors.black.withOpacity(
+              0.3,
             ),
           ),
-        ],
+        ),
+        child: image != null ? Image.file(File(image.path), fit: BoxFit.fill,) : Column(
+          children: [
+            Icon(
+              Icons.photo_camera_outlined,
+              color: auctionColor.subGreyColorB4,
+              size: 35,
+            ),
+            Text(
+              '10장까지',
+              style: tsInter(
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+                color: auctionColor.subGreyColorAE,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

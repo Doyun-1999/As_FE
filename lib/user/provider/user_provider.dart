@@ -115,6 +115,8 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
   }
 
   // 로그아웃
+  // userProvider의 상태를 null로 바꾸고
+  // 저장된 토큰을 모두 삭제한다.
   Future<void> logout() async {
     try {
       if (loginPlatform == LoginPlatform.kakao) {
@@ -129,6 +131,7 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
       }
       loginPlatform = LoginPlatform.none;
       state = null;
+      await storage.deleteAll();
       print("로그아웃 성공");
       print(loginPlatform);
     } catch (e) {
@@ -159,19 +162,6 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
       return resp.pkId;
     }
   }
-
-  // 서버 통신으로 유저정보를 얻어오는 과정에서
-  // 개인키가 없으면 다시 로그인 시킨다.
-  // Future<void> getMe() async {
-  //   final memberId = await storage.read(key: PERSONAL_KEY);
-  //   if(memberId == null){
-  //     state = null;
-  //     return;
-  //   }
-  //   final resp = userRepository.getMe(memberId);
-  //   print(resp);
-
-  // }
 
   // 서버 통신으로 회원가입하는 과정에서
   // 개인키가 없으면 다시 로그인 시킨다.

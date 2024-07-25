@@ -1,3 +1,5 @@
+import 'package:auction_shop/common/component/button.dart';
+import 'package:auction_shop/common/component/user_image.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
@@ -52,7 +54,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
   Widget build(BuildContext context) {
     final data = ref.read(productProvider.notifier).getDetail(widget.id);
     return DefaultLayout(
-      child:  CustomScrollView(
+      child: CustomScrollView(
         slivers: [
           // ProductInfo
           SliverToBoxAdapter(
@@ -88,16 +90,19 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
           // Tabbar
           SliverToBoxAdapter(
             child: TabBar(
-              indicator: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(width: 3, color: auctionColor.mainColor,),
-                )
+              indicatorWeight: 3,
+              indicatorSize: TabBarIndicatorSize.tab,
+              indicatorColor: auctionColor.mainColor,
+              labelStyle: tsNotoSansKR(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
               ),
-              labelStyle: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.bold,),
-              unselectedLabelStyle: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.w400, color: auctionColor.subGreyColorB6,),
-              onTap: (int? val){
-
-              },
+              unselectedLabelStyle: tsNotoSansKR(
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+                color: auctionColor.subGreyColorB6,
+              ),
+              onTap: (int? val) {},
               controller: controller,
               tabs: [
                 Tab(
@@ -112,11 +117,21 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                       left: 25,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: auctionColor.mainColorE2,
-                          borderRadius: BorderRadius.circular(8)
+                            color: auctionColor.mainColorE2,
+                            borderRadius: BorderRadius.circular(8)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 5,
+                          vertical: 3,
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3,),
-                        child: Text('남은 시간 21:00:52', style: tsInter(fontSize: 12, fontWeight: FontWeight.bold, color: auctionColor.mainColor,), textAlign: TextAlign.center,),
+                        child: Text(
+                          '남은 시간 21:00:52',
+                          style: tsInter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: auctionColor.mainColor,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     ),
                     Align(
@@ -127,26 +142,58 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                     ),
                   ],
                 ),
-                
               ],
             ),
           ),
 
+          // Custom TabBarView
           SliverFillRemaining(
-            hasScrollBody: true,
+            hasScrollBody: false,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 33,),
-              child: Text(
-                  data.description,
-                  style: tsNotoSansKR(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    color: auctionColor.subBlackColor49,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 33,
+              ),
+              child: Column(
+                children: [
+                  index == 0
+                      ? Text(
+                          data.description,
+                          style: tsNotoSansKR(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            color: auctionColor.subBlackColor49,
+                          ),
+                        )
+                      : Column(
+                          children: [
+                            Text(
+                              '최근 입찰',
+                              style: tsNotoSansKR(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: auctionColor.mainColor,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 6,
+                            ),
+                            ...List.generate(5, (index) {
+                              return bidBox(date: '2024.02.03', price: 40000, isFirst: index == 0 ? true : false,);
+                            })
+                          ],
+                        ),
+                  SizedBox(
+                    height: 30,
                   ),
-                ),
+                  CustomButton(
+                    text: '입찰하기',
+                    func: () {},
+                  ),
+                ],
+              ),
             ),
           ),
-         
         ],
       ),
     );
@@ -174,7 +221,10 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.center, // 그라데이션 끝나는 지점
-                      colors: [Colors.black.withOpacity(0.8), Colors.transparent],
+                      colors: [
+                        Colors.black.withOpacity(0.8),
+                        Colors.transparent
+                      ],
                     ),
                   ),
                 ),
@@ -370,6 +420,100 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
             height: 20,
           ),
         ],
+      ),
+    );
+  }
+
+  // 경매에 필요한 하나의 박스
+  Container bidBox({
+    required String date,
+    required int price,
+    String? imgpath,
+    bool isFirst = false,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10,),
+      padding: const EdgeInsets.only(
+        left: 10,
+        right: 8.5,
+        bottom: 5.5,
+        top: 9,
+      ),
+      decoration: BoxDecoration(
+        color: isFirst ? auctionColor.mainColorE2 : auctionColor.subGreyColorEF,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: IntrinsicHeight(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // 채팅걸기 + 날짜
+            Container(
+              width: 70,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  isFirst ? Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: auctionColor.mainColor,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Text(
+                      '채팅걸기',
+                      style: tsInter(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ) : SizedBox(height: 15,),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    date,
+                    style: tsNotoSansKR(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      color: auctionColor.mainColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // 가격
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    '$price원',
+                    style: tsInter(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // 유저 이미지
+            Container(
+              width: 70,
+              alignment: Alignment.bottomRight,
+              child: UserImage(
+                size: 30,
+                imgPath: imgpath,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
