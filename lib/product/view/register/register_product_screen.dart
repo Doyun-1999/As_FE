@@ -1,12 +1,12 @@
 import 'dart:io';
-
 import 'package:auction_shop/common/component/button.dart';
 import 'package:auction_shop/common/component/textformfield.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/variable/color.dart';
+import 'package:auction_shop/common/variable/function.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
+import 'package:auction_shop/product/component/upload_image_box.dart';
 import 'package:auction_shop/product/view/register/register_product_screen2.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -26,6 +26,7 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
   List<File> _images = [];
   final ImagePicker picker = ImagePicker();
   final gkey = GlobalKey<FormState>();
+  ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -53,6 +54,12 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
       if(index == null){
         setState(() {
           _images.add(File(pickedFile.path));
+        });
+        // 현재 프레임이 완전히 빌드된 후에 지정한 콜백 함수를 실행하도록 예약
+        //UI가 완전히 렌더링된 후에 특정 작업을 수행
+        // => 이미지가 다 추가되고 ui가 완전히 렌더링 된 후 스크롤 이동
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          scrollToEnd(_scrollController);
         });
       }else{
         setState(() {
@@ -88,14 +95,18 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
               ),
             sliver: SliverToBoxAdapter(
               child: SingleChildScrollView(
+                controller: _scrollController,
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
                     ...List.generate(
                       _images.length, (index) {
-                      return imageBox(image: _images[index], index: index);
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: UploadImageBox(image: _images[index], index: index, func: (){_pickImage(index:index);},),
+                      );
                     }),
-                    _images.length == 10 ? SizedBox() : imageBox(),
+                    _images.length == 10 ? SizedBox() : UploadImageBox(func: (){_pickImage();},),
                   ],
                 ),
               ),
@@ -171,9 +182,9 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
                     CustomButton(
                       text: '다음',
                       func: () async {
-                        final data = await MultipartFile.fromFile(_images[0].path,);
-                        print(data);
-                        //context.pushNamed(RegisterProductScreen2.routeName,);
+                        //final data = await MultipartFile.fromFile(_images[0].path,);
+                        //print(data);
+                        context.pushNamed(RegisterProductScreen2.routeName,);
                       },
                     ),
                   ],
@@ -198,7 +209,6 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
       child: Container(
         width: 85,
         height: 85,
-        margin: const EdgeInsets.only(right: 12,),
         padding: image !=null ? EdgeInsets.all(0) : EdgeInsets.only(
           top: 21,
           left: 15,

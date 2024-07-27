@@ -18,9 +18,11 @@ class CustomTextFormField extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final bool expands;
   final int? maxLines;
+  final double borderRadius;
   const CustomTextFormField({
     required this.controller,
     required this.hintText,
+    this.borderRadius = 8,
     this.onChanged,
     this.enabled = true,
     this.readOnly = false,
@@ -60,13 +62,13 @@ class CustomTextFormField extends StatelessWidget {
         suffixIcon: suffixIcon,
         prefixIcon: prefixIcon,
         disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(borderRadius),
           borderSide: BorderSide(
             color: Color(0xFFBFBFBF),
           ),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(borderRadius),
           borderSide: BorderSide(
             color: Colors.red,
           ),
@@ -81,13 +83,13 @@ class CustomTextFormField extends StatelessWidget {
           color: Color(0xFFBFBFBF),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(borderRadius),
           borderSide: BorderSide(
             color: Color(0xFFBFBFBF),
           ),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(borderRadius),
           borderSide: BorderSide(
             color: Color(0xFFBFBFBF),
           ),

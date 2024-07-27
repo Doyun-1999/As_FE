@@ -7,6 +7,7 @@ import 'package:auction_shop/main.dart';
 import 'package:auction_shop/product/provider/product_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -54,144 +55,112 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
   Widget build(BuildContext context) {
     final data = ref.read(productProvider.notifier).getDetail(widget.id);
     return DefaultLayout(
-      child: CustomScrollView(
-        slivers: [
-          // ProductInfo
-          SliverToBoxAdapter(
-            child: Column(
-              children: [
-                imageWidget(
-                  imgPath: data.imgPath,
-                  heroKey: data.id,
-                ),
-                SizedBox(
-                  height: 28,
-                ),
-                productInfo(
-                  category: data.category,
-                  userName: data.userName,
-                  name: data.name,
-                  nowPrice: data.nowPrice,
-                  startPrice: data.startPrice,
-                  tradeMethod: data.tradeMethod,
-                  place: data.place,
-                ),
-                Divider(
-                  thickness: 8,
-                  color: auctionColor.subGreyColorF5,
-                ),
-                SizedBox(
-                  height: ratio.height * 43,
-                ),
-              ],
-            ),
-          ),
-
-          // Tabbar
-          SliverToBoxAdapter(
-            child: TabBar(
-              indicatorWeight: 3,
-              indicatorSize: TabBarIndicatorSize.tab,
-              indicatorColor: auctionColor.mainColor,
-              labelStyle: tsNotoSansKR(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-              unselectedLabelStyle: tsNotoSansKR(
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-                color: auctionColor.subGreyColorB6,
-              ),
-              onTap: (int? val) {},
-              controller: controller,
-              tabs: [
-                Tab(
-                  text: "설명",
-                ),
-                Stack(
-                  clipBehavior: Clip.none,
+      child: Stack(
+        children: [
+          CustomScrollView(
+            slivers: [
+              // ProductInfo
+              SliverToBoxAdapter(
+                child: Column(
                   children: [
-                    Positioned(
-                      top: -10,
-                      right: 25,
-                      left: 25,
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: auctionColor.mainColorE2,
-                            borderRadius: BorderRadius.circular(8)),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 5,
-                          vertical: 3,
-                        ),
-                        child: Text(
-                          '남은 시간 21:00:52',
-                          style: tsInter(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: auctionColor.mainColor,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
+                    imageWidget(
+                      imgPath: data.imgPath,
+                      heroKey: data.id,
                     ),
-                    Align(
-                      alignment: Alignment.center,
-                      child: Tab(
-                        text: "경매방",
-                      ),
+                    SizedBox(
+                      height: 28,
+                    ),
+                    productInfo(
+                      category: data.category,
+                      userName: data.userName,
+                      name: data.name,
+                      nowPrice: data.nowPrice,
+                      startPrice: data.startPrice,
+                      tradeMethod: data.tradeMethod,
+                      place: data.place,
+                    ),
+                    Divider(
+                      thickness: 8,
+                      color: auctionColor.subGreyColorF5,
+                    ),
+                    SizedBox(
+                      height: ratio.height * 43,
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
-
-          // Custom TabBarView
-          SliverFillRemaining(
-            hasScrollBody: false,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 33,
               ),
-              child: Column(
-                children: [
-                  index == 0
-                      ? Text(
-                          data.description,
-                          style: tsNotoSansKR(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                            color: auctionColor.subBlackColor49,
-                          ),
-                        )
-                      : Column(
-                          children: [
-                            Text(
-                              '최근 입찰',
+
+              // Tabbar
+              TabBarWidget(),
+
+              // Custom TabBarView
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 33,
+                  ),
+                  child: Column(
+                    children: [
+                      index == 0
+                          ? Text(
+                              data.description,
                               style: tsNotoSansKR(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: auctionColor.mainColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                color: auctionColor.subBlackColor49,
                               ),
+                            )
+                          : Column(
+                              children: [
+                                Text(
+                                  '최근 입찰',
+                                  style: tsNotoSansKR(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: auctionColor.mainColor,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 6,
+                                ),
+                                ...List.generate(
+                                  5,
+                                  (index) {
+                                    return bidBox(
+                                      date: '2024.02.03',
+                                      price: 40000,
+                                      isFirst: index == 0 ? true : false,
+                                    );
+                                  },
+                                ),
+                                
+                              ],
+                              
                             ),
                             SizedBox(
-                              height: 6,
-                            ),
-                            ...List.generate(5, (index) {
-                              return bidBox(date: '2024.02.03', price: 40000, isFirst: index == 0 ? true : false,);
-                            })
-                          ],
-                        ),
-                  SizedBox(
-                    height: 30,
+                  height: 90,
+                ),
+                    ],
                   ),
-                  CustomButton(
-                    text: '입찰하기',
-                    func: () {},
-                  ),
-                ],
+                ),
               ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16,),
+            child: Column(
+              children: [
+                Spacer(),
+                CustomButton(
+                  text: '입찰하기',
+                  func: () {},
+                ),
+                SizedBox(
+                  height: 40,
+                ),
+              ],
             ),
           ),
         ],
@@ -424,6 +393,67 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
     );
   }
 
+  // TabBar
+  SliverToBoxAdapter TabBarWidget() {
+    return SliverToBoxAdapter(
+      child: TabBar(
+        indicatorWeight: 3,
+        indicatorSize: TabBarIndicatorSize.tab,
+        indicatorColor: auctionColor.mainColor,
+        labelStyle: tsNotoSansKR(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+        ),
+        unselectedLabelStyle: tsNotoSansKR(
+          fontSize: 16,
+          fontWeight: FontWeight.w400,
+          color: auctionColor.subGreyColorB6,
+        ),
+        onTap: (int? val) {},
+        controller: controller,
+        tabs: [
+          Tab(
+            text: "설명",
+          ),
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Positioned(
+                top: -10,
+                right: 25,
+                left: 25,
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: auctionColor.mainColorE2,
+                      borderRadius: BorderRadius.circular(8)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 5,
+                    vertical: 3,
+                  ),
+                  child: Text(
+                    '남은 시간 21:00:52',
+                    style: tsInter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: auctionColor.mainColor,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+              Align(
+                alignment: Alignment.center,
+                child: Tab(
+                  text: "경매방",
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   // 경매에 필요한 하나의 박스
   Container bidBox({
     required String date,
@@ -432,7 +462,9 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
     bool isFirst = false,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 10,),
+      margin: const EdgeInsets.only(
+        bottom: 10,
+      ),
       padding: const EdgeInsets.only(
         left: 10,
         right: 8.5,
@@ -454,24 +486,28 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  isFirst ? Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 4,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: auctionColor.mainColor,
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Text(
-                      '채팅걸기',
-                      style: tsInter(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ) : SizedBox(height: 15,),
+                  isFirst
+                      ? Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: auctionColor.mainColor,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: Text(
+                            '채팅걸기',
+                            style: tsInter(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        )
+                      : SizedBox(
+                          height: 15,
+                        ),
                   SizedBox(
                     height: 20,
                   ),

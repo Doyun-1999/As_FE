@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class InfoBox extends StatelessWidget {
-  final String firstBoxText;
+  final String? firstBoxText;
   final String? secondeBoxText;
   final Widget widget;
   const InfoBox({
-    required this.firstBoxText,
+    this.firstBoxText,
     required this.widget,
     this.secondeBoxText,
     super.key});
@@ -27,14 +27,14 @@ class InfoBox extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
+              firstBoxText != null ? Container(
                 padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2,),
                 decoration: BoxDecoration(
                   color: auctionColor.mainColorE2,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Text(firstBoxText, style: tsInter(fontSize: 12, fontWeight: FontWeight.bold, color: auctionColor.mainColor,),),
-              ),
+                child: Text(firstBoxText!, style: tsInter(fontSize: 12, fontWeight: FontWeight.bold, color: auctionColor.mainColor,),),
+              ) : SizedBox(),
               Text('수정', style: tsInter(fontSize: 16, fontWeight: FontWeight.w400, color: auctionColor.subGreyColorB6,),),
             ],
           ),
