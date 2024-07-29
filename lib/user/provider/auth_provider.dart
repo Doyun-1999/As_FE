@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:auction_shop/chat/view/chat_info_screen.dart';
 import 'package:auction_shop/chat/view/chat_list_screen.dart';
 import 'package:auction_shop/notification/view/notification_screen.dart';
@@ -133,7 +135,14 @@ class AuthNotifier extends ChangeNotifier {
                 GoRoute(
                   path: 'register2',
                   name: RegisterProductScreen2.routeName,
-                  builder: (_, __) => RegisterProductScreen2(),
+                  builder: (_, __) {
+                    final encodedImagePaths = __.uri.queryParameters['images'];
+                    final List<String> images = encodedImagePaths != null ? List<String>.from(jsonDecode(encodedImagePaths)) : [];
+                    final title = __.uri.queryParameters['title']!;
+                    final trade = __.uri.queryParameters['trade']!;
+                    final place = __.uri.queryParameters['place']!;
+                    final details = __.uri.queryParameters['details']!;
+                    return RegisterProductScreen2(images: images, title: title, trade: trade, place: place, details: details);},
                 ),
               ]
             ),

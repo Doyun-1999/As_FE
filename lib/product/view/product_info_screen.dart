@@ -1,9 +1,11 @@
 import 'package:auction_shop/common/component/button.dart';
+import 'package:auction_shop/common/component/textformfield.dart';
 import 'package:auction_shop/common/component/user_image.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/main.dart';
+import 'package:auction_shop/product/component/toggle_button.dart';
 import 'package:auction_shop/product/provider/product_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +30,9 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
     with SingleTickerProviderStateMixin {
   late TabController controller;
   int index = 0;
+  List<bool> isSelected = [true, false];
+  TextEditingController _priceController = TextEditingController();
+  TextEditingController _inquiryController = TextEditingController();
 
   @override
   void initState() {
@@ -49,6 +54,19 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
     setState(() {
       index = controller.index;
     });
+  }
+
+  // 토글 버튼 선택 함수
+  void toggleSelect(int val) {
+    if (val == 0) {
+      setState(() {
+        isSelected = [true, false];
+      });
+    } else {
+      setState(() {
+        isSelected = [false, true];
+      });
+    }
   }
 
   @override
@@ -135,13 +153,11 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                                     );
                                   },
                                 ),
-                                
                               ],
-                              
                             ),
-                            SizedBox(
-                  height: 90,
-                ),
+                      SizedBox(
+                        height: 90,
+                      ),
                     ],
                   ),
                 ),
@@ -149,13 +165,24 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
             ],
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16,),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+            ),
             child: Column(
               children: [
                 Spacer(),
                 CustomButton(
                   text: '입찰하기',
-                  func: () {},
+                  // 바텀 시트 올라오는 함수
+                  func: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (BuildContext context) {
+                        return customBottomSheet();
+                      },
+                    );
+                  },
                 ),
                 SizedBox(
                   height: 40,
@@ -550,6 +577,77 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // 올라오는 바텀 시트 내부 위젯
+  Container customBottomSheet() {
+    return Container(
+      // 고정 크기 => 텍스트, 버튼 전부 고정 크기이므로
+      height: 600,
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16,
+      ),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(30),
+          topRight: Radius.circular(30),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 50,
+          ),
+          TextLable(text: '희망 거래 방식'),
+          Row(
+            children: [
+              ToggleBox(
+                isSelected: isSelected[0],
+                func: () {
+                  toggleSelect(0);
+                },
+                text: '비대면',
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              ToggleBox(
+                isSelected: isSelected[1],
+                func: () {
+                  toggleSelect(1);
+                },
+                text: '직거래',
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 30,
+          ),
+          TextLable(text: '입찰 가격'),
+          CustomTextFormField(
+            controller: _priceController,
+            hintText: '₩ 입찰가격을 입력해주세요.',
+          ),
+          SizedBox(
+            height: 30,
+          ),
+          TextLable(text: '판매자 문의'),
+          CustomTextFormField(
+            controller: _inquiryController,
+            hintText: '1:1 대화로 궁금한 사항을 문의할 수 있습니다.',
+          ),
+          SizedBox(
+            height: 50,
+          ),
+          CustomButton(
+            text: '입찰 완료',
+            func: () {},
+          ),
+        ],
       ),
     );
   }
