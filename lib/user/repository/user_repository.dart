@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:auction_shop/common/dio/dio.dart';
+import 'package:auction_shop/user/model/Q&A_model.dart';
 import 'package:auction_shop/user/model/pk_id_model.dart';
 import 'package:auction_shop/user/model/user_model.dart';
 import 'package:dio/dio.dart';
@@ -23,9 +24,42 @@ class UserRepository {
     required this.baseUrl,
   });
 
+  // 해당 유저 문의 조회
+  Future<List<QandAModel>?> answerData({required String memberId}) async {
+    final resp = await dio.get(baseUrl + '/inquiry/$memberId',);
+
+    if(resp.statusCode == 200){
+      print("성공");
+      print(resp.data);
+      // 리스트 데이터 각 매핑후 fromJson
+      final dataList = (resp.data as List<Map<String, dynamic>>).map((e) => QandAModel.fromJson(e)).toList();
+      return dataList;
+    }
+    return null;
+  }
+
+  // 문의 전체 조회
+  Future<void> allAnswerData({required FormData data, }) async {
+    final resp = await dio.get(baseUrl + '/inquiry', data: data,);
+
+    if(resp.statusCode == 200){
+      print("성공");
+      print(resp.data);
+    }
+  }
+
+  // 문의 등록
+  Future<void> question({required FormData data,}) async {
+    final resp = await dio.post(baseUrl + '/inquiry', data: data,);
+
+    if(resp.statusCode == 200){
+      print("성공");
+      print(resp.data);
+    }
+  }
+
   // 소셜이 아닌 서버로 사용자 데이터 요청
   Future<UserModel> getMe(String memberId) async {
-      final dio = Dio();
 
       final resp = await dio.get(
         baseUrl + '/member/$memberId',

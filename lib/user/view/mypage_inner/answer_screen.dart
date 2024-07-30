@@ -1,10 +1,8 @@
 import 'package:auction_shop/common/variable/color.dart';
-import 'package:auction_shop/common/variable/textstyle.dart';
-import 'package:auction_shop/main.dart';
 import 'package:auction_shop/user/component/add_button.dart';
 import 'package:auction_shop/user/component/info_box.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
-import 'package:auction_shop/common/variable/data.dart';
+import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/user/component/textcolumn.dart';
 import 'package:auction_shop/user/view/mypage_inner/question_screen.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +19,12 @@ class AnswerScreen extends StatelessWidget {
       bgColor: auctionColor.subGreyColorF6,
       appBar: CustomAppBar().allAppBar(
         context: context,
-        vertFunc: () {},
+        vertFunc: (String? val){
+          print('object');
+        },
+        popupList: [
+          PopupMenuItem(child: Text('수정하기',),),
+        ],
         title: '내 문의',
       ),
       child: SingleChildScrollView(

@@ -1,3 +1,4 @@
+import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/component/button.dart';
 import 'package:auction_shop/common/component/textformfield.dart';
 import 'package:auction_shop/common/component/user_image.dart';
@@ -7,6 +8,7 @@ import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/product/component/toggle_button.dart';
 import 'package:auction_shop/product/provider/product_provider.dart';
+import 'package:auction_shop/product/view/product_revise_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -203,9 +205,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
       child: Stack(
         children: [
           //Image.network(imgPath),
-          Hero(
-            tag: ObjectKey(heroKey),
-            child: Stack(
+          Stack(
               children: [
                 Image.network(
                   imgPath,
@@ -226,7 +226,6 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                 ),
               ],
             ),
-          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -239,12 +238,22 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                   color: Colors.white,
                 ),
               ),
-              IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.more_vert,
-                  color: Colors.white,
-                ),
+              PopupMenuButton<String>(
+                color: Colors.white,
+                onSelected: (String? val){
+                  if(val == "수정"){
+                    context.pushNamed(ProductReviseScreen.routeName);
+                  }
+                  if(val == "삭제"){
+                    print("삭제");
+                  }
+                },
+                itemBuilder: (BuildContext context) => [
+                  popupItem(text: "수정하기", value: "수정",),
+                  PopupMenuDivider(),
+                  popupItem(text: "삭제하기", value: "삭제",),
+                ],
+                icon: Icon(Icons.more_vert),
               ),
             ],
           ),

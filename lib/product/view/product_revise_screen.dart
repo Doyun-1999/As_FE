@@ -1,10 +1,9 @@
 import 'dart:io';
-
 import 'package:auction_shop/common/component/button.dart';
 import 'package:auction_shop/common/component/textformfield.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/variable/color.dart';
-import 'package:auction_shop/common/variable/data.dart';
+import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/variable/function.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/main.dart';
@@ -14,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ProductReviseScreen extends StatefulWidget {
+  static String get routeName => "revise";
   const ProductReviseScreen({super.key});
 
   @override
@@ -94,7 +94,12 @@ class _ProductReviseScreenState extends State<ProductReviseScreen> {
   Widget build(BuildContext context) {
     return DefaultLayout(
       appBar: CustomAppBar().allAppBar(
-        vertFunc: () {},
+        vertFunc: (String? val){
+          print('object');
+        },
+        popupList: [
+          PopupMenuItem(child: Text('수정하기',),),
+        ],
         title: "경매 수정",
         context: context,
       ),
@@ -147,6 +152,7 @@ class _ProductReviseScreenState extends State<ProductReviseScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   ToggleBox(isSelected: tradeSelected[0], func: (){toggleSelect(0, type: "trade");}, text: "비대면",),
+                  SizedBox(width: 10,),
                   ToggleBox(isSelected: tradeSelected[1], func: (){toggleSelect(1, type: "trade");}, text: "직거래",),
                 ],
               ),
@@ -167,6 +173,7 @@ class _ProductReviseScreenState extends State<ProductReviseScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   ToggleBox(isSelected: bidSelected[0], func: (){toggleSelect(0, type: "bid");}, text: "상향식",),
+                  SizedBox(width: 10,),
                   ToggleBox(isSelected: bidSelected[1], func: (){toggleSelect(1, type: "bid");}, text: "하향식",),
                 ],
               ),
@@ -179,6 +186,7 @@ class _ProductReviseScreenState extends State<ProductReviseScreen> {
               // 버튼
               SizedBox(height: 20,),
               CustomButton(text: "등록완료", func: (){},),
+              SizedBox(height: 60,),
             ],
           ),
         ),

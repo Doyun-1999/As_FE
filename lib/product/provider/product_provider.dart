@@ -21,7 +21,7 @@ class ProductNotifier extends StateNotifier<List<ProductModel>> {
           ProductModel(
             id: 'asdf1',
             imgPath:
-                'https://search.pstatic.net/common/?src=http%3A%2F%2Fcafefiles.naver.net%2FMjAxOTEyMDVfMjU2%2FMDAxNTc1NTE2MzEwMjIz.kIYmVdQawkXdHsH9RvWrxU94TmGM5X0UinyXE-nwd04g.1xpDlQoz01cPT3h0AKZZcP_nnvEJiJ4cVvlZwy_rpTsg.JPEG%2F9F661565-0C62-4C6A-8DEC-67C48EED9872.jpeg&type=sc960_832',
+                'https://search.pstatic.net/sunny/?src=https%3A%2F%2Fwatermark.lovepik.com%2Fphoto%2F20211208%2Flarge%2Flovepik-auction-hammer-picture_501588219.jpg&type=sc960_832',
             name: "아이폰 프로 12",
             category: "IT 디지털",
             startPrice: 450000,

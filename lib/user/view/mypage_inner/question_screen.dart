@@ -3,13 +3,12 @@ import 'dart:io';
 import 'package:auction_shop/common/component/button.dart';
 import 'package:auction_shop/common/component/textformfield.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
-import 'package:auction_shop/common/variable/data.dart';
+import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/variable/function.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/product/component/upload_image_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 class QuestionScreen extends StatefulWidget {

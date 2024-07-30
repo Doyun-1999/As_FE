@@ -159,6 +159,10 @@ flutter:
     - family: Chatting
       fonts:
         - asset: assets/icon/chatting.ttf
+    - family: SFPro
+      fonts:
+        - asset: assets/fonts/SF-Pro-Text-Regular.otf
+          weight: 400
 
   # fonts:
   #   - family: Schyler

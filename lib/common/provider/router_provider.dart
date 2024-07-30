@@ -12,10 +12,10 @@ final routerProvider = Provider<GoRouter>(
     return GoRouter(
       routes: provider.routes,
       initialLocation: '/',
-      refreshListenable: provider,
-      redirect: (_, state) {
-        return provider.redirectLogic(state);
-      }
+      // refreshListenable: provider,
+      // redirect: (_, state) {
+      //   return provider.redirectLogic(state);
+      // }
     );
   },
 );

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/component/button.dart';
 import 'package:auction_shop/common/component/textformfield.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
@@ -7,6 +8,7 @@ import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/function.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/variable/validator.dart';
+import 'package:auction_shop/common/view/root_tab.dart';
 import 'package:auction_shop/product/component/toggle_button.dart';
 import 'package:auction_shop/product/component/upload_image_box.dart';
 import 'package:auction_shop/product/view/register/register_product_screen2.dart';
@@ -93,17 +95,7 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
   Widget build(BuildContext context) {
     return DefaultLayout(
       resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(
-          '경매 등록',
-          style: tsNotoSansKR(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: auctionColor.subBlackColor49,
-          ),
-        ),
-      ),
+      appBar: CustomAppBar().noActionAppBar(title: '경매 등록', context: context, func: (){context.goNamed(RootTab.routeName);},),
       child: Form(
         key: gKey,
         child: CustomScrollView(

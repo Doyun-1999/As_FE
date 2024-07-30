@@ -1,10 +1,10 @@
 import 'dart:convert';
-
 import 'package:auction_shop/chat/view/chat_info_screen.dart';
 import 'package:auction_shop/chat/view/chat_list_screen.dart';
 import 'package:auction_shop/notification/view/notification_screen.dart';
 import 'package:auction_shop/product/view/product_category_screen.dart';
 import 'package:auction_shop/product/view/product_info_screen.dart';
+import 'package:auction_shop/product/view/product_revise_screen.dart';
 import 'package:auction_shop/product/view/register/register_product_screen.dart';
 import 'package:auction_shop/product/view/register/register_product_screen2.dart';
 import 'package:auction_shop/user/model/user_model.dart';
@@ -17,6 +17,7 @@ import 'package:auction_shop/user/view/mypage_inner/mybid_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/question_screen.dart';
 import 'package:auction_shop/user/view/mypage_screen.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:auction_shop/common/view/root_tab.dart';
@@ -47,7 +48,6 @@ class AuthNotifier extends ChangeNotifier {
           name: RootTab.routeName,
           builder: (_, __) => RootTab(),
           routes: [
-
             // 채팅
             GoRoute(
               path: 'chat',
@@ -64,21 +64,42 @@ class AuthNotifier extends ChangeNotifier {
               ],
             ),
 
-            
             // product category 내부에 info 화면을 라우팅하면
             // info 화면에도 카테고리 id를 전달해줘야하는 상황 발생
             // 따라서 라우팅을 따로 구성
             GoRoute(
               path: 'products/:cid',
               name: ProductCategoryScreen.routeName,
-              builder: (_, __) => ProductCategoryScreen(index: int.parse(__.pathParameters['cid']!),),
+              builder: (_, __) => ProductCategoryScreen(
+                index: int.parse(__.pathParameters['cid']!),
+              ),
             ),
             GoRoute(
               path: 'info/:pid',
               name: ProductInfoScreen.routeName,
-              builder: (_, __) => ProductInfoScreen(id: __.pathParameters['pid']!,),
-            ),
+              // 경매 물품 상세 페이지 화면 전환 애니메이션 추가
+              pageBuilder: (_, __) => CustomTransitionPage(
+                child: ProductInfoScreen(
+                  id: __.pathParameters['pid']!,
+                ),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  // 오른쪽 시작
+                  const begin = Offset(1.0, 0.0);
+                  const end = Offset.zero;
+                  const curve = Curves.ease;
 
+                  var tween = Tween(begin: begin, end: end)
+                      .chain(CurveTween(curve: curve));
+                  var offsetAnimation = animation.drive(tween);
+
+                  return SlideTransition(
+                    position: offsetAnimation,
+                    child: child,
+                  );
+                },
+              ),
+            ),
 
             // 알림
             GoRoute(
@@ -114,39 +135,52 @@ class AuthNotifier extends ChangeNotifier {
                   builder: (_, __) => MyInterestScreen(),
                 ),
                 GoRoute(
-                  path: 'answer',
-                  name: AnswerScreen.routeName,
-                  builder: (_, __) => AnswerScreen(),
-                  routes: [
-                    GoRoute(
-                      path: 'question',
-                      name: QuestionScreen.routeName,
-                      builder: (_, __) => QuestionScreen()
-                    ),
-                  ]
-                ),
+                    path: 'answer',
+                    name: AnswerScreen.routeName,
+                    builder: (_, __) => AnswerScreen(),
+                    routes: [
+                      GoRoute(
+                          path: 'question',
+                          name: QuestionScreen.routeName,
+                          builder: (_, __) => QuestionScreen()),
+                    ]),
               ],
             ),
+          ],
+        ),
+        // 경매 물품 등록
+        GoRoute(
+          path: '/register',
+          name: RegisterProductScreen.routeName,
+          builder: (_, __) => RegisterProductScreen(),
+          routes: [
             GoRoute(
-              path: 'register',
-              name: RegisterProductScreen.routeName,
-              builder: (_, __) => RegisterProductScreen(),
-              routes: [
-                GoRoute(
-                  path: 'register2',
-                  name: RegisterProductScreen2.routeName,
-                  builder: (_, __) {
-                    final encodedImagePaths = __.uri.queryParameters['images'];
-                    final List<String> images = encodedImagePaths != null ? List<String>.from(jsonDecode(encodedImagePaths)) : [];
-                    final title = __.uri.queryParameters['title']!;
-                    final trade = __.uri.queryParameters['trade']!;
-                    final place = __.uri.queryParameters['place']!;
-                    final details = __.uri.queryParameters['details']!;
-                    return RegisterProductScreen2(images: images, title: title, trade: trade, place: place, details: details);},
-                ),
-              ]
+              path: 'register2',
+              name: RegisterProductScreen2.routeName,
+              builder: (_, __) {
+                final encodedImagePaths = __.uri.queryParameters['images'];
+                final List<String> images = encodedImagePaths != null
+                    ? List<String>.from(jsonDecode(encodedImagePaths))
+                    : [];
+                final title = __.uri.queryParameters['title']!;
+                final trade = __.uri.queryParameters['trade']!;
+                final place = __.uri.queryParameters['place']!;
+                final details = __.uri.queryParameters['details']!;
+                return RegisterProductScreen2(
+                    images: images,
+                    title: title,
+                    trade: trade,
+                    place: place,
+                    details: details);
+              },
             ),
           ],
+        ),
+        // 경매 물품 수정 화면
+        GoRoute(
+          path: '/revise',
+          name: ProductReviseScreen.routeName,
+          builder: (_, __) => ProductReviseScreen(),
         ),
         GoRoute(
           path: '/login',
@@ -158,8 +192,6 @@ class AuthNotifier extends ChangeNotifier {
           name: SignupScreen.routeName,
           builder: (_, __) => SignupScreen(),
         ),
-        
-        
       ];
 
   // 앱을 처음 시작했을 때

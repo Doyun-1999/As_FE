@@ -192,16 +192,19 @@ class MyPageScreen extends ConsumerWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        context.pushNamed(MyBidScreen.routeName);
-                      },
-                      child: Text(
-                        "내 경매장 보기",
-                        style: tsNotoSansKR(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: auctionColor.subGreyColor94,
+                    Padding(
+                      padding: const EdgeInsets.only(right: 12),
+                      child: GestureDetector(
+                        onTap: () {
+                          context.pushNamed(MyBidScreen.routeName);
+                        },
+                        child: Text(
+                          "내 경매장 보기",
+                          style: tsNotoSansKR(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: auctionColor.subGreyColor94,
+                          ),
                         ),
                       ),
                     ),
