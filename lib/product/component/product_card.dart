@@ -51,9 +51,7 @@ class ProductCard extends StatelessWidget {
       },
       child: Row(
         children: [
-          Hero(
-            tag: ObjectKey(id),
-            child: Container(
+          Container(
               width: ratio.height * 140,
               height: ratio.height * 140,
               decoration: BoxDecoration(
@@ -61,7 +59,6 @@ class ProductCard extends StatelessWidget {
                     image: NetworkImage(imgPath), fit: BoxFit.fill),
               ),
             ),
-          ),
           SizedBox(
             width: 14,
           ),

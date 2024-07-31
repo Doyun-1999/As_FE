@@ -18,7 +18,6 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-
   @override
   Widget build(BuildContext context) {
     return DefaultLayout(
@@ -36,11 +35,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Image.asset('assets/logo/main_logo.png',height: ratio.height * 50,),
+                      Image.asset(
+                        'assets/logo/main_logo.png',
+                        height: ratio.height * 50,
+                      ),
                       IconButton(
-                        onPressed: () {
-                          
-                        },
+                        onPressed: () {},
                         icon: Icon(
                           Icons.search,
                           size: 34,
@@ -85,8 +85,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               return Column(
                 children: [
                   GestureDetector(
-                    onTap: (){
-                      context.pushNamed(ProductCategoryScreen.routeName, pathParameters: {'cid' : index.toString(),},);
+                    onTap: () {
+                      context.pushNamed(
+                        ProductCategoryScreen.routeName,
+                        pathParameters: {
+                          'cid': index.toString(),
+                        },
+                      );
                     },
                     child: Container(
                       decoration: BoxDecoration(
@@ -106,34 +111,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             },
           ),
           auctionRowBox(
-              text: '추천경매',
-              firstText: "10만원 시작",
-              secondText: "5만원 시작",
-              firstSubText: "원목 캐주얼 가구 판매",
-              secondSubText: "청동 사슴 야외용 장식"),
+            typeText: '추천경매',
+            title: "10만원 시작",
+            content: "원목 캐주얼 가구 판매 원목 캐주얼 가구 판매 원목 캐주얼 가구 판매",
+          ),
           auctionRowBox(
-              text: 'HOT경매',
-              firstText: "10만원 시작",
-              secondText: "5만원 시작",
-              firstSubText: "원목 캐주얼 가구 판매",
-              secondSubText: "청동 사슴 야외용 장식"),
+            typeText: 'HOT경매',
+            title: "10만원 시작",
+            content: "원목 캐주얼 가구 판매 원목 캐주얼 가구 판매 원목 캐주얼 가구 판매",
+          ),
           auctionRowBox(
-              text: 'NEW경매',
-              firstText: "10만원 시작",
-              secondText: "5만원 시작",
-              firstSubText: "원목 캐주얼 가구 판매",
-              secondSubText: "청동 사슴 야외용 장식"),
+            typeText: 'NEW경매',
+            title: "10만원 시작",
+            content: "원목 캐주얼 가구 판매 원목 캐주얼 가구 판매 원목 캐주얼 가구 판매",
+          ),
         ],
       ),
     );
   }
 
   SliverPadding auctionRowBox({
-    required String text,
-    required String firstText,
-    required String secondText,
-    required String firstSubText,
-    required String secondSubText,
+    required String typeText,
+    required String title,
+    required String content,
   }) {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
@@ -143,81 +143,60 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             Padding(
               padding: const EdgeInsets.only(top: 30, bottom: 12),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
-                    "$text",
+                    "$typeText",
                     style: tsNotoSansKR(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: auctionColor.subBlackColor49),
                   ),
-                  Text(
-                    "더보기 >",
-                    style: tsNotoSansKR(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: auctionColor.subGreyColor9E),
-                  ),
                 ],
               ),
             ),
-            Row(
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 14),
-                      color: Colors.grey,
-                      height: ratio.height * 220,
-                      width: (MediaQuery.of(context).size.width - 44) / 2,
-                    ),
-                    Text(
-                      firstText,
-                      style: tsNotoSansKR(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: auctionColor.subBlackColor49),
-                    ),
-                    Text(
-                      firstSubText,
-                      style: tsNotoSansKR(
-                          fontSize: 16,
-                          fontWeight: FontWeight.normal,
-                          color: auctionColor.subBlackColor49),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  width: 12,
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 14),
-                      color: Colors.grey,
-                      height: ratio.height * 220,
-                      width: (MediaQuery.of(context).size.width - 44) / 2,
-                    ),
-                    Text(
-                      secondText,
-                      style: tsNotoSansKR(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: auctionColor.subBlackColor49),
-                    ),
-                    Text(
-                      secondSubText,
-                      style: tsNotoSansKR(
-                          fontSize: 16,
-                          fontWeight: FontWeight.normal,
-                          color: auctionColor.subBlackColor49),
-                    ),
-                  ],
-                ),
-              ],
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  ...List.generate(
+                    4,
+                    (index) {
+                      return Container(
+                        width: 155,
+                        margin: const EdgeInsets.only(right: 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.only(bottom: 14),
+                              color: Colors.grey,
+                              height: 220,
+                            ),
+                            Text(
+                              title,
+                              style: tsNotoSansKR(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: auctionColor.subBlackColor49,
+                              ),
+                            ),
+                            Text(
+                              content,
+                              style: tsNotoSansKR(
+                                fontSize: 16,
+                                fontWeight: FontWeight.normal,
+                                color: auctionColor.subBlackColor49,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ],
         ),

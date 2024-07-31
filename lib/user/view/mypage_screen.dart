@@ -63,21 +63,21 @@ class MyPageScreen extends ConsumerWidget {
                 imgName: 'bid_mypage',
                 text: "입찰 내역",
                 func: () {
-                  context.pushNamed(RegisterProductScreen.routeName);
+                  
                 },
               ),
               IconText(
                 imgName: 'sell',
                 text: "판매 내역",
                 func: () {
-                  context.pushNamed(MyInterestScreen.routeName);
+                  
                 },
               ),
               IconText(
                 imgName: 'buy',
                 text: "구매 내역",
                 func: () {
-                  context.pushNamed(RegisterProductScreen.routeName);
+                  
                 },
               ),
               Divider(
@@ -94,7 +94,7 @@ class MyPageScreen extends ConsumerWidget {
                 imgName: 'card',
                 text: "결제 관리",
                 func: () {
-                  context.pushNamed(AnswerScreen.routeName);
+                  
                 },
               ),
               IconText(
@@ -115,7 +115,7 @@ class MyPageScreen extends ConsumerWidget {
                 imgName: 'notice',
                 text: "공지사항",
                 func: () {
-                  context.pushNamed(RegisterProductScreen.routeName);
+                  
                 },
               ),
               Divider(
@@ -192,16 +192,19 @@ class MyPageScreen extends ConsumerWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        context.pushNamed(MyBidScreen.routeName);
-                      },
-                      child: Text(
-                        "내 경매장 보기",
-                        style: tsNotoSansKR(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: auctionColor.subGreyColor94,
+                    Padding(
+                      padding: const EdgeInsets.only(right: 12),
+                      child: GestureDetector(
+                        onTap: () {
+                          context.pushNamed(MyBidScreen.routeName);
+                        },
+                        child: Text(
+                          "내 경매장 보기",
+                          style: tsNotoSansKR(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: auctionColor.subGreyColor94,
+                          ),
                         ),
                       ),
                     ),

@@ -146,7 +146,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   height: 12,
                 ),
                 CustomTextFormField(
-                  validator: nameValidator,
+                  validator: (String? val){
+                        return supportOValidator(val, name: '이름');
+                      },
                   controller: _nameController,
                   hintText: "이름을 입력해주세요.",
                 ),
@@ -211,7 +213,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       Icons.search_outlined,
                       color: auctionColor.subGreyColorBF,
                     ),
-                    validator: addressValidator,
+                    validator: (String? val){
+                        return supportXValidator(val, name: '주소');
+                      },
                     enabled: false,
                     controller: _addressController,
                     hintText: "도로명 주소를 입력해주세요.",
@@ -222,7 +226,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 ),
                 CustomTextFormField(
                   readOnly: true,
-                  validator: addressValidator,
+                  validator: (String? val){
+                        return supportXValidator(val, name: '주소');
+                      },
                   controller: _postcodeController,
                   hintText: "자동 입력",
                 ),
@@ -230,7 +236,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   height: 6,
                 ),
                 CustomTextFormField(
-                  validator: detailAddressValidator,
+                  validator: (String? val){
+                        return supportXValidator(val, name: '상세 주소지');
+                      },
                   controller: _detailAddressController,
                   hintText: "상세 주소지를 입력해주세요.",
                 ),

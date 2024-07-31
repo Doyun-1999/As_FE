@@ -1,6 +1,6 @@
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/variable/color.dart';
-import 'package:auction_shop/common/variable/data.dart';
+import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/product/component/product_card.dart';
 import 'package:auction_shop/product/provider/product_provider.dart';
@@ -25,7 +25,12 @@ class _MyInterestScreenState extends ConsumerState<MyInterestScreen> {
     final products = ref.watch(productProvider);
     return DefaultLayout(
       appBar: CustomAppBar().allAppBar(
-        vertFunc: () {},
+        vertFunc: (String? val){
+          print('object');
+        },
+        popupList: [
+          PopupMenuItem(child: Text('수정하기',),),
+        ],
         title: '관심 목록',
         context: context,
       ),

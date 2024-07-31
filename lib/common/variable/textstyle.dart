@@ -40,3 +40,16 @@ TextStyle tsInter({
     color: color,
   );
 }
+
+TextStyle tsSFPro({
+  double fontSize = 20,
+  FontWeight fontWeight = FontWeight.w400,
+  Color color = auctionColor.subBlackColor49,
+}) {
+  return TextStyle(
+    fontFamily: 'SFPro',
+    fontSize: fontSize,
+    fontWeight: fontWeight,
+    color: color,
+  );
+}

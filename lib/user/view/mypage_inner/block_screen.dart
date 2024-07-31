@@ -1,7 +1,7 @@
 import 'package:auction_shop/common/component/user_image.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/variable/color.dart';
-import 'package:auction_shop/common/variable/data.dart';
+import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/main.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,7 +17,12 @@ class BlockScreen extends StatelessWidget {
       bgColor: auctionColor.subGreyColorF6,
       appBar: CustomAppBar().allAppBar(
         context: context,
-        vertFunc: () {},
+        vertFunc: (String? val){
+          print('object');
+        },
+        popupList: [
+          PopupMenuItem(child: Text('수정하기',),),
+        ],
         title: '차단 내역',
       ),
       child: SafeArea(

@@ -1,10 +1,9 @@
+import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/variable/color.dart';
-import 'package:auction_shop/common/variable/data.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class NotificationScreen extends StatelessWidget {
   static String get routeName => 'notification';
@@ -12,14 +11,14 @@ class NotificationScreen extends StatelessWidget {
 
   String changeText({
     required String text,
-  }){
-    if(text == '채팅'){
+  }) {
+    if (text == '채팅') {
       return 'chatting';
-    }else if(text == '새로운 입찰'){
+    } else if (text == '새로운 입찰') {
       return 'new_bid';
-    }else if(text == '경매 제한 시간'){
+    } else if (text == '경매 제한 시간') {
       return 'limit_clock';
-    }else{
+    } else {
       return 'limit_hammer';
     }
   }
@@ -28,18 +27,42 @@ class NotificationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return DefaultLayout(
       bgColor: auctionColor.subGreyColorF6,
-      appBar: CustomAppBar().noLeadingAppBar(vertFunc: (){}, title: '알림'),
+      appBar: CustomAppBar().noLeadingAppBar(
+        vertFunc: (String? val) {
+          print('object');
+        },
+        popupList: [
+          popupItem(text: '수정하기', value: "1"),
+          PopupMenuDivider(),
+          PopupMenuItem(
+            height: 30,
+            padding: const EdgeInsets.only(right: 100, left: 30),
+            child: Text(
+              '수정하기2',
+              style: tsSFPro(),
+            ),
+          ),
+        ],
+        title: '알림',
+      ),
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: ListView.separated(
-            separatorBuilder: (context, index){
-              return SizedBox(height: 11,);
+            separatorBuilder: (context, index) {
+              return SizedBox(
+                height: 11,
+              );
             },
             shrinkWrap: true,
             itemCount: 8,
             itemBuilder: (context, index) {
-              return notificationBox(type: '채팅', title: '알림 제목입니다.', content: '알림 내용입니다. 알림 내용입니다. 알림 내용입니다. 알림 내용입니다. 알림 내용입니다. 알림 내용입니다. 알림 내용입니다. ',);
+              return notificationBox(
+                type: '채팅',
+                title: '알림 제목입니다.',
+                content:
+                    '알림 내용입니다. 알림 내용입니다. 알림 내용입니다. 알림 내용입니다. 알림 내용입니다. 알림 내용입니다. 알림 내용입니다. ',
+              );
             },
           ),
         ),

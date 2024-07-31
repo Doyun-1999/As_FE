@@ -196,6 +196,7 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
         address: address,
         detailAddress: detailAddress,
       );
+      print(userData.toJson());
 
     // FormData 생성
     FormData formData = FormData();

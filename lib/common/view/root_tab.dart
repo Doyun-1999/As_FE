@@ -7,6 +7,7 @@ import 'package:auction_shop/user/view/mypage_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:auction_shop/product/view/home_screen.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
+import 'package:go_router/go_router.dart';
 
 class RootTab extends StatefulWidget {
   static String get routeName => 'home';
@@ -34,6 +35,10 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
   }
 
   void tabListener(){
+    if(index == 2){
+      context.goNamed(RegisterProductScreen.routeName);
+      return;
+    }
     setState(() {
       index = controller.index;
     });

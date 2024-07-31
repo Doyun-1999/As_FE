@@ -38,3 +38,31 @@ Map<String, dynamic> _$ProductModelToJson(ProductModel instance) =>
       'userName': instance.userName,
       'date': instance.date,
     };
+
+RegisterProductModel _$RegisterProductModelFromJson(
+        Map<String, dynamic> json) =>
+    RegisterProductModel(
+      title: json['title'] as String,
+      product_type: json['product_type'] as String,
+      trade: json['trade'] as String,
+      tradeLocation: json['tradeLocation'] as String?,
+      initial_price: (json['initial_price'] as num).toInt(),
+      minimum_price: (json['minimum_price'] as num).toInt(),
+      startTime: json['startTime'] as String,
+      endTime: json['endTime'] as String,
+      details: json['details'] as String,
+    );
+
+Map<String, dynamic> _$RegisterProductModelToJson(
+        RegisterProductModel instance) =>
+    <String, dynamic>{
+      'title': instance.title,
+      'product_type': instance.product_type,
+      'trade': instance.trade,
+      'tradeLocation': instance.tradeLocation,
+      'initial_price': instance.initial_price,
+      'minimum_price': instance.minimum_price,
+      'startTime': instance.startTime,
+      'endTime': instance.endTime,
+      'details': instance.details,
+    };

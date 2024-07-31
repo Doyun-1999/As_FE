@@ -1,27 +1,34 @@
 import 'package:auction_shop/common/variable/color.dart';
-import 'package:auction_shop/common/variable/textstyle.dart';
-import 'package:auction_shop/main.dart';
 import 'package:auction_shop/user/component/add_button.dart';
 import 'package:auction_shop/user/component/info_box.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
-import 'package:auction_shop/common/variable/data.dart';
+import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/user/component/textcolumn.dart';
+import 'package:auction_shop/user/provider/Q&A_provider.dart';
 import 'package:auction_shop/user/view/mypage_inner/question_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class AnswerScreen extends StatelessWidget {
+class AnswerScreen extends ConsumerWidget {
   static String get routeName => 'answer';
   const AnswerScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref,) {
+    final trueData = ref.watch(answerStateProvider(true));
+    final falseData = ref.watch(answerStateProvider(false));
     return DefaultLayout(
       bgColor: auctionColor.subGreyColorF6,
       appBar: CustomAppBar().allAppBar(
         context: context,
-        vertFunc: () {},
+        vertFunc: (String? val){
+          print('object');
+        },
+        popupList: [
+          PopupMenuItem(child: Text('수정하기',),),
+        ],
         title: '내 문의',
       ),
       child: SingleChildScrollView(
@@ -49,7 +56,7 @@ class AnswerScreen extends StatelessWidget {
             ),
                     
             InfoBox(
-              firstBoxText: '문의 중',
+              firstBoxText: '답변 완료',
               widget: ListView(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),

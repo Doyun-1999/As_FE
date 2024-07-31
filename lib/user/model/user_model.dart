@@ -63,6 +63,8 @@ class SignupUser{
   });
 
   Map<String, dynamic> toJson() => _$SignupUserToJson(this);
+
+  factory SignupUser.fromJson(Map<String, dynamic> json) => _$SignupUserFromJson(json);
 }
 
 @JsonSerializable()

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:auction_shop/common/dio/dio.dart';
+import 'package:auction_shop/user/model/Q&A_model.dart';
 import 'package:auction_shop/user/model/pk_id_model.dart';
 import 'package:auction_shop/user/model/user_model.dart';
 import 'package:dio/dio.dart';
@@ -23,9 +24,48 @@ class UserRepository {
     required this.baseUrl,
   });
 
+  // 문의 상세 조회
+  Future<AnswerModel> answerData({required int inquiryId,}) async {
+    final resp = await dio.get(baseUrl + '/inquiry/$inquiryId',);
+
+    print(resp.statusCode);
+    print(resp.data);
+    final data = AnswerModel.fromJson(resp.data);
+    return data;
+  }
+
+  // 문의 전체 조회
+  Future<List<AnswerModel>> allAnswerData({required int memberId, }) async {
+    final resp = await dio.get(baseUrl + '/inquiry', data: {"memberId" : memberId,},);
+    print(resp.statusCode);
+    print(resp.data);
+    final dataList = (resp.data as List<dynamic>).map((e) => AnswerModel.fromJson(e)).toList();
+    return dataList;
+  }
+
+  // 문의 등록
+  Future<void> question({required FormData data,}) async {
+    try{
+      final resp = await dio.post(baseUrl + '/inquiry', data: data,);
+
+      if(resp.statusCode == 200){
+        print("성공");
+        print(resp);
+        print(resp.data);
+        return;
+      }else{
+        print("실패요");
+        print(resp.statusCode);
+        print(resp);
+      }
+    }on DioException catch(e){
+      print("실패");
+      print(e);
+    }
+  }
+
   // 소셜이 아닌 서버로 사용자 데이터 요청
   Future<UserModel> getMe(String memberId) async {
-      final dio = Dio();
 
       final resp = await dio.get(
         baseUrl + '/member/$memberId',

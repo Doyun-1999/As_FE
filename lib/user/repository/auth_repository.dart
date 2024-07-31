@@ -39,7 +39,8 @@ class AuthRepository {
     print('성공---------------');
     print(resp.data);
     print(resp.statusCode);
-
+    final cookies = resp.headers['set-cookie'];
+    print(cookies);
     final data = TokenModel.fromJson(resp.data);
     return data;
     } on DioException catch(e){

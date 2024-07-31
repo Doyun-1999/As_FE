@@ -1,22 +1,16 @@
-String? nameValidator(String? val) {
-  if (val!.isEmpty) {
-    return '이름을 입력해주세요.';
+
+
+String? supportOValidator(String? val, {required String name}) {
+  if (val == null || val.isEmpty) {
+    return '$name을 입력해주세요.';
   } else {
     return null;
   }
 }
 
-String? addressValidator(String? val) {
-  if (val!.isEmpty) {
-    return '주소를 입력해주세요.';
-  } else {
-    return null;
-  }
-}
-
-String? detailAddressValidator(String? val) {
-  if (val!.isEmpty) {
-    return '상세주소를 입력해주세요.';
+String? supportXValidator(String? val, {required String name}) {
+  if (val == null || val.isEmpty) {
+    return '$name를 입력해주세요.';
   } else {
     return null;
   }
