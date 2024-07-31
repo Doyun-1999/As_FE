@@ -163,6 +163,8 @@ flutter:
       fonts:
         - asset: assets/fonts/SF-Pro-Text-Regular.otf
           weight: 400
+        - asset: assets/fonts/SF-Pro-Text-Bold.otf
+          weight: 700
 
   # fonts:
   #   - family: Schyler

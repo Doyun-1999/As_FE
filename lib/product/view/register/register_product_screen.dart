@@ -228,7 +228,6 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
                             queryParameters: {
                               "images" : encodedImages,
                               "title": _titleController.text,
-                              "trade": tradeText(),
                               "place": _placeController.text,
                               "details": _detailsController.text,
                             },

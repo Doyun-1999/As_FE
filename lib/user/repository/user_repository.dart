@@ -24,37 +24,43 @@ class UserRepository {
     required this.baseUrl,
   });
 
-  // 해당 유저 문의 조회
-  Future<List<QandAModel>?> answerData({required String memberId}) async {
-    final resp = await dio.get(baseUrl + '/inquiry/$memberId',);
+  // 문의 상세 조회
+  Future<AnswerModel> answerData({required int inquiryId,}) async {
+    final resp = await dio.get(baseUrl + '/inquiry/$inquiryId',);
 
-    if(resp.statusCode == 200){
-      print("성공");
-      print(resp.data);
-      // 리스트 데이터 각 매핑후 fromJson
-      final dataList = (resp.data as List<Map<String, dynamic>>).map((e) => QandAModel.fromJson(e)).toList();
-      return dataList;
-    }
-    return null;
+    print(resp.statusCode);
+    print(resp.data);
+    final data = AnswerModel.fromJson(resp.data);
+    return data;
   }
 
   // 문의 전체 조회
-  Future<void> allAnswerData({required FormData data, }) async {
-    final resp = await dio.get(baseUrl + '/inquiry', data: data,);
-
-    if(resp.statusCode == 200){
-      print("성공");
-      print(resp.data);
-    }
+  Future<List<AnswerModel>> allAnswerData({required int memberId, }) async {
+    final resp = await dio.get(baseUrl + '/inquiry', data: {"memberId" : memberId,},);
+    print(resp.statusCode);
+    print(resp.data);
+    final dataList = (resp.data as List<dynamic>).map((e) => AnswerModel.fromJson(e)).toList();
+    return dataList;
   }
 
   // 문의 등록
   Future<void> question({required FormData data,}) async {
-    final resp = await dio.post(baseUrl + '/inquiry', data: data,);
+    try{
+      final resp = await dio.post(baseUrl + '/inquiry', data: data,);
 
-    if(resp.statusCode == 200){
-      print("성공");
-      print(resp.data);
+      if(resp.statusCode == 200){
+        print("성공");
+        print(resp);
+        print(resp.data);
+        return;
+      }else{
+        print("실패요");
+        print(resp.statusCode);
+        print(resp);
+      }
+    }on DioException catch(e){
+      print("실패");
+      print(e);
     }
   }
 

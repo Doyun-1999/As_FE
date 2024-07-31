@@ -163,13 +163,11 @@ class AuthNotifier extends ChangeNotifier {
                     ? List<String>.from(jsonDecode(encodedImagePaths))
                     : [];
                 final title = __.uri.queryParameters['title']!;
-                final trade = __.uri.queryParameters['trade']!;
                 final place = __.uri.queryParameters['place']!;
                 final details = __.uri.queryParameters['details']!;
                 return RegisterProductScreen2(
                     images: images,
                     title: title,
-                    trade: trade,
                     place: place,
                     details: details);
               },

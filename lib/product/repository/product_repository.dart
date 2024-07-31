@@ -18,16 +18,27 @@ class ProductRepository{
   });
 
   Future<bool> registerProduct(FormData data) async {
-    final resp = await dio.post(
+    try{
+      final resp = await dio.post(
       baseUrl + '/registration',
       data: data,
     );
-    print('성공---------------');
-    print(resp.data);
-    print(resp.statusCode);
+
     if(resp.statusCode == 200){
+      print('성공---------------');
+      print(resp.data);
+      print(resp.statusCode);
       return true;
     }
     return false;
+    }on DioException catch(e){
+      print('----------------');
+      print(e);
+      print(e.error);
+      print(e.message);
+      print(e.response);
+      print(e.type);
+      return false;
+    }
   }
 }

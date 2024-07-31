@@ -160,3 +160,37 @@ class NumberFormat extends TextInputFormatter {
         selection: TextSelection.collapsed(offset: string.length));
   }
 }
+
+// 시간 자동 : 입력
+class TimeFormat extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    var text = newValue.text.replaceAll(':', '');
+
+    if (newValue.selection.baseOffset == 0) {
+      return newValue;
+    }
+
+    var buffer = StringBuffer();
+    int selectionIndex = newValue.selection.end;
+    for (int i = 0; i < text.length; i++) {
+      buffer.write(text[i]);
+      var nonZeroIndex = i + 1;
+      if (nonZeroIndex == 2 || nonZeroIndex == 4) {
+        if (nonZeroIndex != text.length) {
+          buffer.write(':');
+          if (nonZeroIndex <= selectionIndex) {
+            selectionIndex++;
+          }
+        }
+      }
+    }
+
+    var string = buffer.toString();
+    return TextEditingValue(
+      text: string,
+      selection: TextSelection.collapsed(offset: selectionIndex),
+    );
+  }
+}

@@ -45,6 +45,7 @@ class RegisterProductModel{
   final String title;
   final String product_type;
   final String trade;
+  final String? tradeLocation;
   final int initial_price;
   final int minimum_price;
   final String startTime;
@@ -55,6 +56,7 @@ class RegisterProductModel{
     required this.title,
     required this.product_type,
     required this.trade,
+    this.tradeLocation,
     required this.initial_price,
     required this.minimum_price,
     required this.startTime,

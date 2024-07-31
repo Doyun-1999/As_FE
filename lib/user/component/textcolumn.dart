@@ -12,27 +12,30 @@ class TextColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: tsInter(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
+    return Container(
+      color: Colors.green,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: tsInter(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-        SizedBox(
-          height: 4,
-        ),
-        Text(
-          content,
-          style: tsNotoSansKR(
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
+          SizedBox(
+            height: 4,
           ),
-        ),
-      ],
+          Text(
+            content,
+            style: tsNotoSansKR(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

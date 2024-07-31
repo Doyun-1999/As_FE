@@ -49,6 +49,9 @@ class ProductNotifier extends StateNotifier<List<ProductModel>> {
     required int memberId,
     //required 
   }) async {
+    print(images);
+    print(data.toJson());
+    print(memberId);
     FormData formData = FormData();
 
     // 경매 물품 데이터 추가

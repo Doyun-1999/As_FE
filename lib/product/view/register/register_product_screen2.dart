@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:auction_shop/common/component/button.dart';
 import 'package:auction_shop/common/component/textformfield.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
@@ -21,28 +20,30 @@ class RegisterProductScreen2 extends ConsumerStatefulWidget {
   static String get routeName => 'register2';
   final List<String>? images;
   final String title;
-  final String trade;
   final String place;
   final String details;
   const RegisterProductScreen2({
     required this.images,
     required this.title,
-    required this.trade,
     required this.place,
     required this.details,
     super.key,
   });
 
   @override
-  ConsumerState<RegisterProductScreen2> createState() => _RegisterProductScreen2State();
+  ConsumerState<RegisterProductScreen2> createState() =>
+      _RegisterProductScreen2State();
 }
 
-class _RegisterProductScreen2State extends ConsumerState<RegisterProductScreen2> {
+class _RegisterProductScreen2State
+    extends ConsumerState<RegisterProductScreen2> {
   // 토글 버튼
   late List<bool> isSelected;
 
   TextEditingController _priceController = TextEditingController();
-  //TextEditingController _timeController = TextEditingController();
+  TextEditingController _minPriceController = TextEditingController();
+  TextEditingController _timeController = TextEditingController();
+
   final gkey = GlobalKey<FormState>();
 
   // 시간 정하는 변수
@@ -73,6 +74,7 @@ class _RegisterProductScreen2State extends ConsumerState<RegisterProductScreen2>
     final state = ref.watch(userProvider);
     final userData = state as UserModel;
     return DefaultLayout(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         centerTitle: true,
         title: Text(
@@ -92,157 +94,210 @@ class _RegisterProductScreen2State extends ConsumerState<RegisterProductScreen2>
           ),
         ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16,
-        ),
-        child: Form(
-          key: gkey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 경매 방식 선택 Row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  toggleBox(
-                    func: () {
-                      toggleSelect(0);
-                    },
-                    text: "원하는 가격에 경매!",
-                    method: '상향식',
-                    imgName: 'up_bid',
-                    isSelected: isSelected[0],
-                  ),
-                  Spacer(),
-                  toggleBox(
-                    func: () {
-                      toggleSelect(1);
-                    },
-                    text: "보다 빠른 경매!",
-                    method: '하향식',
-                    imgName: 'down_bid',
-                    isSelected: isSelected[1],
-                  ),
-                ],
-              ),
-
-              // 추가 텍스트 기입
-              TextLable(
-                text: '시작 가격',
-              ),
-              CustomTextFormField(
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                ],
-                controller: _priceController,
-                hintText: '₩ 가격을 입력해 주세요',
-                validator: (String? val) {
-                  return supportOValidator(val, name: '가격');
-                },
-              ),
-              TextLable(
-                text: '제한 시간',
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('시'),
-                      DropdownButton<int>(
-                        value: _selectedHour,
-                        items: List.generate(48, (index) {
-                          return DropdownMenuItem<int>(
-                            value: index,
-                            child: Text(index.toString().padLeft(2, '0')),
-                          );
-                        }),
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedHour = value!;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    width: 12,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('분'),
-                      DropdownButton<int>(
-                        value: _selectedMinute,
-                        items: List.generate(60, (index) {
-                          return DropdownMenuItem<int>(
-                            value: index,
-                            child: Text(index.toString().padLeft(2, '0')),
-                          );
-                        }),
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedMinute = value!;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              // CustomTextFormField(
-              //   controller: _timeController,
-              //   hintText: '48:00:00',
-              //   validator: (String? val) {
-              //     return supportOValidator(val, name: '시간');
-              //   },
-              // ),
-
-              // 간격
-              Spacer(),
-
-              // 버튼
-              CustomButton(
-                text: '등록완료',
-                func: () async {
-                  if (gkey.currentState!.validate()) {
-                    final now = DateTime.now();
-                    final adjustedTime = now.add(
-                      Duration(hours: _selectedHour, minutes: _selectedMinute),
-                    );
-                    // 현재 시간
-                    final formattedNowDate = DateFormat('yyyy-MM-ddTHH:mm').format(now);
-                    // 현재 시간 + 사용자가 설정한 시간
-                    final formattedAddedDate = DateFormat('yyyy-MM-ddTHH:mm').format(adjustedTime);
-
-                    // 경매 물품 데이터
-                    final data = RegisterProductModel(
-                      title: widget.title,
-                      product_type: "도서",
-                      trade: widget.trade,
-                      initial_price: int.parse(_priceController.text),
-                      minimum_price: 20,
-                      startTime: formattedNowDate,
-                      endTime: formattedAddedDate,
-                      details: widget.details,
-                    );
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+          ),
+          child: Form(
+            key: gkey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 경매 방식 선택 Row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    toggleBox(
+                      func: () {
+                        toggleSelect(0);
+                      },
+                      text: "원하는 가격에 경매!",
+                      method: '상향식',
+                      imgName: 'up_bid',
+                      isSelected: isSelected[0],
+                    ),
+                    Spacer(),
+                    toggleBox(
+                      func: () {
+                        toggleSelect(1);
+                      },
+                      text: "보다 빠른 경매!",
+                      method: '하향식',
+                      imgName: 'down_bid',
+                      isSelected: isSelected[1],
+                    ),
+                  ],
+                ),
                     
-                    final resp = await ref.read(productProvider.notifier).registerProduct(images: widget.images, data: data, memberId: userData.id);
-                    if(resp){
-                      print("성공!");
-                    }else{
-                      print("실패..");
-                    }
-                  }
-                },
-              ),
+                // 추가 텍스트 기입
+                TextLable(
+                  text: '시작 가격',
+                ),
+                CustomTextFormField(
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                  ],
+                  controller: _priceController,
+                  hintText: '₩ 가격을 입력해 주세요',
+                  validator: (String? val) {
+                    return supportOValidator(val, name: '가격');
+                  },
+                ),
+                    
+                TextLable(
+                  text: '최소 가격',
+                ),
+                CustomTextFormField(
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                  ],
+                  controller: _minPriceController,
+                  hintText: '₩ 가격을 입력해 주세요',
+                  validator: (String? val) {
+                    return supportOValidator(val, name: '최소 가격');
+                  },
+                ),
+                TextLable(
+                  text: '제한 시간',
+                ),
+                // TimePicker
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.start,
+                //   children: [
+                //     Column(
+                //       crossAxisAlignment: CrossAxisAlignment.start,
+                //       children: [
+                //         Text('시'),
+                //         DropdownButton<int>(
+                //           value: _selectedHour,
+                //           items: List.generate(48, (index) {
+                //             return DropdownMenuItem<int>(
+                //               value: index,
+                //               child: Text(index.toString().padLeft(2, '0')),
+                //             );
+                //           }),
+                //           onChanged: (value) {
+                //             setState(() {
+                //               _selectedHour = value!;
+                //             });
+                //           },
+                //         ),
+                //       ],
+                //     ),
+                //     SizedBox(
+                //       width: 12,
+                //     ),
+                //     Column(
+                //       crossAxisAlignment: CrossAxisAlignment.start,
+                //       children: [
+                //         Text('분'),
+                //         DropdownButton<int>(
+                //           value: _selectedMinute,
+                //           items: List.generate(60, (index) {
+                //             return DropdownMenuItem<int>(
+                //               value: index,
+                //               child: Text(index.toString().padLeft(2, '0')),
+                //             );
+                //           }),
+                //           onChanged: (value) {
+                //             setState(() {
+                //               _selectedMinute = value!;
+                //             });
+                //           },
+                //         ),
+                //       ],
+                //     ),
+                //   ],
+                // ),
+                CustomTextFormField(
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    TimeFormat()
+                  ],
+                  maxLength: 8,
+                  controller: _timeController,
+                  hintText: '48:00:00',
+                  validator: (String? val) {
+                    return supportOValidator(val, name: '시간');
+                  },
+                ),
 
-              SizedBox(
-                height: ratio.height * 50,
-              ),
-            ],
+                SizedBox(height: ratio.height * 100,),
+        
+                    
+                // 버튼
+                CustomButton(
+                  text: '등록완료',
+                  func: () async {
+                    if (gkey.currentState!.validate()) {
+                      // 시간 데이터 추출
+                      final minPrice = int.parse(_minPriceController.text);
+                      final startPrice = int.parse(_priceController.text);
+                      final time = (_timeController.text).split(':');
+                      int hours = int.parse(time[0]);
+                      int minutes = int.parse(time[1]);
+                      int seconds = int.parse(time[2]);
+                    
+                      // 만약 시작 가격이 최소 가격보다 작으면 return
+                      if (minPrice > startPrice) {
+                        print("가격 설정좀 제대로");
+                        return;
+                      }
+                    
+                      // 1. 시간을 48시간 이상으로 설정했을 때
+                      // 2. 분을 60분 이상으로 설정했을 때
+                      // 3. 초를 60초 이상으로 설정했을 때
+                      // return
+                      if (hours > 47 || minutes > 59 || seconds > 59) {
+                        print("시간 설정 잘못됨");
+                        return;
+                      }
+                    
+                      final now = DateTime.now();
+                      final adjustedTime = now.add(
+                        Duration(
+                            hours: hours, minutes: minutes, seconds: seconds),
+                      );
+                      // 현재 시간
+                      final formattedNowDate =
+                          DateFormat('yyyy-MM-ddTHH:mm').format(now);
+                      // 현재 시간 + 사용자가 설정한 시간
+                      final formattedAddedDate =
+                          DateFormat('yyyy-MM-ddTHH:mm:ss').format(adjustedTime);
+                      // 경매 방식
+                      String trade = isSelected[0] ? "상향식" : "하향식";
+                    
+                      // 경매 물품 데이터
+                      final data = RegisterProductModel(
+                        title: widget.title,
+                        product_type: "도서",
+                        trade: trade,
+                        initial_price: startPrice,
+                        minimum_price: minPrice,
+                        startTime: formattedNowDate,
+                        endTime: formattedAddedDate,
+                        details: widget.details,
+                      );
+                      final resp = await ref.read(productProvider.notifier).registerProduct(
+                        images: widget.images,
+                        data: data,
+                        memberId: userData.id,
+                      );
+                      if (resp) {
+                        print("성공!");
+                      } else {
+                        print("실패..");
+                      }
+                    }
+                  },
+                ),
+                    
+                SizedBox(
+                  height: ratio.height * 50,
+                ),
+              ],
+            ),
           ),
         ),
       ),
