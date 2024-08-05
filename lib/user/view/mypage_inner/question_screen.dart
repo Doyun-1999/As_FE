@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:auction_shop/common/component/button.dart';
 import 'package:auction_shop/common/component/textformfield.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
@@ -11,9 +10,11 @@ import 'package:auction_shop/user/model/Q&A_model.dart';
 import 'package:auction_shop/user/model/user_model.dart';
 import 'package:auction_shop/user/provider/Q&A_provider.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
+import 'package:auction_shop/user/view/mypage_inner/answer_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 class QuestionScreen extends ConsumerStatefulWidget {
@@ -59,6 +60,7 @@ class _QuestionScreenState extends ConsumerState<QuestionScreen> {
   @override
   Widget build(BuildContext context) {
     return DefaultLayout(
+      // resizeToAvoidBottomInset: true,
       appBar: CustomAppBar().noActionAppBar(
         context: context,
         title: '문의하기',
@@ -105,29 +107,35 @@ class _QuestionScreenState extends ConsumerState<QuestionScreen> {
             ),
             TextLable(text: '내용'),
             Expanded(
-                child: CustomTextFormField(
-              expands: true,
-              maxLines: null,
-              controller: _contentController,
-              hintText: '상세 설명을 작성해 주세요.',
-            )),
+              child: CustomTextFormField(
+                expands: true,
+                maxLines: null,
+                controller: _contentController,
+                hintText: '상세 설명을 작성해 주세요.',
+              ),
+            ),
             Spacer(),
             CustomButton(
               text: '문의하기',
-              func: () {
+              func: () async {
                 // memberId를 얻기 위한 변수 할당
                 // 해당 화면에 존재한 상태에서 userProvider의 상태는 무조건 UserModel이다.
                 final user = ref.watch(userProvider);
                 final state = user as UserModel;
 
                 // 문의 데이터
-                final data = QuestionModel(title: _titleController.text, content: _contentController.text);
+                final data = QuestionModel(
+                    title: _titleController.text,
+                    content: _contentController.text);
 
                 // 이미지 데이터 경로
                 final images = _images.map((e) => e.path).toList();
 
                 // 요청
-                ref.read(QandAProvider.notifier).question(memberId: (state.id).toString(), data: data, images: images,);
+                await ref.read(QandAProvider.notifier).question(memberId: (state.id).toString(),data: data,images: images,);
+                
+                // 요청이 완료되면 다시 페이지 전환
+                context.pop(AnswerScreen.routeName);
               },
             ),
             SizedBox(

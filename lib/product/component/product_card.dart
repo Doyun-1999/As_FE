@@ -9,21 +9,21 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 class ProductCard extends StatelessWidget {
-  final String id;
-  final String imgPath;
-  final String name;
-  final int startPrice;
+  final int product_id;
+  final String imageUrl;
+  final String title;
+  final int initial_price;
   final int nowPrice;
-  final int likeNum;
+  final int likeCount;
   final int bidNum;
 
   const ProductCard({
-    required this.id,
-    required this.imgPath,
-    required this.name,
-    required this.startPrice,
+    required this.product_id,
+    required this.imageUrl,
+    required this.title,
+    required this.initial_price,
     required this.nowPrice,
-    required this.likeNum,
+    required this.likeCount,
     required this.bidNum,
     super.key,
   });
@@ -32,13 +32,13 @@ class ProductCard extends StatelessWidget {
     required ProductModel model,
   }) {
     return ProductCard(
-      id: model.id,
-      imgPath: model.imgPath,
-      name: model.name,
-      startPrice: model.startPrice,
-      nowPrice: model.nowPrice,
-      likeNum: model.likeNum,
-      bidNum: model.bidNum,
+      product_id: model.product_id,
+      imageUrl: model.imageUrl,
+      title: model.title,
+      initial_price: model.initial_price,
+      nowPrice: 10000,
+      likeCount: model.likeCount,
+      bidNum: 100,
     );
   }
 
@@ -47,7 +47,7 @@ class ProductCard extends StatelessWidget {
     return InkWell(
       onTap: () {
         context.pushNamed(ProductInfoScreen.routeName,
-            pathParameters: {'pid': id});
+            pathParameters: {'pid': (product_id).toString()});
       },
       child: Row(
         children: [
@@ -56,7 +56,7 @@ class ProductCard extends StatelessWidget {
               height: ratio.height * 140,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: NetworkImage(imgPath), fit: BoxFit.fill),
+                    image: NetworkImage(imageUrl), fit: BoxFit.fill),
               ),
             ),
           SizedBox(
@@ -67,7 +67,7 @@ class ProductCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  name,
+                  title,
                   style: tsNotoSansKR(
                     fontSize: 14,
                     fontWeight: FontWeight.normal,
@@ -77,7 +77,7 @@ class ProductCard extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Text(
-                    "${startPrice}원 시작",
+                    "${initial_price}원 시작",
                     style: tsNotoSansKR(
                       fontSize: 12,
                       fontWeight: FontWeight.normal,
@@ -123,7 +123,7 @@ class ProductCard extends StatelessWidget {
                         print('object');
                       },
                       child: Text(
-                        '${likeNum}',
+                        '${likeCount}',
                         style: tsNotoSansKR(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,

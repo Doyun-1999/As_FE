@@ -8,8 +8,29 @@ class QandABaseLoading extends QandABaseModel{}
 
 class QandABaseError extends QandABaseModel{}
 
+// 답변 리스트 모델
 @JsonSerializable()
-class QuestionModel extends QandABaseModel{
+class AnswerListModel extends QandABaseModel{
+  List<AnswerModel> list;
+
+  AnswerListModel({
+    required this.list,
+  });
+
+  AnswerListModel copyWith({
+    List<AnswerModel>? list,
+  }){
+    return AnswerListModel(list: list ?? this.list);
+  }
+
+  factory AnswerListModel.fromJson(Map<String, dynamic> json) => _$AnswerListModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$AnswerListModelToJson(this);
+}
+
+// 문의 모델
+@JsonSerializable()
+class QuestionModel{
   final String title;
   final String content;
 
@@ -23,6 +44,7 @@ class QuestionModel extends QandABaseModel{
   Map<String, dynamic> toJson() => _$QuestionModelToJson(this);
 }
 
+// 답변 모델
 @JsonSerializable()
 class AnswerModel{
   final int id;

@@ -11,6 +11,7 @@ class CustomAppBar {
     required String title,
   }) {
     return AppBar(
+      backgroundColor: Colors.white,
       centerTitle: true,
       title: Text(
         title,
@@ -37,6 +38,7 @@ class CustomAppBar {
     VoidCallback? func,
   }) {
     return AppBar(
+      backgroundColor: Colors.white,
       centerTitle: true,
       title: Text(
         title,
@@ -65,6 +67,7 @@ class CustomAppBar {
     required BuildContext context,
   }) {
     return AppBar(
+      backgroundColor: Colors.white,
       centerTitle: true,
       title: Text(
         title,

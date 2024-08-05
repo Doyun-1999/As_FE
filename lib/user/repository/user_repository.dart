@@ -35,11 +35,11 @@ class UserRepository {
   }
 
   // 문의 전체 조회
-  Future<List<AnswerModel>> allAnswerData({required int memberId, }) async {
+  Future<AnswerListModel> allAnswerData({required int memberId, }) async {
     final resp = await dio.get(baseUrl + '/inquiry', data: {"memberId" : memberId,},);
     print(resp.statusCode);
     print(resp.data);
-    final dataList = (resp.data as List<dynamic>).map((e) => AnswerModel.fromJson(e)).toList();
+    final dataList = AnswerListModel(list: (resp.data as List<dynamic>).map((e) => AnswerModel.fromJson(e)).toList());
     return dataList;
   }
 
@@ -48,7 +48,7 @@ class UserRepository {
     try{
       final resp = await dio.post(baseUrl + '/inquiry', data: data,);
 
-      if(resp.statusCode == 200){
+      if(resp.statusCode == 201){
         print("성공");
         print(resp);
         print(resp.data);

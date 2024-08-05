@@ -46,7 +46,8 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
   @override
   Widget build(BuildContext context) {
     //final state = ref.watch(userProvider);
-    final products = ref.watch(productProvider);
+    // final products = ref.watch(productProvider);
+    final products = [];
     return DefaultLayout(
       appBar: AppBar(
         centerTitle: true,

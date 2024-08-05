@@ -1,4 +1,6 @@
+import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
+import 'package:auction_shop/common/model/cursor_pagination_model.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/data.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
@@ -56,6 +58,43 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(productProvider);
+    
+    // 로딩 화면
+    if(state is CursorPaginationLoading){
+      return DefaultLayout(
+        appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            context.pop();
+          },
+          icon: Icon(
+            Icons.arrow_back_ios,
+          ),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: Icon(
+              Icons.search,
+              color: auctionColor.mainColor,
+              size: 34,
+            ),
+          ),
+        ],
+      ),
+        child: Center(
+        child: CircularProgressIndicator(),
+      ),);
+    }
+
+    // 에러 발생시
+    if(state is CursorPaginationError){
+      return DefaultLayout(child: Center(child: Text(state.msg),),);
+    }
+
+    // 정상적으로 데이터 출력
+    final data = state as CursorPagination<ProductModel>;
+
     return DefaultLayout(
       appBar: AppBar(
         leading: IconButton(
@@ -87,7 +126,7 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
           dropDownWidget(),
 
           // 경매 상품 리스트
-          productList(dataList: state),
+          productList(dataList: data.data),
         ],
       )),
     );

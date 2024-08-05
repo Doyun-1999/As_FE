@@ -7,6 +7,8 @@ import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/product/component/toggle_button.dart';
+import 'package:auction_shop/product/model/product_model.dart';
+import 'package:auction_shop/product/provider/product_detail_provider.dart';
 import 'package:auction_shop/product/provider/product_provider.dart';
 import 'package:auction_shop/product/view/product_revise_screen.dart';
 import 'package:flutter/cupertino.dart';
@@ -43,6 +45,10 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
       vsync: this,
     );
     controller.addListener(tabListener);
+    // 데이터 얻기
+    ref
+        .read(productDetailProvider.notifier)
+        .getProductDetail(productId: int.parse(widget.id));
     super.initState();
   }
 
@@ -73,7 +79,15 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
 
   @override
   Widget build(BuildContext context) {
-    final data = ref.read(productProvider.notifier).getDetail(widget.id);
+    final data = ref.watch(getProductDetailProvider(int.parse(widget.id)));
+    if (data == null) {
+      return DefaultLayout(
+        appBar: CustomAppBar().noActionAppBar(title: "", context: context),
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
     return DefaultLayout(
       child: Stack(
         children: [
@@ -84,20 +98,19 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                 child: Column(
                   children: [
                     imageWidget(
-                      imgPath: data.imgPath,
-                      heroKey: data.id,
+                      imgPath: data.imageUrls[0],
                     ),
                     SizedBox(
                       height: 28,
                     ),
                     productInfo(
-                      category: data.category,
-                      userName: data.userName,
-                      name: data.name,
-                      nowPrice: data.nowPrice,
-                      startPrice: data.startPrice,
-                      tradeMethod: data.tradeMethod,
-                      place: data.place,
+                      category: data.product_type,
+                      userName: 'username',
+                      name: data.title,
+                      nowPrice: data.minimum_price,
+                      startPrice: data.initial_price,
+                      tradeMethod: data.trade,
+                      place: data.tradeLocation,
                     ),
                     Divider(
                       thickness: 8,
@@ -125,7 +138,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                     children: [
                       index == 0
                           ? Text(
-                              data.description,
+                              data.details,
                               style: tsNotoSansKR(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w400,
@@ -199,33 +212,29 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
 
   IntrinsicHeight imageWidget({
     required String imgPath,
-    required String heroKey,
   }) {
     return IntrinsicHeight(
       child: Stack(
         children: [
           //Image.network(imgPath),
           Stack(
-              children: [
-                Image.network(
-                  imgPath,
-                ),
-                Container(
-                  width: double.infinity,
-                  height: ratio.height * 150,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.center, // 그라데이션 끝나는 지점
-                      colors: [
-                        Colors.black.withOpacity(0.8),
-                        Colors.transparent
-                      ],
-                    ),
+            children: [
+              Image.network(
+                imgPath,
+              ),
+              Container(
+                width: double.infinity,
+                height: ratio.height * 150,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.center, // 그라데이션 끝나는 지점
+                    colors: [Colors.black.withOpacity(0.8), Colors.transparent],
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -240,18 +249,24 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
               ),
               PopupMenuButton<String>(
                 color: Colors.white,
-                onSelected: (String? val){
-                  if(val == "수정"){
+                onSelected: (String? val) {
+                  if (val == "수정") {
                     context.pushNamed(ProductReviseScreen.routeName);
                   }
-                  if(val == "삭제"){
+                  if (val == "삭제") {
                     print("삭제");
                   }
                 },
                 itemBuilder: (BuildContext context) => [
-                  popupItem(text: "수정하기", value: "수정",),
+                  popupItem(
+                    text: "수정하기",
+                    value: "수정",
+                  ),
                   PopupMenuDivider(),
-                  popupItem(text: "삭제하기", value: "삭제",),
+                  popupItem(
+                    text: "삭제하기",
+                    value: "삭제",
+                  ),
                 ],
                 icon: Icon(Icons.more_vert),
               ),
@@ -291,7 +306,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
     required int nowPrice,
     required int startPrice,
     required String tradeMethod,
-    required String place,
+    String? place,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -413,7 +428,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
               ),
             ),
           ),
-          Text(
+          place == null ? SizedBox() : Text(
             "거래장소 ${place}",
             style: tsNotoSansKR(
               fontSize: 12,

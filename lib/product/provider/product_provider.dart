@@ -1,48 +1,25 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:auction_shop/common/model/cursor_pagination_model.dart';
+import 'package:auction_shop/common/provider/pagination_provider.dart';
 import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/product/repository/product_repository.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http_parser/http_parser.dart';
 
-
-final productProvider = StateNotifierProvider<ProductNotifier, List<ProductModel>>((ref) {
+final productProvider = StateNotifierProvider<ProductNotifier, CursorPaginationBase>((ref) {
   final repo = ref.watch(productRepositoryProvider);
   return ProductNotifier(repo: repo);
 });
 
-class ProductNotifier extends StateNotifier<List<ProductModel>> {
-  final ProductRepository repo;
+class ProductNotifier extends PaginationProvider<ProductModel, ProductRepository> {
+  
   ProductNotifier({
-    required this.repo,
-  })
-      : super([
-          ProductModel(
-            id: 'asdf1',
-            imgPath:
-                'https://search.pstatic.net/sunny/?src=https%3A%2F%2Fwatermark.lovepik.com%2Fphoto%2F20211208%2Flarge%2Flovepik-auction-hammer-picture_501588219.jpg&type=sc960_832',
-            name: "아이폰 프로 12",
-            category: "IT 디지털",
-            startPrice: 450000,
-            nowPrice: 700000,
-            tradeMethod: "직거래",
-            place: "place",
-            bidNum: 2,
-            likeNum: 10,
-            description:
-                "소니 사이버샷  DSC-W630 빈티지 디카 실버 판매해요. 색감이 따뜻하고 뽀얗게 잘나오는 카메라입니다. 카메라는 정상작동하고 큰 하자는 아니지만 생활기스는 있습니다. 카메라본체+SD카드+배터리+충전기까지 모두 드려요. 자세한 문의는 채팅주세요!",
-            userName: "사용자1",
-            date: "2024-08-03",
-          ),
-          
-        ]);
+    required super.repo,
+  });
 
-  ProductModel getDetail(String id){
-    final data = state.firstWhere((e) => e.id == id);
-    return data;
-  }
-
+  // 경매 물품 등록
   Future<bool> registerProduct({
     required List<String>? images,
     required RegisterProductModel data,

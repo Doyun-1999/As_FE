@@ -47,6 +47,7 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
       if (platform == LoginPlatform.kakao) {
         final pk = await authRepository.kakaoLogin();
         if (pk == null) {
+          state = null;
           return;
         }
       }
@@ -230,5 +231,13 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
   // 상태 변경
   void resetState() {
     state = null;
+  }
+
+  // 유저의 memberID 반환
+  // 단, 사용자는 로그인된 상태여야만한다.
+  int getMemberId(){
+    final nowState = state as UserModel;
+    final memberId = nowState.id;
+    return memberId;
   }
 }

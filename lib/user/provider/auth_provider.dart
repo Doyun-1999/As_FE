@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:auction_shop/chat/view/chat_info_screen.dart';
 import 'package:auction_shop/chat/view/chat_list_screen.dart';
 import 'package:auction_shop/notification/view/notification_screen.dart';
+import 'package:auction_shop/product/view/category_screen.dart';
 import 'package:auction_shop/product/view/product_category_screen.dart';
 import 'package:auction_shop/product/view/product_info_screen.dart';
 import 'package:auction_shop/product/view/product_revise_screen.dart';
@@ -135,15 +136,17 @@ class AuthNotifier extends ChangeNotifier {
                   builder: (_, __) => MyInterestScreen(),
                 ),
                 GoRoute(
-                    path: 'answer',
-                    name: AnswerScreen.routeName,
-                    builder: (_, __) => AnswerScreen(),
-                    routes: [
-                      GoRoute(
-                          path: 'question',
-                          name: QuestionScreen.routeName,
-                          builder: (_, __) => QuestionScreen()),
-                    ]),
+                  path: 'answer',
+                  name: AnswerScreen.routeName,
+                  builder: (_, __) => AnswerScreen(),
+                  routes: [
+                    GoRoute(
+                      path: 'question',
+                      name: QuestionScreen.routeName,
+                      builder: (_, __) => QuestionScreen(),
+                    ),
+                  ],
+                ),
               ],
             ),
           ],
@@ -154,10 +157,12 @@ class AuthNotifier extends ChangeNotifier {
           name: RegisterProductScreen.routeName,
           builder: (_, __) => RegisterProductScreen(),
           routes: [
+            // 등록 두번째 페이지는 사용자가 입력한 데이터들을 전달해야한다.
             GoRoute(
               path: 'register2',
               name: RegisterProductScreen2.routeName,
               builder: (_, __) {
+                // 이미지 데이터 리스트화
                 final encodedImagePaths = __.uri.queryParameters['images'];
                 final List<String> images = encodedImagePaths != null
                     ? List<String>.from(jsonDecode(encodedImagePaths))
@@ -165,12 +170,20 @@ class AuthNotifier extends ChangeNotifier {
                 final title = __.uri.queryParameters['title']!;
                 final place = __.uri.queryParameters['place']!;
                 final details = __.uri.queryParameters['details']!;
+                final category = __.uri.queryParameters['category']!;
                 return RegisterProductScreen2(
                     images: images,
                     title: title,
                     place: place,
-                    details: details);
+                    details: details,
+                    category : category,
+                    );
               },
+            ),
+            GoRoute(
+              path: 'category',
+              name: CategoryScreen.routeName,
+              builder: (_, __) => CategoryScreen(),
             ),
           ],
         ),

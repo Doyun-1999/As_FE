@@ -6,37 +6,37 @@ part of 'product_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+ProductListModel _$ProductListModelFromJson(Map<String, dynamic> json) =>
+    ProductListModel(
+      data: (json['data'] as List<dynamic>)
+          .map((e) => ProductModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$ProductListModelToJson(ProductListModel instance) =>
+    <String, dynamic>{
+      'data': instance.data,
+    };
+
 ProductModel _$ProductModelFromJson(Map<String, dynamic> json) => ProductModel(
-      id: json['id'] as String,
-      imgPath: json['imgPath'] as String,
-      name: json['name'] as String,
-      category: json['category'] as String,
-      startPrice: (json['startPrice'] as num).toInt(),
-      nowPrice: (json['nowPrice'] as num).toInt(),
-      tradeMethod: json['tradeMethod'] as String,
-      place: json['place'] as String,
-      bidNum: (json['bidNum'] as num).toInt(),
-      likeNum: (json['likeNum'] as num).toInt(),
-      description: json['description'] as String,
-      userName: json['userName'] as String,
-      date: json['date'] as String,
+      product_id: (json['product_id'] as num).toInt(),
+      imageUrl: json['imageUrl'] as String,
+      title: json['title'] as String,
+      tradeLocation: json['tradeLocation'] as String?,
+      initial_price: (json['initial_price'] as num).toInt(),
+      likeCount: (json['likeCount'] as num).toInt(),
+      sold: json['sold'] as bool,
     );
 
 Map<String, dynamic> _$ProductModelToJson(ProductModel instance) =>
     <String, dynamic>{
-      'id': instance.id,
-      'imgPath': instance.imgPath,
-      'name': instance.name,
-      'category': instance.category,
-      'startPrice': instance.startPrice,
-      'nowPrice': instance.nowPrice,
-      'tradeMethod': instance.tradeMethod,
-      'place': instance.place,
-      'bidNum': instance.bidNum,
-      'likeNum': instance.likeNum,
-      'description': instance.description,
-      'userName': instance.userName,
-      'date': instance.date,
+      'product_id': instance.product_id,
+      'title': instance.title,
+      'tradeLocation': instance.tradeLocation,
+      'initial_price': instance.initial_price,
+      'imageUrl': instance.imageUrl,
+      'likeCount': instance.likeCount,
+      'sold': instance.sold,
     };
 
 RegisterProductModel _$RegisterProductModelFromJson(
@@ -65,4 +65,39 @@ Map<String, dynamic> _$RegisterProductModelToJson(
       'startTime': instance.startTime,
       'endTime': instance.endTime,
       'details': instance.details,
+    };
+
+ProductDetailModel _$ProductDetailModelFromJson(Map<String, dynamic> json) =>
+    ProductDetailModel(
+      product_id: json['product_id'] as String,
+      title: json['title'] as String,
+      trade: json['trade'] as String,
+      tradeLocation: json['tradeLocation'] as String?,
+      likeCount: (json['likeCount'] as num).toInt(),
+      initial_price: (json['initial_price'] as num).toInt(),
+      product_type: json['product_type'] as String,
+      minimum_price: (json['minimum_price'] as num).toInt(),
+      startTime: json['startTime'] as String,
+      endTime: json['endTime'] as String,
+      details: json['details'] as String,
+      imageUrls:
+          (json['imageUrls'] as List<dynamic>).map((e) => e as String).toList(),
+      sold: json['sold'] as bool,
+    );
+
+Map<String, dynamic> _$ProductDetailModelToJson(ProductDetailModel instance) =>
+    <String, dynamic>{
+      'product_id': instance.product_id,
+      'title': instance.title,
+      'trade': instance.trade,
+      'tradeLocation': instance.tradeLocation,
+      'likeCount': instance.likeCount,
+      'initial_price': instance.initial_price,
+      'product_type': instance.product_type,
+      'minimum_price': instance.minimum_price,
+      'startTime': instance.startTime,
+      'endTime': instance.endTime,
+      'details': instance.details,
+      'imageUrls': instance.imageUrls,
+      'sold': instance.sold,
     };

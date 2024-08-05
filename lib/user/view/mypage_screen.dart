@@ -4,6 +4,7 @@ import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/product/view/register/register_product_screen.dart';
 import 'package:auction_shop/user/model/user_model.dart';
+import 'package:auction_shop/user/provider/Q&A_provider.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:auction_shop/user/view/mypage_inner/address_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/block_screen.dart';
@@ -107,7 +108,10 @@ class MyPageScreen extends ConsumerWidget {
               IconText(
                 imgName: 'Q&A',
                 text: "내 문의",
+                // 화면 넘어갈 때 데이터 로딩
                 func: () {
+                  final memberId = ref.read(userProvider.notifier).getMemberId();
+                  ref.read(QandAProvider.notifier).allAnswerData(memberId: memberId);
                   context.pushNamed(AnswerScreen.routeName);
                 },
               ),

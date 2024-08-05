@@ -4,16 +4,19 @@ import 'package:flutter/material.dart';
 class TextColumn extends StatelessWidget {
   final String title;
   final String content;
+  final Color? color;
   const TextColumn({
     required this.title,
     required this.content,
+    this.color,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.green,
+      color: color,
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

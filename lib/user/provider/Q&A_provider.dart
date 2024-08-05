@@ -1,31 +1,38 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:auction_shop/user/model/Q&A_model.dart';
+import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:auction_shop/user/repository/user_repository.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http_parser/http_parser.dart';
-import 'package:collection/collection.dart';
 
 
-final answerStateProvider = Provider.family<AnswerModel?, bool>((ref, status){
+final answerStateProvider = Provider.family<AnswerListModel?, bool>((ref, status){
   final state = ref.watch(QandAProvider);
 
-  return state.firstWhereOrNull((e) => e.status == status);
+  if(!(state is AnswerListModel)){
+    return null;
+  }
+
+  // 같은 status인 것들만 다시 추출
+  final data = state.copyWith(list: state.list.where((e) => e.status == status).toList());
+  
+  return data;
 });
 
-final QandAProvider = StateNotifierProvider<QandANotifier, List<AnswerModel>>((ref) {
+final QandAProvider = StateNotifierProvider<QandANotifier, QandABaseModel?>((ref) {
   final repo = ref.watch(userRepositoryProvider);
 
   return QandANotifier(repo: repo);
 });
 
-class QandANotifier extends StateNotifier<List<AnswerModel>>{
+class QandANotifier extends StateNotifier<QandABaseModel?>{
   final UserRepository repo;
 
   QandANotifier({
     required this.repo,
-  }):super([]);
+  }):super(null);
 
   // 문의 상세 조회
   Future<AnswerModel> answerData({required int inquiryId,}) async {
@@ -35,6 +42,8 @@ class QandANotifier extends StateNotifier<List<AnswerModel>>{
 
   // 문의 전체 조회
   Future<void> allAnswerData({required int memberId, }) async {
+    state = QandABaseLoading();
+    print("로딩 상태");
     final resp = await repo.allAnswerData(memberId: memberId);
     state = resp;
   }
@@ -45,6 +54,7 @@ class QandANotifier extends StateNotifier<List<AnswerModel>>{
     required QuestionModel data,
     required List<String>? images,
   }) async {
+    state = QandABaseLoading();
     FormData formData = FormData();
 
     // 경매 물품 데이터 추가
@@ -73,5 +83,8 @@ class QandANotifier extends StateNotifier<List<AnswerModel>>{
 
     // 서버 요청
     final resp = await repo.question(data: formData,);
+    
+    // 요청 후 완료되면 다시 로딩
+    allAnswerData(memberId: int.parse(memberId));
   }
 }
