@@ -39,6 +39,10 @@ class UserRepository {
     final resp = await dio.get(baseUrl + '/inquiry', data: {"memberId" : memberId,},);
     print(resp.statusCode);
     print(resp.data);
+    // 데이터가 없으면 빈 리스트 데이터 반환
+    if(resp.statusCode == 204){
+      return AnswerListModel(list: []);
+    }
     final dataList = AnswerListModel(list: (resp.data as List<dynamic>).map((e) => AnswerModel.fromJson(e)).toList());
     return dataList;
   }

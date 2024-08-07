@@ -2,14 +2,11 @@ import 'dart:ui';
 import 'package:auction_shop/common/component/user_image.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/variable/color.dart';
-import 'package:auction_shop/product/view/register/register_product_screen.dart';
-import 'package:auction_shop/user/model/user_model.dart';
 import 'package:auction_shop/user/provider/Q&A_provider.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:auction_shop/user/view/mypage_inner/address_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/block_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/answer_screen.dart';
-import 'package:auction_shop/user/view/mypage_inner/my_interest_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/mybid_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -25,10 +22,7 @@ class MyPageScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(userProvider);
-    //final userData = state as UserModel;
-    //print(state);
-    //print(userData);
+    final state = ref.read(userProvider.notifier).getUser();
     return DefaultLayout(
       appBar: AppBar(
         centerTitle: true,
@@ -59,7 +53,9 @@ class MyPageScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              userInfo(name: '유저 이름', point: 156, address: "유저 주소", context: context,),
+              // 유저 이름, 포인트, 주소
+              userInfo(name: state.name, point: state.point, address: "${state.address.address} ${state.address.detailAddress}", context: context, imgPath: state.profileImageUrl,),
+              
               IconText(
                 imgName: 'bid_mypage',
                 text: "입찰 내역",
@@ -153,6 +149,7 @@ class MyPageScreen extends ConsumerWidget {
     required String name,
     required int point,
     required String address,
+    String? imgPath,
     required BuildContext context,
   }) {
     return Container(
@@ -174,6 +171,7 @@ class MyPageScreen extends ConsumerWidget {
       child: Row(
         children: [
           UserImage(
+            imgPath: imgPath,
             size: 60,
             margin: EdgeInsets.only(
               top: 14,

@@ -33,6 +33,7 @@ class UserModel extends UserModelBase{
   final int point;
   final bool available;
   final String role;
+  final String profileImageUrl;
 
   UserModel({
     required this.id,
@@ -43,6 +44,7 @@ class UserModel extends UserModelBase{
     required this.point,
     required this.available,
     required this.role,
+    required this.profileImageUrl,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);

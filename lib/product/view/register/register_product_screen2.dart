@@ -41,22 +41,15 @@ class RegisterProductScreen2 extends ConsumerStatefulWidget {
 class _RegisterProductScreen2State
     extends ConsumerState<RegisterProductScreen2> {
   // 토글 버튼
-  late List<bool> isSelected;
+  List<bool> isSelected = [true, false];
 
+  // TextFormField
+  final gkey = GlobalKey<FormState>();
   TextEditingController _priceController = TextEditingController();
   TextEditingController _minPriceController = TextEditingController();
-  TextEditingController _timeController = TextEditingController();
-
-  final gkey = GlobalKey<FormState>();
 
   // 시간 정하는 변수
-  int _selectedHour = 24;
-
-  @override
-  void initState() {
-    isSelected = [true, false];
-    super.initState();
-  }
+  int _selectedHour = 23;
 
   // 토글 버튼 선택 함수
   void toggleSelect(int val) {

@@ -92,17 +92,22 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
         state = null;
         return;
       }
-      await storage.write(key: ACCESS_TOKEN, value: resp.accessToken);
-      if (!resp.available) {
-        state = UserModelSignup(id: resp.id);
+      final baseTokenModel = resp.model;
+      // 토큰값 저장
+      await storage.write(key: ACCESS_TOKEN, value: baseTokenModel.accessToken);
+      await storage.write(key: REFRESH_TOKEN, value: resp.refreshToken);
+      if (!baseTokenModel.available) {
+        state = UserModelSignup(id: baseTokenModel.id);
         print("회원가입 해야해요");
         print("현재 상태 : ${state}");
         return;
       }
 
-      if (resp.available) {
-        final userData = await userRepository.getMe(resp.id.toString());
+      if (baseTokenModel.available) {
+        final userData = await userRepository.getMe(baseTokenModel.id.toString());
         state = userData;
+        print("회원가입이 진행된 회원입니다.");
+        print("현재 상태 : ${state}");
         if(!(state is UserModel)){
           state = null;
           return;
@@ -239,5 +244,17 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
     final nowState = state as UserModel;
     final memberId = nowState.id;
     return memberId;
+  }
+
+  // 로그인이 되어있다는 가정하에,
+  // 로그인된 유저의 객체 정보를 가져온다.
+  UserModel getUser(){
+    final nowState = state as UserModel;
+    return nowState;
+  }
+
+  void getAccessToken() async {
+    final refreshToken = await storage.read(key: REFRESH_TOKEN);
+    final resp = await authRepository.getAccessToken(refreshToken!);
   }
 }

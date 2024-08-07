@@ -1,4 +1,5 @@
 import 'package:auction_shop/common/variable/color.dart';
+import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/user/component/add_button.dart';
 import 'package:auction_shop/user/component/info_box.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
@@ -42,7 +43,20 @@ class _AnswerScreenState extends ConsumerState<AnswerScreen> {
           title: '내 문의',
         ),
         child: Center(
-          child: Text("에러발생"),
+          child: Column(
+            children: [
+              Text("에러발생"),
+              AddButton(
+                text: '새 문의하기',
+                func: () async {
+                  context.pushNamed(QuestionScreen.routeName);
+                },
+              ),
+              SizedBox(
+                height: 30,
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -94,6 +108,12 @@ class _AnswerScreenState extends ConsumerState<AnswerScreen> {
   answerList({
     required List<AnswerModel> list,
   }) {
+    if(list.length == 0){
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Center(child: Text("문의 내역이 없습니다.", style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.bold,),),),
+      );
+    }
     return ListView.builder(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),

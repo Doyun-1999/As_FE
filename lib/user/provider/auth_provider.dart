@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:auction_shop/chat/view/chat_info_screen.dart';
 import 'package:auction_shop/chat/view/chat_list_screen.dart';
+import 'package:auction_shop/common/view/splash_screen.dart';
 import 'package:auction_shop/notification/view/notification_screen.dart';
 import 'package:auction_shop/product/view/category_screen.dart';
 import 'package:auction_shop/product/view/product_category_screen.dart';
@@ -203,6 +204,11 @@ class AuthNotifier extends ChangeNotifier {
           name: SignupScreen.routeName,
           builder: (_, __) => SignupScreen(),
         ),
+        GoRoute(
+          path: '/splash',
+          name: SplashScreen.routeName,
+          builder: (_, __) => SplashScreen(),
+        ),
       ];
 
   // 앱을 처음 시작했을 때
@@ -212,11 +218,9 @@ class AuthNotifier extends ChangeNotifier {
   String? redirectLogic(GoRouterState gState) {
     print('redirect 실행');
     final UserModelBase? user = ref.read(userProvider);
-    final logginIn = gState.fullPath == '/login';
+    final isLoggin = gState.fullPath == '/login';
     final isSignup = gState.fullPath == '/signup';
-
-    print(gState.fullPath);
-    print(user);
+    final isSplash = gState.fullPath == '/splash';
 
     // 유저 정보가 없고 로그인 중이라면
     // 로그인 화면로 이동
@@ -225,7 +229,12 @@ class AuthNotifier extends ChangeNotifier {
       if (gState.fullPath == '/signup') {
         return '/signup';
       }
-      return logginIn ? null : '/login';
+      return isLoggin ? null : '/login';
+    }
+
+    // 로딩 상태에는 스플래쉬 화면 출력
+    if(user is UserModelLoading){
+      return '/splash';
     }
 
     // 만약 유저가 앱내에서 회원가입이 진행되지 않은 회원이라면
@@ -234,11 +243,11 @@ class AuthNotifier extends ChangeNotifier {
       return '/signup';
     }
 
-    // 유저 정보가 존재하고 로그인 상태라면
-    // 홈 화면으로 이동
+    // 유저 정보가 존재한 상태에서
+    // 로그인/회원가입/스플래쉬 화면이라면, 홈화면으로 이동
     if (user is UserModel) {
       print('로그인 상태');
-      return (logginIn || isSignup) ? '/' : null;
+      return (isLoggin || isSignup || isSplash) ? '/' : null;
     }
 
     // 유저 정보에 에러가 존재하고 로그인 상태가 아니라면

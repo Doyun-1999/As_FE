@@ -102,6 +102,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   final access = await storage.read(key: ACCESS_TOKEN);
                   print(refresh);
                   print(access);
+                  ref.read(userProvider.notifier).getAccessToken();
                 },
                 // func: (state is UserModelLoading) ? null : () {
                 //   context.pushNamed(SignupScreen.routeName);
