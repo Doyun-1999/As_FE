@@ -93,6 +93,18 @@ class ProductCard extends StatelessWidget {
                     color: auctionColor.subBlackColor49,
                   ),
                 ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: auctionColor.subBlackColor49,),
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                  child: Column(
+                    children: [
+                      Text("비대면", style: tsNotoSansKR(fontSize: 10, fontWeight: FontWeight.w500,), textAlign: TextAlign.center,),
+                    ],
+                  ),
+                ),
 
                 Spacer(),
                 Row(

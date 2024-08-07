@@ -46,9 +46,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
     );
     controller.addListener(tabListener);
     // 데이터 얻기
-    ref
-        .read(productDetailProvider.notifier)
-        .getProductDetail(productId: int.parse(widget.id));
+    ref.read(productDetailProvider.notifier).getProductDetail(productId: int.parse(widget.id));
     super.initState();
   }
 

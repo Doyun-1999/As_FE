@@ -14,6 +14,8 @@ class CursorPaginationError extends CursorPaginationBase{
   });
 }
 
+class CursurPaginationMore extends CursorPaginationBase{}
+
 @JsonSerializable(
   genericArgumentFactories: true,
 )
@@ -33,4 +35,10 @@ class CursorPagination<T> extends CursorPaginationBase{
   factory CursorPagination.fromJson(
           Map<String, dynamic> json, T Function(Object? json) fromJsonT) =>
       _$CursorPaginationFromJson(json, fromJsonT);
+}
+
+class CursorPaginationRefetching<T> extends CursorPagination<T>{
+  CursorPaginationRefetching({
+    required super.data,
+  });
 }

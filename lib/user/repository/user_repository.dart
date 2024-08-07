@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'package:auction_shop/common/dio/dio.dart';
+import 'package:auction_shop/common/model/cursor_pagination_model.dart';
+import 'package:auction_shop/common/repository/base_cursorpagination_repository.dart';
+import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/user/model/Q&A_model.dart';
 import 'package:auction_shop/user/model/pk_id_model.dart';
 import 'package:auction_shop/user/model/user_model.dart';
@@ -15,7 +18,7 @@ final userRepositoryProvider = Provider<UserRepository>((ref) {
   return UserRepository(dio: dio, baseUrl: BASE_URL);
 });
 
-class UserRepository {
+class UserRepository{
   final Dio dio;
   final String baseUrl;
 
@@ -23,6 +26,16 @@ class UserRepository {
     required this.dio,
     required this.baseUrl,
   });
+
+  // 유저 판매 목록
+  Future<ProductListModel> getMyBid(int memberId) async {
+    final resp = await dio.get(baseUrl + 'sell/${memberId}');
+    print(resp.statusCode);
+    print(resp.data);
+    final data = {"data": resp.data};
+    final dataList = ProductListModel.fromJson(data);
+    return dataList;
+  }
 
   // 문의 상세 조회
   Future<AnswerModel> answerData({required int inquiryId,}) async {

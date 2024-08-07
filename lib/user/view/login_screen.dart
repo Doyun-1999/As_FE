@@ -19,6 +19,14 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
+
+  @override
+  void initState() {
+    // 자동 로그인함수
+    ref.read(userProvider.notifier).autoLogin();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(userProvider);
@@ -102,11 +110,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   final access = await storage.read(key: ACCESS_TOKEN);
                   print(refresh);
                   print(access);
-                  ref.read(userProvider.notifier).getAccessToken();
+                  //ref.read(userProvider.notifier).getAccessToken();
                 },
-                // func: (state is UserModelLoading) ? null : () {
-                //   context.pushNamed(SignupScreen.routeName);
-                // },
                 borderColor: (state is UserModelLoading)
                     ? auctionColor.subGreyColor94
                     : Colors.white,
@@ -131,6 +136,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 }
 
+// 소셜 로그인 Widget
 GestureDetector loginContainer({
   Icon? icon = null,
   required String? imgPath,

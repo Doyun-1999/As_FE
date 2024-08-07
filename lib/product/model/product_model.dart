@@ -83,7 +83,7 @@ class RegisterProductModel{
 
 @JsonSerializable()
 class ProductDetailModel{
-  final String product_id;
+  final int product_id;
   final String title;
   final String trade;
   final String? tradeLocation;

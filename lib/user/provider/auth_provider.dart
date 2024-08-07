@@ -3,7 +3,7 @@ import 'package:auction_shop/chat/view/chat_info_screen.dart';
 import 'package:auction_shop/chat/view/chat_list_screen.dart';
 import 'package:auction_shop/common/view/splash_screen.dart';
 import 'package:auction_shop/notification/view/notification_screen.dart';
-import 'package:auction_shop/product/view/category_screen.dart';
+import 'package:auction_shop/product/view/select_category_screen.dart';
 import 'package:auction_shop/product/view/product_category_screen.dart';
 import 'package:auction_shop/product/view/product_info_screen.dart';
 import 'package:auction_shop/product/view/product_revise_screen.dart';
@@ -183,8 +183,8 @@ class AuthNotifier extends ChangeNotifier {
             ),
             GoRoute(
               path: 'category',
-              name: CategoryScreen.routeName,
-              builder: (_, __) => CategoryScreen(),
+              name: SelectCategoryScreen.routeName,
+              builder: (_, __) => SelectCategoryScreen(),
             ),
           ],
         ),

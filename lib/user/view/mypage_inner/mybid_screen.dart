@@ -45,8 +45,7 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
 
   @override
   Widget build(BuildContext context) {
-    //final state = ref.watch(userProvider);
-    // final products = ref.watch(productProvider);
+    final state = ref.read(userProvider.notifier).getUser();
     final products = [];
     return DefaultLayout(
       appBar: AppBar(
@@ -85,7 +84,7 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
           headerSliverBuilder: (context, innerBoxIsScrolled) {
             return [
               // userInfo
-              userInfo(name: 'name'),
+              userInfo(name: state.name, imgPath: state.profileImageUrl,),
 
               // TabBar
               SliverPersistentHeader(
@@ -135,18 +134,20 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
 
   SliverToBoxAdapter userInfo({
     required String name,
+    String? imgPath,
   }) {
     return SliverToBoxAdapter(
       child: Row(
         children: [
           UserImage(
             size: 60,
+            imgPath: imgPath,
           ),
           SizedBox(
             width: 8,
           ),
           Text(
-            'user.name',
+            name,
             style: tsNotoSansKR(
               fontSize: 20,
               fontWeight: FontWeight.bold,

@@ -68,6 +68,7 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
       // 유저 정보를 불러오는 과정에서
       // 유저 고유의 id를 storage에 저장
       final pk = await socialGetMe();
+      await storage.write(key: PERSONAL_KEY, value: pk);
 
       // 유저 정보를 성공적으로 불러오면
       // 정상적으로 서버로 다시 해당 id를 전송
@@ -86,33 +87,7 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
       // => 앱내에서 한 번 회원가입이 진행된 회원이므로 user 반환
       // 2. 요청시 response의 값중 avaliable의 값이 false 일 경우
       // => 앱내에서 회원가입이 진행되지 않은 회원이므로 userSignup 반환
-      final resp = await authRepository.login(pk);
-      if (resp == null) {
-        print("로그인 실패");
-        state = null;
-        return;
-      }
-      final baseTokenModel = resp.model;
-      // 토큰값 저장
-      await storage.write(key: ACCESS_TOKEN, value: baseTokenModel.accessToken);
-      await storage.write(key: REFRESH_TOKEN, value: resp.refreshToken);
-      if (!baseTokenModel.available) {
-        state = UserModelSignup(id: baseTokenModel.id);
-        print("회원가입 해야해요");
-        print("현재 상태 : ${state}");
-        return;
-      }
-
-      if (baseTokenModel.available) {
-        final userData = await userRepository.getMe(baseTokenModel.id.toString());
-        state = userData;
-        print("회원가입이 진행된 회원입니다.");
-        print("현재 상태 : ${state}");
-        if(!(state is UserModel)){
-          state = null;
-          return;
-        }
-      }
+      serverLogin(pk);
 
       print(loginPlatform);
     } catch (e) {
@@ -255,6 +230,56 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
 
   void getAccessToken() async {
     final refreshToken = await storage.read(key: REFRESH_TOKEN);
-    final resp = await authRepository.getAccessToken(refreshToken!);
+    await authRepository.getAccessToken(refreshToken!);
+  }
+
+  // 첫 로그인 화면 진입시
+  // 로그인 이력이 있어서 소셜 고유 ID가 존재하면
+  // 자동으로 로그인 시켜주는 함수
+  void autoLogin() async {
+    // 소셜 로그인 고유 ID
+    final pk = await storage.read(key: PERSONAL_KEY);
+    // 해당 ID가 null이 아닐 경우 로그인 함수 실행
+    if(pk != null){
+      // 로딩을 위한 상태 변경
+      state = UserModelLoading();
+      serverLogin(pk);
+    }
+  }
+
+  // 서버와 로그인하는 함수
+  void serverLogin(String pk) async {
+    final resp = await authRepository.login(pk);
+      // 로그인 실패시 다시 return
+      if (resp == null) {
+        print("로그인 실패");
+        state = null;
+        return;
+      }
+      final baseTokenModel = resp.model;
+      // 토큰값 저장
+      await storage.write(key: ACCESS_TOKEN, value: baseTokenModel.accessToken);
+      await storage.write(key: REFRESH_TOKEN, value: resp.refreshToken);
+      // 첫 사용자라면
+      // 회원가입이 필요한 객체 상태로 변환 후 return
+      if (!baseTokenModel.available) {
+        state = UserModelSignup(id: baseTokenModel.id);
+        print("회원가입 해야해요");
+        print("현재 상태 : ${state}");
+        return;
+      }
+
+      // 첫 사용자가 아니라면
+      // 유저 정보 얻어오기
+      if (baseTokenModel.available) {
+        final userData = await userRepository.getMe(baseTokenModel.id.toString());
+        state = userData;
+        print("회원가입이 진행된 회원입니다.");
+        print("현재 상태 : ${state}");
+        if(!(state is UserModel)){
+          state = null;
+          return;
+        }
+      }
   }
 }

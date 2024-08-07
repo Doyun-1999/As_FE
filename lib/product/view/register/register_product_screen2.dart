@@ -2,9 +2,11 @@ import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/component/button.dart';
 import 'package:auction_shop/common/component/textformfield.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
+import 'package:auction_shop/common/model/cursor_pagination_model.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/variable/validator.dart';
+import 'package:auction_shop/common/view/root_tab.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/product/provider/product_provider.dart';
@@ -15,6 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class RegisterProductScreen2 extends ConsumerStatefulWidget {
@@ -68,6 +71,7 @@ class _RegisterProductScreen2State
   Widget build(BuildContext context) {
     final state = ref.watch(userProvider);
     final userData = state as UserModel;
+    final productState = ref.watch(productProvider);
     return DefaultLayout(
       resizeToAvoidBottomInset: true,
       appBar: CustomAppBar().noActionAppBar(title: "경매 등록", context: context),
@@ -178,9 +182,11 @@ class _RegisterProductScreen2State
                 ),
 
                 // 버튼
+                // ProductProvider의 상태에 따라서 버튼 색 및 함수 작동 여부 변경
                 CustomButton(
+                  bgColor: (productState is CursorPaginationLoading) ? Colors.grey : auctionColor.mainColor,
                   text: '등록완료',
-                  func: () async {
+                  func: (productState is CursorPaginationLoading) ? null : () async {
                     if (gkey.currentState!.validate()) {
                       // 가격 데이터
                       final minPrice = int.parse(_minPriceController.text);
@@ -189,15 +195,12 @@ class _RegisterProductScreen2State
                       // 시간 데이터
                       final now = DateTime.now();
                       final adjustedTime = now.add(
-                        Duration(hours: _selectedHour),
+                        Duration(hours: _selectedHour)
                       );
                       // 현재 시간
-                      final formattedNowDate =
-                          DateFormat('yyyy-MM-ddTHH:mm').format(now);
+                      final formattedNowDate = DateFormat('yyyy-MM-ddTHH:mm').format(now);
                       // 현재 시간 + 사용자가 설정한 시간
-                      final formattedAddedDate =
-                          DateFormat('yyyy-MM-ddTHH:mm:ss')
-                              .format(adjustedTime);
+                      final formattedAddedDate = DateFormat('yyyy-MM-ddTHH:mm:ss').format(adjustedTime);
                       // 경매 방식
                       String trade = isSelected[0] ? "상향식" : "하향식";
 
@@ -220,6 +223,7 @@ class _RegisterProductScreen2State
                           );
                       if (resp) {
                         print("성공!");
+                        context.pushNamed(RootTab.routeName);
                       } else {
                         print("실패..");
                       }

@@ -29,6 +29,7 @@ class ProductRepository extends BasePaginationRepository{
   }
 
   // 전체 product 불러오기
+  @override
   Future<CursorPagination<ProductModel>> paginate() async {
     final resp = await dio.get(baseUrl);
     print(resp.statusCode);

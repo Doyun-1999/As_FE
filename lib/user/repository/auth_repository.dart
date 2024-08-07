@@ -29,10 +29,23 @@ class AuthRepository {
 
   // 토큰 재발급
   Future<void> getAccessToken(String refreshToken) async {
-    final resp = await dio.get(baseUrl + '/auth/refresh', data: {"refreshToken" : refreshToken});
-    
-    print(resp.statusCode);
-    print(resp.data);
+    print("보낼 토큰 값 : ${refreshToken}");
+    try{
+      final resp = await dio.post(baseUrl + '/auth/refresh', data: {"refreshToken" : refreshToken});
+      
+      print(resp.statusCode);
+      print(resp.data);
+    } on DioException catch(e){
+      print(e.error);
+      print('--------------');
+      print(e.message);
+      print('--------------');
+      print(e.response);
+      print('--------------');
+      print(e.type);
+      print('--------------');
+      print(e);
+    }
   }
 
   // ※ dio provider 생성 후 연동해야함

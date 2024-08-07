@@ -12,9 +12,15 @@ class PaginationProvider<T, U extends BasePaginationRepository> extends StateNot
   }
 
   // 임시 pagination
-  Future<void> paginate() async {
-    state = CursorPaginationLoading();
+  void paginate() async {
     final resp = await repo.paginate();
+    state = resp;
+  }
+
+  // 데이터 첨부터 다시 불러오기
+  void refetching() async {
+    print("refetching 실행");
+    final resp = await repo.paginate();  
     state = resp;
   }
 }

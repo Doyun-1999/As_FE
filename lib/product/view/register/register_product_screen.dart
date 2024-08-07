@@ -11,7 +11,7 @@ import 'package:auction_shop/common/variable/validator.dart';
 import 'package:auction_shop/common/view/root_tab.dart';
 import 'package:auction_shop/product/component/toggle_button.dart';
 import 'package:auction_shop/product/component/upload_image_box.dart';
-import 'package:auction_shop/product/view/category_screen.dart';
+import 'package:auction_shop/product/view/select_category_screen.dart';
 import 'package:auction_shop/product/view/register/register_product_screen2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -168,7 +168,7 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
                     TextLable(text: '카테고리'),
                     GestureDetector(
                       onTap: () async {
-                        final result = await context.pushNamed(CategoryScreen.routeName);
+                        final result = await context.pushNamed(SelectCategoryScreen.routeName);
                         if(result != null){
                           setState(() {
                             _categoryController.text = (result as List<String>).join(', ');

@@ -9,15 +9,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
-class CategoryScreen extends StatefulWidget {
+class SelectCategoryScreen extends StatefulWidget {
   static String get routeName => "category";
-  const CategoryScreen({super.key});
+  const SelectCategoryScreen({super.key});
 
   @override
-  State<CategoryScreen> createState() => _CategoryScreenState();
+  State<SelectCategoryScreen> createState() => _SelectCategoryScreenState();
 }
 
-class _CategoryScreenState extends State<CategoryScreen> {
+class _SelectCategoryScreenState extends State<SelectCategoryScreen> {
   List<int> indexList = [];
 
   @override
@@ -78,19 +78,27 @@ class _CategoryScreenState extends State<CategoryScreen> {
                               ),
                               // 체크 버튼 위젯
                               Positioned(
-                                  right: ratio.width * 10,
-                                  top: -10,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: auctionColor.mainColor,
-                                    ),
-                                    child: Icon(
-                                      Icons.check,
+                                right: ratio.width * 10,
+                                top: -10,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 5,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: auctionColor.mainColor,
+                                  ),
+                                  child: Text(
+                                    getSelectIndex(index),
+                                    style: tsNotoSansKR(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w900,
                                       color: Colors.white,
-                                      size: 20,
                                     ),
-                                  ),),
+                                  ),
+                                ),
+                              ),
                             ],
                           )
                         :
@@ -138,6 +146,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
     );
   }
 
+  // 선택된 카테고리인지 확인는 함수
   bool isSelected(int index) {
     return indexList.contains(index);
   }
@@ -149,5 +158,11 @@ class _CategoryScreenState extends State<CategoryScreen> {
         .map((index) => category[index + 1]) // 원본 리스트에서 데이터 가져오기
         .whereType<String>() // null 값을 제외
         .toList(); // 리스트로 변환
+  }
+
+  // 선택된 카테고리의 index + 1의 값 반환
+  String getSelectIndex(int index){
+    int order = indexList.indexOf(index);
+    return (order + 1).toString();
   }
 }

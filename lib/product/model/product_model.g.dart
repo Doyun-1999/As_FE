@@ -69,7 +69,7 @@ Map<String, dynamic> _$RegisterProductModelToJson(
 
 ProductDetailModel _$ProductDetailModelFromJson(Map<String, dynamic> json) =>
     ProductDetailModel(
-      product_id: json['product_id'] as String,
+      product_id: (json['product_id'] as num).toInt(),
       title: json['title'] as String,
       trade: json['trade'] as String,
       tradeLocation: json['tradeLocation'] as String?,
