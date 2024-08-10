@@ -55,11 +55,14 @@ class QandANotifier extends StateNotifier<QandABaseModel?>{
     state = resp;
   }
 
-  // 문의 하기
+  // 문의 하기 및 수정
+  // inquiryId 유무에 따라서 요청 방식이 변경됨
+  // 데이터 정제 방식은 같다.
   Future<void> question({
     required String memberId,
     required QuestionModel data,
     required List<String>? images,
+    int? inquiryId,
   }) async {
     state = QandABaseLoading();
     FormData formData = FormData();
@@ -88,9 +91,14 @@ class QandANotifier extends StateNotifier<QandABaseModel?>{
       }
     }
 
-    // 서버 요청
-    await repo.question(data: formData,);
-    
+    // 문의 수정
+    if(inquiryId != null){
+      await repo.reviseQuestion(formData: formData, inquiryId: inquiryId);
+    }
+    // 문의 하기
+    if(inquiryId == null){
+      await repo.question(formData: formData);
+    }
     // 요청 후 완료되면 다시 로딩
     allAnswerData(memberId: int.parse(memberId));
   }

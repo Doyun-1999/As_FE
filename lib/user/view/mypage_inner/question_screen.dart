@@ -43,7 +43,7 @@ class _QuestionScreenState extends ConsumerState<QuestionScreen> {
   // Controller
   TextEditingController _titleController = TextEditingController();
   TextEditingController _contentController = TextEditingController();
-  ScrollController _scrollController = ScrollController();  
+  ScrollController _scrollController = ScrollController();
 
   // 이미지 올리는 함수
   Future<void> _pickImage({int? index}) async {
@@ -73,16 +73,15 @@ class _QuestionScreenState extends ConsumerState<QuestionScreen> {
     // 만약 goRouter에서 extra 데이터를 받았으면
     // 해당 데이터들을 textField와 image에 데이터 넣기
     // 데이터 유무에 따라 appBar, button의 텍스트가 달라진다.
-    if(widget.answer != null){
+    if (widget.answer != null) {
       appBarTitle = "내 문의";
       buttonText = "수정하기";
       final answerData = widget.answer!;
       _titleController = TextEditingController(text: answerData.title);
       _contentController = TextEditingController(text: answerData.content);
-      if(answerData.imageUrl != null){
+      if (answerData.imageUrl != null) {
         _setImages.add(answerData.imageUrl!);
       }
-      print("data : ${answerData.toJson()}");
       return;
     }
     buttonText = "문의하기";
@@ -110,13 +109,7 @@ class _QuestionScreenState extends ConsumerState<QuestionScreen> {
               child: Row(
                 children: [
                   ...List.generate(_setImages.length, (index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 12),
-                      child: UploadImageBox(
-                        stringImg: _setImages[index],
-                        func: () {},
-                      ),
-                    );
+                    return setImages(_setImages[index]);
                   }),
                   ...List.generate(_images.length, (index) {
                     return Padding(
@@ -160,32 +153,65 @@ class _QuestionScreenState extends ConsumerState<QuestionScreen> {
             Spacer(),
             CustomButton(
               text: buttonText,
-              bgColor: (state is QandABaseLoading) ? Colors.grey : auctionColor.mainColor,
-              func: (state is QandABaseLoading) ? null : () async {
-                // memberId를 얻기 위한 변수 할당
-                // 해당 화면에 존재한 상태에서 userProvider의 상태는 무조건 UserModel이다.
-                final user = ref.watch(userProvider);
-                final state = user as UserModel;
+              bgColor: (state is QandABaseLoading)
+                  ? Colors.grey
+                  : auctionColor.mainColor,
+              func: (state is QandABaseLoading)
+                  ? null
+                  : () async {
+                      // memberId를 얻기 위한 변수 할당
+                      // 해당 화면에 존재한 상태에서 userProvider의 상태는 무조건 UserModel이다.
+                      final user = ref.watch(userProvider);
+                      final state = user as UserModel;
 
-                // 문의 데이터
-                final data = QuestionModel(
-                    title: _titleController.text,
-                    content: _contentController.text);
+                      // 문의 데이터
+                      final data = QuestionModel(
+                          title: _titleController.text,
+                          content: _contentController.text);
 
-                // 이미지 데이터 경로
-                final images = _images.map((e) => e.path).toList();
+                      // 이미지 데이터 경로
+                      final images = _images.map((e) => e.path).toList();
 
-                // 요청
-                await ref.read(QandAProvider.notifier).question(memberId: (state.id).toString(),data: data,images: images,);
-                
-                // 요청이 완료되면 다시 페이지 전환
-                context.pop(AnswerScreen.routeName);
-              },
+                      // 요청
+                      await ref.read(QandAProvider.notifier).question(
+                            memberId: (state.id).toString(),
+                            data: data,
+                            images: images,
+                            inquiryId: widget.answer != null ? widget.answer!.id : null,
+                          );
+
+                      // 요청이 완료되면 다시 페이지 전환
+                      context.pop(AnswerScreen.routeName);
+                    },
             ),
             SizedBox(
               height: ratio.height * 55,
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  // 수정할 때 있었던 이미지
+  Padding setImages(String imgPath) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 12),
+      child: Container(
+        width: 85,
+        height: 85,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: Colors.black.withOpacity(
+              0.3,
+            ),
+          ),
+          image: DecorationImage(
+            image: NetworkImage(
+              imgPath,
+            ),
+          ),
         ),
       ),
     );

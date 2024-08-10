@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'package:auction_shop/common/dio/dio.dart';
-import 'package:auction_shop/common/model/cursor_pagination_model.dart';
-import 'package:auction_shop/common/repository/base_cursorpagination_repository.dart';
 import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/user/model/Q&A_model.dart';
 import 'package:auction_shop/user/model/pk_id_model.dart';
@@ -60,10 +58,26 @@ class UserRepository{
     return dataList;
   }
 
-  // 문의 등록
-  Future<void> question({required FormData data,}) async {
+  // 문의 수정
+  Future<void> reviseQuestion({
+    required int inquiryId,
+    required FormData formData,
+  }) async {
     try{
-      final resp = await dio.post(baseUrl + '/inquiry', data: data,);
+      final resp = await dio.put(baseUrl + '/inquiry/${inquiryId}',
+        data: formData
+      );
+      print(resp.statusCode);
+      print(resp.data);
+    }catch(e){
+      print(e);
+    }
+  }
+
+  // 문의 등록
+  Future<void> question({required FormData formData,}) async {
+    try{
+      final resp = await dio.post(baseUrl + '/inquiry', data: formData,);
 
       if(resp.statusCode == 201){
         print("성공");
