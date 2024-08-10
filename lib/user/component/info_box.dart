@@ -1,5 +1,6 @@
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -8,9 +9,11 @@ class InfoBox extends StatelessWidget {
   final String? secondeBoxText;
   final Widget widget;
   final String sideText;
+  final VoidCallback sideFunc;
   const InfoBox({
     this.firstBoxText,
     required this.widget,
+    required this.sideFunc,
     this.secondeBoxText,
     this.sideText = "수정",
     super.key,
@@ -57,12 +60,15 @@ class InfoBox extends StatelessWidget {
                         ),
                       )
                     : SizedBox(),
-                Text(
-                  sideText,
-                  style: tsInter(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    color: auctionColor.subGreyColorB6,
+                GestureDetector(
+                  onTap: sideFunc,
+                  child: Text(
+                    sideText,
+                    style: tsInter(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      color: auctionColor.subGreyColorB6,
+                    ),
                   ),
                 ),
               ],

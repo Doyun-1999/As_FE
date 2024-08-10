@@ -50,14 +50,14 @@ class AnswerModel{
   final int id;
   final String title;
   final String content;
-  final String? imageUrls;
+  final String? imageUrl;
   final bool status;
 
   AnswerModel({
     required this.id,
     required this.title,
     required this.content,
-    required this.imageUrls,
+    required this.imageUrl,
     required this.status,
   });
 

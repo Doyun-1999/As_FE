@@ -1,5 +1,7 @@
+import 'package:auction_shop/common/component/button.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
+import 'package:auction_shop/main.dart';
 import 'package:auction_shop/user/component/add_button.dart';
 import 'package:auction_shop/user/component/info_box.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
@@ -25,6 +27,7 @@ class _AnswerScreenState extends ConsumerState<AnswerScreen> {
   @override
   Widget build(BuildContext context) {
     final data = ref.watch(QandAProvider);
+    // 로딩중일 때
     if (data is QandABaseLoading) {
       return DefaultLayout(
         appBar: CustomAppBar().noActionAppBar(
@@ -32,36 +35,24 @@ class _AnswerScreenState extends ConsumerState<AnswerScreen> {
           title: '내 문의',
         ),
         child: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
-    if (data is QandABaseError) {
-      return DefaultLayout(
-        appBar: CustomAppBar().noActionAppBar(
-          context: context,
-          title: '내 문의',
-        ),
-        child: Center(
-          child: Column(
-            children: [
-              Text("에러발생"),
-              AddButton(
-                text: '새 문의하기',
-                func: () async {
-                  context.pushNamed(QuestionScreen.routeName);
-                },
-              ),
-              SizedBox(
-                height: 30,
-              ),
-            ],
+          child: CircularProgressIndicator(
+            color: auctionColor.mainColor,
           ),
         ),
       );
     }
+    // 에러가 발생했을 때
+    if (data is QandABaseError) {
+      return onErrorUI();
+    }
     // 예외 상황 제외하면 data는 AnswerListModel 여야한다.
     else {
+      // 만약 데이터가 없으면 == List.length가 0이면,
+      // 다른 ui 출력
+      if ((data as AnswerListModel).list.length == 0) {
+        return noDataUI();
+      }
+      // 데이터가 있으면 정상적으로 출력
       return DefaultLayout(
         bgColor: auctionColor.subGreyColorF6,
         appBar: CustomAppBar().allAppBar(
@@ -83,7 +74,7 @@ class _AnswerScreenState extends ConsumerState<AnswerScreen> {
             children: [
               // 통일 위젯
               answerList(list: (data as AnswerListModel).list),
-              
+
               // 답변 데이터 나눔
               // // 답변 X 데이터
               // answerList(list: (data as AnswerListModel).list.where((e) => e.status == false).toList()),
@@ -108,12 +99,6 @@ class _AnswerScreenState extends ConsumerState<AnswerScreen> {
   answerList({
     required List<AnswerModel> list,
   }) {
-    if(list.length == 0){
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Center(child: Text("문의 내역이 없습니다.", style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.bold,),),),
-      );
-    }
     return ListView.builder(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
@@ -123,6 +108,7 @@ class _AnswerScreenState extends ConsumerState<AnswerScreen> {
         // 답변이 있을 때,
         if (answerData.status) {
           return InfoBox(
+            sideFunc: () {},
             sideText: "삭제",
             firstBoxText: '답변 완료',
             widget: ListView(
@@ -152,6 +138,9 @@ class _AnswerScreenState extends ConsumerState<AnswerScreen> {
         // 답변이 없을 때
         else {
           return InfoBox(
+            sideFunc: () {
+              context.pushNamed(QuestionScreen.routeName, extra: answerData);
+            },
             firstBoxText: '문의 중',
             widget: ListView(
               shrinkWrap: true,
@@ -173,6 +162,92 @@ class _AnswerScreenState extends ConsumerState<AnswerScreen> {
           );
         }
       },
+    );
+  }
+
+  DefaultLayout noDataUI() {
+    return DefaultLayout(
+      bgColor: auctionColor.subGreyColorF6,
+      appBar: CustomAppBar().allAppBar(
+        context: context,
+        vertFunc: (String? val) {
+          print('object');
+        },
+        popupList: [
+          PopupMenuItem(
+            child: Text(
+              '수정하기',
+            ),
+          ),
+        ],
+        title: '내 문의',
+      ),
+      child: Container(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "아직 문의를\n등록하지 않으셨어요.",
+                textAlign: TextAlign.center,
+                style: tsNotoSansKR(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              Text(
+                "궁금한 점은 빠르게 답변해 드릴게요!",
+                textAlign: TextAlign.center,
+                style: tsNotoSansKR(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+              SizedBox(
+                height: 70,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: ratio.width * 80),
+                child: CustomButton(
+                  text: "문의하기",
+                  func: () {
+                    context.pushNamed(QuestionScreen.routeName);
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  DefaultLayout onErrorUI() {
+    return DefaultLayout(
+      appBar: CustomAppBar().noActionAppBar(
+        context: context,
+        title: '내 문의',
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("에러가 발생하였습니다."),
+            AddButton(
+              text: '새 문의하기',
+              func: () async {
+                context.pushNamed(QuestionScreen.routeName);
+              },
+            ),
+            SizedBox(
+              height: 30,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

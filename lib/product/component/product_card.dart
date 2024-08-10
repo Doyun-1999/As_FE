@@ -10,7 +10,7 @@ import 'package:go_router/go_router.dart';
 
 class ProductCard extends StatelessWidget {
   final int product_id;
-  final String imageUrl;
+  final String? imageUrl;
   final String title;
   final int initial_price;
   final int nowPrice;
@@ -19,7 +19,7 @@ class ProductCard extends StatelessWidget {
 
   const ProductCard({
     required this.product_id,
-    required this.imageUrl,
+    this.imageUrl,
     required this.title,
     required this.initial_price,
     required this.nowPrice,
@@ -55,8 +55,7 @@ class ProductCard extends StatelessWidget {
               width: ratio.height * 140,
               height: ratio.height * 140,
               decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: NetworkImage(imageUrl), fit: BoxFit.fill),
+                image: imageUrl == null ? null : DecorationImage(image: NetworkImage(imageUrl!), fit: BoxFit.fill),
               ),
             ),
           SizedBox(

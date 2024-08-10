@@ -3,6 +3,7 @@ import 'package:auction_shop/common/component/button.dart';
 import 'package:auction_shop/common/component/textformfield.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/component/appbar.dart';
+import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/function.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/product/component/upload_image_box.dart';
@@ -19,7 +20,9 @@ import 'package:image_picker/image_picker.dart';
 
 class QuestionScreen extends ConsumerStatefulWidget {
   static String get routeName => 'question';
+  final AnswerModel? answer;
   const QuestionScreen({
+    this.answer,
     super.key,
   });
 
@@ -28,13 +31,21 @@ class QuestionScreen extends ConsumerStatefulWidget {
 }
 
 class _QuestionScreenState extends ConsumerState<QuestionScreen> {
+  // 이미지 데이터
   final ImagePicker picker = ImagePicker();
   List<File> _images = [];
+  List<String> _setImages = [];
 
+  // 데이터 유무에 따라 달라지는 텍스트(버튼, 앱바)
+  late String appBarTitle;
+  late String buttonText;
+
+  // Controller
   TextEditingController _titleController = TextEditingController();
   TextEditingController _contentController = TextEditingController();
-  ScrollController _scrollController = ScrollController();
+  ScrollController _scrollController = ScrollController();  
 
+  // 이미지 올리는 함수
   Future<void> _pickImage({int? index}) async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
@@ -44,7 +55,7 @@ class _QuestionScreenState extends ConsumerState<QuestionScreen> {
           _images.add(File(pickedFile.path));
         });
         // 현재 프레임이 완전히 빌드된 후에 지정한 콜백 함수를 실행하도록 예약
-        //UI가 완전히 렌더링된 후에 특정 작업을 수행
+        // UI가 완전히 렌더링된 후에 특정 작업을 수행
         // => 이미지가 다 추가되고 ui가 완전히 렌더링 된 후 스크롤 이동
         WidgetsBinding.instance.addPostFrameCallback((_) {
           scrollToEnd(_scrollController);
@@ -58,12 +69,35 @@ class _QuestionScreenState extends ConsumerState<QuestionScreen> {
   }
 
   @override
+  void initState() {
+    // 만약 goRouter에서 extra 데이터를 받았으면
+    // 해당 데이터들을 textField와 image에 데이터 넣기
+    // 데이터 유무에 따라 appBar, button의 텍스트가 달라진다.
+    if(widget.answer != null){
+      appBarTitle = "내 문의";
+      buttonText = "수정하기";
+      final answerData = widget.answer!;
+      _titleController = TextEditingController(text: answerData.title);
+      _contentController = TextEditingController(text: answerData.content);
+      if(answerData.imageUrl != null){
+        _setImages.add(answerData.imageUrl!);
+      }
+      print("data : ${answerData.toJson()}");
+      return;
+    }
+    buttonText = "문의하기";
+    appBarTitle = "문의하기";
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final state = ref.watch(QandAProvider);
     return DefaultLayout(
       // resizeToAvoidBottomInset: true,
       appBar: CustomAppBar().noActionAppBar(
         context: context,
-        title: '문의하기',
+        title: appBarTitle,
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -75,6 +109,15 @@ class _QuestionScreenState extends ConsumerState<QuestionScreen> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
+                  ...List.generate(_setImages.length, (index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 12),
+                      child: UploadImageBox(
+                        stringImg: _setImages[index],
+                        func: () {},
+                      ),
+                    );
+                  }),
                   ...List.generate(_images.length, (index) {
                     return Padding(
                       padding: const EdgeInsets.only(right: 12),
@@ -116,8 +159,9 @@ class _QuestionScreenState extends ConsumerState<QuestionScreen> {
             ),
             Spacer(),
             CustomButton(
-              text: '문의하기',
-              func: () async {
+              text: buttonText,
+              bgColor: (state is QandABaseLoading) ? Colors.grey : auctionColor.mainColor,
+              func: (state is QandABaseLoading) ? null : () async {
                 // memberId를 얻기 위한 변수 할당
                 // 해당 화면에 존재한 상태에서 userProvider의 상태는 무조건 UserModel이다.
                 final user = ref.watch(userProvider);

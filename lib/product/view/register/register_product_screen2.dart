@@ -223,7 +223,7 @@ class _RegisterProductScreen2State
                           );
                       if (resp) {
                         print("성공!");
-                        context.pushNamed(RootTab.routeName);
+                        context.goNamed(RootTab.routeName);
                       } else {
                         print("실패..");
                       }

@@ -34,7 +34,7 @@ AnswerModel _$AnswerModelFromJson(Map<String, dynamic> json) => AnswerModel(
       id: (json['id'] as num).toInt(),
       title: json['title'] as String,
       content: json['content'] as String,
-      imageUrls: json['imageUrls'] as String?,
+      imageUrl: json['imageUrl'] as String?,
       status: json['status'] as bool,
     );
 
@@ -43,6 +43,6 @@ Map<String, dynamic> _$AnswerModelToJson(AnswerModel instance) =>
       'id': instance.id,
       'title': instance.title,
       'content': instance.content,
-      'imageUrls': instance.imageUrls,
+      'imageUrl': instance.imageUrl,
       'status': instance.status,
     };

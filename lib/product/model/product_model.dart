@@ -27,7 +27,7 @@ class ProductModel{
   final String title;
   final String? tradeLocation;
   final int initial_price;
-  final String imageUrl;
+  final String? imageUrl;
   final int likeCount;
   final bool sold;
 
@@ -37,7 +37,7 @@ class ProductModel{
   
   ProductModel({
     required this.product_id,
-    required this.imageUrl,
+    this.imageUrl,
     required this.title,
     this.tradeLocation,
     required this.initial_price,

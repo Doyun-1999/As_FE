@@ -9,6 +9,7 @@ import 'package:auction_shop/product/view/product_info_screen.dart';
 import 'package:auction_shop/product/view/product_revise_screen.dart';
 import 'package:auction_shop/product/view/register/register_product_screen.dart';
 import 'package:auction_shop/product/view/register/register_product_screen2.dart';
+import 'package:auction_shop/user/model/Q&A_model.dart';
 import 'package:auction_shop/user/model/user_model.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:auction_shop/user/view/mypage_inner/address_screen.dart';
@@ -144,7 +145,15 @@ class AuthNotifier extends ChangeNotifier {
                     GoRoute(
                       path: 'question',
                       name: QuestionScreen.routeName,
-                      builder: (_, __) => QuestionScreen(),
+                      builder: (_, __) {
+                        // 데이터가 없으면 일반 문의하기 화면으로
+                        if(__.extra == null){
+                          return QuestionScreen();
+                        }
+                        // 데이터가 있으면 내 문의 수정 화면으로
+                        final answer = __.extra as AnswerModel;
+                        return QuestionScreen(answer: answer);
+                      },
                     ),
                   ],
                 ),
