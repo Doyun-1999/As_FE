@@ -8,8 +8,29 @@ class QandABaseLoading extends QandABaseModel{}
 
 class QandABaseError extends QandABaseModel{}
 
+// 답변 리스트 모델
 @JsonSerializable()
-class QuestionModel extends QandABaseModel{
+class AnswerListModel extends QandABaseModel{
+  List<AnswerModel> list;
+
+  AnswerListModel({
+    required this.list,
+  });
+
+  AnswerListModel copyWith({
+    List<AnswerModel>? list,
+  }){
+    return AnswerListModel(list: list ?? this.list);
+  }
+
+  factory AnswerListModel.fromJson(Map<String, dynamic> json) => _$AnswerListModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$AnswerListModelToJson(this);
+}
+
+// 문의 모델
+@JsonSerializable()
+class QuestionModel{
   final String title;
   final String content;
 
@@ -23,23 +44,45 @@ class QuestionModel extends QandABaseModel{
   Map<String, dynamic> toJson() => _$QuestionModelToJson(this);
 }
 
+// 답변 모델
 @JsonSerializable()
 class AnswerModel{
   final int id;
   final String title;
   final String content;
-  final String? imageUrls;
+  final String? imageUrl;
   final bool status;
 
   AnswerModel({
     required this.id,
     required this.title,
     required this.content,
-    required this.imageUrls,
+    required this.imageUrl,
     required this.status,
   });
 
   factory AnswerModel.fromJson(Map<String, dynamic> json) => _$AnswerModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$AnswerModelToJson(this);
+}
+
+@JsonSerializable()
+class AnswerDetailModel{
+  final int id;
+  final String title;
+  final String content;
+  final List<String>? imageUrl;
+  final bool status;
+
+  AnswerDetailModel({
+    required this.id,
+    required this.title,
+    required this.content,
+    required this.imageUrl,
+    required this.status,
+  });
+
+  factory AnswerDetailModel.fromJson(Map<String, dynamic> json) => _$AnswerDetailModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$AnswerDetailModelToJson(this);
 }

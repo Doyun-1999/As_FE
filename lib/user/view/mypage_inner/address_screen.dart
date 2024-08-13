@@ -29,6 +29,7 @@ class AddressScreen extends StatelessWidget {
         child: Column(
           children: [
             InfoBox(
+              sideFunc: (){},
               firstBoxText: '기본 배송지',
               widget: ListView(
                 shrinkWrap: true,
@@ -57,6 +58,7 @@ class AddressScreen extends StatelessWidget {
             ),
                     
             InfoBox(
+              sideFunc: (){},
               widget: ListView(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
@@ -84,6 +86,7 @@ class AddressScreen extends StatelessWidget {
             ),
 
             InfoBox(
+              sideFunc: (){},
               widget: ListView(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),

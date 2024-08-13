@@ -11,6 +11,7 @@ class CustomAppBar {
     required String title,
   }) {
     return AppBar(
+      backgroundColor: Colors.white,
       centerTitle: true,
       title: Text(
         title,
@@ -25,7 +26,7 @@ class CustomAppBar {
           color: Colors.white,
           onSelected: vertFunc,
           itemBuilder: (BuildContext context) => popupList,
-          icon: Icon(Icons.more_vert),
+          icon: Icon(Icons.more_vert, color: Colors.white,),
         ),
       ],
     );
@@ -37,6 +38,7 @@ class CustomAppBar {
     VoidCallback? func,
   }) {
     return AppBar(
+      backgroundColor: Colors.white,
       centerTitle: true,
       title: Text(
         title,
@@ -65,6 +67,7 @@ class CustomAppBar {
     required BuildContext context,
   }) {
     return AppBar(
+      backgroundColor: Colors.white,
       centerTitle: true,
       title: Text(
         title,
@@ -87,7 +90,7 @@ class CustomAppBar {
           color: Colors.white,
           onSelected: vertFunc,
           itemBuilder: (BuildContext context) => popupList,
-          icon: Icon(Icons.more_vert),
+          icon: Icon(Icons.more_vert, color: Colors.white,),
         ),
       ],
     );

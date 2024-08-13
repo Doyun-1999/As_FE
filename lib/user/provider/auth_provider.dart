@@ -1,12 +1,16 @@
 import 'dart:convert';
 import 'package:auction_shop/chat/view/chat_info_screen.dart';
 import 'package:auction_shop/chat/view/chat_list_screen.dart';
+import 'package:auction_shop/common/view/splash_screen.dart';
 import 'package:auction_shop/notification/view/notification_screen.dart';
+import 'package:auction_shop/product/model/product_model.dart';
+import 'package:auction_shop/product/view/select_category_screen.dart';
 import 'package:auction_shop/product/view/product_category_screen.dart';
 import 'package:auction_shop/product/view/product_info_screen.dart';
 import 'package:auction_shop/product/view/product_revise_screen.dart';
 import 'package:auction_shop/product/view/register/register_product_screen.dart';
 import 'package:auction_shop/product/view/register/register_product_screen2.dart';
+import 'package:auction_shop/user/model/Q&A_model.dart';
 import 'package:auction_shop/user/model/user_model.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:auction_shop/user/view/mypage_inner/address_screen.dart';
@@ -113,6 +117,7 @@ class AuthNotifier extends ChangeNotifier {
               path: 'mypage',
               name: MyPageScreen.routeName,
               builder: (_, __) => MyPageScreen(),
+              // 마이페이지 내부에서 이동하는 화면들
               routes: [
                 GoRoute(
                   path: 'mybid',
@@ -135,15 +140,26 @@ class AuthNotifier extends ChangeNotifier {
                   builder: (_, __) => MyInterestScreen(),
                 ),
                 GoRoute(
-                    path: 'answer',
-                    name: AnswerScreen.routeName,
-                    builder: (_, __) => AnswerScreen(),
-                    routes: [
-                      GoRoute(
-                          path: 'question',
-                          name: QuestionScreen.routeName,
-                          builder: (_, __) => QuestionScreen()),
-                    ]),
+                  path: 'answer',
+                  name: AnswerScreen.routeName,
+                  builder: (_, __) => AnswerScreen(),
+                  routes: [
+                    GoRoute(
+                      path: 'question',
+                      name: QuestionScreen.routeName,
+                      builder: (_, __) {
+                        // __.extra를 이용하여 goRouter를 이용할 때 객체를 전달받을 수 있다.
+                        // 데이터가 없으면 일반 문의하기 화면으로
+                        if(__.extra == null){
+                          return QuestionScreen();
+                        }
+                        // 데이터가 있으면 내 문의 수정 화면으로
+                        final answer = __.extra as AnswerModel;
+                        return QuestionScreen(answer: answer);
+                      },
+                    ),
+                  ],
+                ),
               ],
             ),
           ],
@@ -154,23 +170,24 @@ class AuthNotifier extends ChangeNotifier {
           name: RegisterProductScreen.routeName,
           builder: (_, __) => RegisterProductScreen(),
           routes: [
+            // 등록 두번째 페이지는 사용자가 입력한 데이터들을 전달해야한다.
             GoRoute(
               path: 'register2',
               name: RegisterProductScreen2.routeName,
               builder: (_, __) {
+                final data = __.extra;
+                // 이미지 데이터 리스트화
                 final encodedImagePaths = __.uri.queryParameters['images'];
                 final List<String> images = encodedImagePaths != null
                     ? List<String>.from(jsonDecode(encodedImagePaths))
                     : [];
-                final title = __.uri.queryParameters['title']!;
-                final place = __.uri.queryParameters['place']!;
-                final details = __.uri.queryParameters['details']!;
-                return RegisterProductScreen2(
-                    images: images,
-                    title: title,
-                    place: place,
-                    details: details);
+                 return RegisterProductScreen2(data: data as RegisterPagingData, images: images,);
               },
+            ),
+            GoRoute(
+              path: 'category',
+              name: SelectCategoryScreen.routeName,
+              builder: (_, __) => SelectCategoryScreen(),
             ),
           ],
         ),
@@ -190,20 +207,25 @@ class AuthNotifier extends ChangeNotifier {
           name: SignupScreen.routeName,
           builder: (_, __) => SignupScreen(),
         ),
+        GoRoute(
+          path: '/splash',
+          name: SplashScreen.routeName,
+          builder: (_, __) => SplashScreen(),
+        ),
       ];
 
   // 앱을 처음 시작했을 때
-  // 토큰이 존재하는지 확인하고
+  // 유저 정보가 존재하는지 확인하고
   // 로그인 스크린으로 보내줄지
   // 홈 스크린으로 보내줄지 확인하는 과정
   String? redirectLogic(GoRouterState gState) {
     print('redirect 실행');
     final UserModelBase? user = ref.read(userProvider);
-    final logginIn = gState.fullPath == '/login';
+    // 현재 넘어가는 화면에 따른 변수 설정
+    // 로그인 / 회원가입 / 스플래쉬
+    final isLoggin = gState.fullPath == '/login';
     final isSignup = gState.fullPath == '/signup';
-
-    print(gState.fullPath);
-    print(user);
+    final isSplash = gState.fullPath == '/splash';
 
     // 유저 정보가 없고 로그인 중이라면
     // 로그인 화면로 이동
@@ -212,7 +234,12 @@ class AuthNotifier extends ChangeNotifier {
       if (gState.fullPath == '/signup') {
         return '/signup';
       }
-      return logginIn ? null : '/login';
+      return isLoggin ? null : '/login';
+    }
+
+    // 로딩 상태에는 스플래쉬 화면 출력
+    if(user is UserModelLoading){
+      return '/splash';
     }
 
     // 만약 유저가 앱내에서 회원가입이 진행되지 않은 회원이라면
@@ -221,11 +248,12 @@ class AuthNotifier extends ChangeNotifier {
       return '/signup';
     }
 
-    // 유저 정보가 존재하고 로그인 상태라면
-    // 홈 화면으로 이동
+    // 유저 정보가 존재한 상태에서
+    // 로그인/회원가입/스플래쉬 화면이라면, 홈화면으로 이동
+    // 그 외는 기존에 이동하려던 경로로 정상 이동
     if (user is UserModel) {
       print('로그인 상태');
-      return (logginIn || isSignup) ? '/' : null;
+      return (isLoggin || isSignup || isSplash) ? '/' : null;
     }
 
     // 유저 정보에 에러가 존재하고 로그인 상태가 아니라면
@@ -235,7 +263,7 @@ class AuthNotifier extends ChangeNotifier {
       return '/login';
     }
 
-    // 그 이외의 상황시에는 전부 null
+    // 그 이외의 상황시에는 전부 null => 기존 경로로 이동
     print('그 외 상황');
     return null;
   }

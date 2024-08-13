@@ -3,19 +3,32 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'token_model.g.dart';
 
-@JsonSerializable()
+// 반환 모델 + refresh 토큰 합친 모델
+// 실질적으로 다루는 모델
 class TokenModel{
-  final String accessToken;
-  final bool available;
-  final int id;
+  final BaseTokenModel model;
+  final String refreshToken;
 
   TokenModel({
+    required this.model,
+    required this.refreshToken,
+  });
+}
+
+// 로그인 요청 후 들어오는 반환 모델
+@JsonSerializable()
+class BaseTokenModel{
+  final int id;
+  final String accessToken;
+  final bool available;
+
+  BaseTokenModel({
     required this.accessToken,
     required this.available,
     required this.id,
   });
 
-  factory TokenModel.fromJson(Map<String, dynamic> json) => _$TokenModelFromJson(json);
+  factory BaseTokenModel.fromJson(Map<String, dynamic> json) => _$BaseTokenModelFromJson(json);
 
-  Map<String, dynamic> toJson() => _$TokenModelToJson(this);
+  Map<String, dynamic> toJson() => _$BaseTokenModelToJson(this);
 }

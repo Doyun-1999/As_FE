@@ -8,7 +8,7 @@ import 'package:flutter/widgets.dart';
 class UploadImageBox extends StatelessWidget {
   final int? index;
   final File? image;
-  final VoidCallback func;
+  final VoidCallback? func;
   const UploadImageBox({
     this.image,
     this.index,
@@ -37,7 +37,8 @@ class UploadImageBox extends StatelessWidget {
             ),
           ),
         ),
-        child: image != null ? Image.file(File(image!.path), fit: BoxFit.fill,) : Column(
+        child: 
+        image != null ? Image.file(File(image!.path), fit: BoxFit.fill,) : Column(
           children: [
             Icon(
               Icons.photo_camera_outlined,

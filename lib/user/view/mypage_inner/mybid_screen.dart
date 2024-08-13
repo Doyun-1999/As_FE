@@ -1,9 +1,12 @@
+import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/component/user_image.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/product/component/product_card.dart';
+import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/product/provider/product_provider.dart';
+import 'package:auction_shop/user/provider/user_product_provider.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +31,8 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
   void initState() {
     controller = TabController(length: 2, vsync: this);
     controller.addListener(tabListener);
+    final memberId = ref.read(userProvider.notifier).getMemberId();
+    ref.read(userProductProvider.notifier).getMyBid(memberId);
     super.initState();
   }
 
@@ -45,8 +50,30 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
 
   @override
   Widget build(BuildContext context) {
-    //final state = ref.watch(userProvider);
-    final products = ref.watch(productProvider);
+    // 유저 데이터
+    final state = ref.read(userProvider.notifier).getUser();
+    
+    // 전체 경매 물품
+    final products = ref.watch(userProductProvider);
+    
+    // 팔린 경매 물품
+    final soldProducts = products.data.where((e) => e.sold == true).toList();
+    
+    // 안팔린 경매 물품
+    final notSoldProducts = products.data.where((e) => e.sold == false).toList();
+
+    if (products.data.length == 0) {
+      return DefaultLayout(
+        appBar: CustomAppBar().noActionAppBar(
+          title: "내 경매장",
+          context: context,
+        ),
+        child: Center(
+          child: Text("경매 물품이 없습니다."),
+        ),
+      );
+    }
+
     return DefaultLayout(
       appBar: AppBar(
         centerTitle: true,
@@ -84,7 +111,10 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
           headerSliverBuilder: (context, innerBoxIsScrolled) {
             return [
               // userInfo
-              userInfo(name: 'name'),
+              userInfo(
+                name: state.name,
+                imgPath: state.profileImageUrl,
+              ),
 
               // TabBar
               SliverPersistentHeader(
@@ -99,32 +129,12 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
             controller: controller,
             children: [
               // 첫 번째 탭: CustomScrollView 사용
-              Padding(
-                padding: const EdgeInsets.only(top: 25,),
-                child: ListView.separated(
-                  separatorBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 12,
-                      ),
-                      child: Divider(
-                        color: auctionColor.subGreyColorE2,
-                      ),
-                    );
-                  },
-                  itemCount: products.length,
-                  itemBuilder: (context, index) {
-                    final model = products[index];
-                    return IntrinsicHeight(
-                        child: ProductCard.fromModel(model: model));
-                  },
-                ),
-              ),
+              // 경매 미완료
+              bidListData(notSoldProducts),
 
               // 두 번째 탭
-              Center(
-                child: Text('1'),
-              ),
+              // 경매 완료
+              bidListData(soldProducts),
             ],
           ),
         ),
@@ -134,18 +144,20 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
 
   SliverToBoxAdapter userInfo({
     required String name,
+    String? imgPath,
   }) {
     return SliverToBoxAdapter(
       child: Row(
         children: [
           UserImage(
             size: 60,
+            imgPath: imgPath,
           ),
           SizedBox(
             width: 8,
           ),
           Text(
-            'user.name',
+            name,
             style: tsNotoSansKR(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -184,6 +196,43 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
           text: "경매 완료",
         ),
       ],
+    );
+  }
+
+  Padding bidListData(List<ProductModel> list) {
+    if (list.length == 0) {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Center(
+          child: Text(
+            "경매 물품이 없습니다.",
+          ),
+        ),
+      );
+    }
+    return Padding(
+      padding: const EdgeInsets.only(
+        top: 25,
+      ),
+      child: ListView.separated(
+        separatorBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: 12,
+            ),
+            child: Divider(
+              color: auctionColor.subGreyColorE2,
+            ),
+          );
+        },
+        itemCount: list.length,
+        itemBuilder: (context, index) {
+          final model = list[index];
+          return IntrinsicHeight(
+            child: ProductCard.fromModel(model: model),
+          );
+        },
+      ),
     );
   }
 }

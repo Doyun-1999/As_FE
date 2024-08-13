@@ -1,4 +1,5 @@
 import 'package:auction_shop/common/dio/dio.dart';
+import 'package:auction_shop/common/variable/function.dart';
 import 'package:auction_shop/user/model/token_model.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
@@ -30,18 +31,19 @@ class AuthRepository {
   // 서버와 통신하는 로그인 함수
   Future<TokenModel?> login(String pk) async {
     try{
-      final dio = Dio();
-    print("고유 id값 : $pk");
-    
     final resp = await dio.post(baseUrl + '/auth/login',
       data: {'uuid' : pk},
     );
     print('성공---------------');
     print(resp.data);
-    print(resp.statusCode);
     final cookies = resp.headers['set-cookie'];
+    print("쿠키 ----------------------------------------------");
     print(cookies);
-    final data = TokenModel.fromJson(resp.data);
+    
+    // access 토큰, 회원가입 유무, id 반환
+    final tokenModel = BaseTokenModel.fromJson(resp.data);
+    // refresh 토큰 반환 후 모델 형성
+    final data = TokenModel(model: tokenModel, refreshToken: parseRefreshToken(cookies![0]));
     return data;
     } on DioException catch(e){
       print('실패');

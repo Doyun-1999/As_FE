@@ -22,7 +22,8 @@ class _MyInterestScreenState extends ConsumerState<MyInterestScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final products = ref.watch(productProvider);
+    // final products = ref.watch(productProvider);
+    final products = [];
     return DefaultLayout(
       appBar: CustomAppBar().allAppBar(
         vertFunc: (String? val){

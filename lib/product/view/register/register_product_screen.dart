@@ -11,6 +11,8 @@ import 'package:auction_shop/common/variable/validator.dart';
 import 'package:auction_shop/common/view/root_tab.dart';
 import 'package:auction_shop/product/component/toggle_button.dart';
 import 'package:auction_shop/product/component/upload_image_box.dart';
+import 'package:auction_shop/product/model/product_model.dart';
+import 'package:auction_shop/product/view/select_category_screen.dart';
 import 'package:auction_shop/product/view/register/register_product_screen2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -27,8 +29,11 @@ class RegisterProductScreen extends StatefulWidget {
 }
 
 class _RegisterProductScreenState extends State<RegisterProductScreen> {
-  // 토글 변수
-  late List<bool> isSelected = [true, false];
+  // 버튼 변수
+  List<bool> tradeValue = [true, false];
+  List<bool> stateValue = [true, false];
+  bool isTradeVal = true;
+  List<String> categories = [];
 
   // 이미지들 데이터
   List<File> _images = [];
@@ -46,16 +51,29 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
   TextEditingController _titleController = TextEditingController();
   TextEditingController _placeController = TextEditingController();
   TextEditingController _detailsController = TextEditingController();
+  TextEditingController _categoryController = TextEditingController();
 
   // 토글 버튼 선택 함수
   void toggleSelect(int val) {
     if (val == 0) {
       setState(() {
-        isSelected = [true, false];
+        stateValue = [true, false];
       });
     } else {
       setState(() {
-        isSelected = [false, true];
+        stateValue = [false, true];
+      });
+    }
+  }
+
+  void tradeSelect(int val) {
+    if (val == 0) {
+      setState(() {
+        tradeValue[0] = !tradeValue[0];
+      });
+    } else {
+      setState(() {
+        tradeValue[1] = !tradeValue[1];
       });
     }
   }
@@ -84,7 +102,7 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
   }
 
   String tradeText() {
-    if (isSelected[0] == true) {
+    if (tradeValue[0] == true) {
       return "비대면";
     } else {
       return "직거래";
@@ -95,7 +113,13 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
   Widget build(BuildContext context) {
     return DefaultLayout(
       resizeToAvoidBottomInset: true,
-      appBar: CustomAppBar().noActionAppBar(title: '경매 등록', context: context, func: (){context.goNamed(RootTab.routeName);},),
+      appBar: CustomAppBar().noActionAppBar(
+        title: '경매 등록',
+        context: context,
+        func: () {
+          context.goNamed(RootTab.routeName);
+        },
+      ),
       child: Form(
         key: gKey,
         child: CustomScrollView(
@@ -150,12 +174,37 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
                         return supportOValidator(val, name: '상품명');
                       },
                     ),
-                    TextLable(text: '거래 방식'),
+                    TextLable(text: '카테고리'),
+                    GestureDetector(
+                      onTap: () async {
+                        final result = await context.pushNamed(SelectCategoryScreen.routeName);
+                        if (result != null) {
+                          setState(() {
+                            categories = result as List<String>;
+                            _categoryController.text = (result as List<String>).join(', ');
+                          });
+                        }
+                      },
+                      child: CustomTextFormField(
+                        suffixIcon: Icon(
+                          Icons.arrow_forward_ios,
+                          color: auctionColor.subGreyColorB6,
+                        ),
+                        validator: (String? val) {
+                          return supportXValidator(val, name: '카테고리');
+                        },
+                        enabled: false,
+                        controller: _categoryController,
+                        hintText: "상품 카테고리를 선택해주세요.",
+                      ),
+                    ),
+                    TextLable(text: '상태'),
+                    // 중복 선태 가능
                     Row(
                       children: [
                         ToggleBox(
-                          isSelected: isSelected[0],
-                          text: "비대면",
+                          isSelected: stateValue[0],
+                          text: "새상품",
                           func: () {
                             toggleSelect(0);
                           },
@@ -164,27 +213,67 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
                           width: 10,
                         ),
                         ToggleBox(
-                          isSelected: isSelected[1],
-                          text: "직거래",
+                          isSelected: stateValue[1],
+                          text: "중고",
                           func: () {
                             toggleSelect(1);
                           },
                         ),
                       ],
                     ),
-                    isSelected[1] ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    TextLable(text: '거래 방식'),
+                    // 중복 선태 가능
+                    Row(
                       children: [
-                        TextLable(text: '거래 장소'),
-                        CustomTextFormField(
-                          controller: _placeController,
-                          hintText: "거래 장소를 입력해 주세요.",
-                          validator: (String? val) {
-                            return supportXValidator(val, name: '거래 장소');
+                        ToggleBox(
+                          isSelected: tradeValue[0],
+                          text: "비대면",
+                          func: () {
+                            tradeSelect(0);
+                          },
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        ToggleBox(
+                          isSelected: tradeValue[1],
+                          text: "직거래",
+                          func: () {
+                            tradeSelect(1);
                           },
                         ),
                       ],
-                    ) : SizedBox(),
+                    ),
+                    // 거래 방식 선택안하면 안되여~
+                    !isTradeVal
+                        ? Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              "거래 방식을 선택해주세요.",
+                              style: tsNotoSansKR(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.red,
+                              ),
+                            ),
+                          )
+                        : SizedBox(),
+
+                    tradeValue[1]
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TextLable(text: '거래 장소'),
+                              CustomTextFormField(
+                                controller: _placeController,
+                                hintText: "거래 장소를 입력해 주세요.",
+                                validator: (String? val) {
+                                  return supportXValidator(val, name: '거래 장소');
+                                },
+                              ),
+                            ],
+                          )
+                        : SizedBox(),
                     TextLable(text: '설명'),
                   ],
                 ),
@@ -218,18 +307,32 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
                     CustomButton(
                       text: '다음',
                       func: () async {
+                        if (tradeTypes() == null) {
+                          setState(() {
+                            isTradeVal = false;
+                          });
+                          return;
+                        }
                         if (gKey.currentState!.validate()) {
                           // 이미지 경로 데이터 encode
                           final imagePath = _images.map((e) => e.path).toList();
                           final encodedImages = jsonEncode(imagePath);
 
+                          // 객체 데이터 정의
+                          // 제목, 거래방식, 설명, 상태, 카테고리, 장소
+                          final extra = RegisterPagingData(
+                            title: _titleController.text,
+                            tradeTypes: tradeTypes()!,
+                            details: _detailsController.text,
+                            categories: categories,
+                            conditions: conditions(),
+                            tradeLocation: _placeController.text,
+                          );
                           context.pushNamed(
                             RegisterProductScreen2.routeName,
+                            extra: extra,
                             queryParameters: {
-                              "images" : encodedImages,
-                              "title": _titleController.text,
-                              "place": _placeController.text,
-                              "details": _detailsController.text,
+                              "images": encodedImages,
                             },
                           );
                         }
@@ -243,6 +346,27 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
         ),
       ),
     );
+  }
+
+  // 거래 방식 반환
+  List<String>? tradeTypes() {
+    if (tradeValue[0] && !tradeValue[1]) {
+      return ['비대면'];
+    }
+    if (!tradeValue[0] && tradeValue[1]) {
+      return ['직거래'];
+    }
+    if (tradeValue[0] && tradeValue[1]) {
+      return ['비대면', '직거래'];
+    }
+    return null;
+  }
+
+  String conditions() {
+    if (stateValue[0]) {
+      return '새상품';
+    }
+    return '중고';
   }
 
   // 이미지 상자

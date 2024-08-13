@@ -105,6 +105,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                   Text(
                     category[index + 1],
+                    style: tsNotoSansKR(fontSize: 12, fontWeight: FontWeight.w500,),
                   ),
                 ],
               );

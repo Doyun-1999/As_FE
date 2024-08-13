@@ -7,7 +7,7 @@ import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/product/component/toggle_button.dart';
-import 'package:auction_shop/product/provider/product_provider.dart';
+import 'package:auction_shop/product/provider/product_detail_provider.dart';
 import 'package:auction_shop/product/view/product_revise_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +35,15 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
   List<bool> isSelected = [true, false];
   TextEditingController _priceController = TextEditingController();
   TextEditingController _inquiryController = TextEditingController();
+  
+  late DateTime currentTime;
+
+  void updateCurrentTime() {
+    setState(() {
+      currentTime = DateTime.now();
+    });
+    Future.delayed(Duration(seconds: 1), updateCurrentTime);
+  }
 
   @override
   void initState() {
@@ -43,6 +52,8 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
       vsync: this,
     );
     controller.addListener(tabListener);
+    // 데이터 얻기
+    ref.read(productDetailProvider.notifier).getProductDetail(productId: int.parse(widget.id));
     super.initState();
   }
 
@@ -73,7 +84,15 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
 
   @override
   Widget build(BuildContext context) {
-    final data = ref.read(productProvider.notifier).getDetail(widget.id);
+    final data = ref.watch(getProductDetailProvider(int.parse(widget.id)));
+    if (data == null) {
+      return DefaultLayout(
+        appBar: CustomAppBar().noActionAppBar(title: "", context: context),
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
     return DefaultLayout(
       child: Stack(
         children: [
@@ -84,20 +103,23 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                 child: Column(
                   children: [
                     imageWidget(
-                      imgPath: data.imgPath,
-                      heroKey: data.id,
+                      imgPath: data.imageUrls.length == 0 
+                      ? 'https://search.pstatic.net/sunny/?src=https%3A%2F%2Fwww.shutterstock.com%2Fshutterstock%2Fphotos%2F261719003%2Fdisplay_1500%2Fstock-vector-no-image-available-sign-internet-web-icon-to-indicate-the-absence-of-image-until-it-will-be-261719003.jpg&type=sc960_832'
+                      : data.imageUrls[0],
+                      likeCount: data.likeCount,
+                      liked: data.liked,
                     ),
                     SizedBox(
                       height: 28,
                     ),
                     productInfo(
-                      category: data.category,
-                      userName: data.userName,
-                      name: data.name,
-                      nowPrice: data.nowPrice,
-                      startPrice: data.startPrice,
-                      tradeMethod: data.tradeMethod,
-                      place: data.place,
+                      categories: data.categories,
+                      createdBy: data.createdBy,
+                      title: data.title,
+                      current_price: data.current_price,
+                      initial_price: data.initial_price,
+                      tradeTypes: data.tradeTypes,
+                      conditions: data.conditions,
                     ),
                     Divider(
                       thickness: 8,
@@ -111,7 +133,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
               ),
 
               // Tabbar
-              TabBarWidget(),
+              TabBarWidget(limitTime: data.endTime),
 
               // Custom TabBarView
               SliverFillRemaining(
@@ -125,7 +147,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                     children: [
                       index == 0
                           ? Text(
-                              data.description,
+                              data.details,
                               style: tsNotoSansKR(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w400,
@@ -199,33 +221,35 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
 
   IntrinsicHeight imageWidget({
     required String imgPath,
-    required String heroKey,
+    required int likeCount,
+    required bool liked,
   }) {
     return IntrinsicHeight(
       child: Stack(
         children: [
           //Image.network(imgPath),
           Stack(
-              children: [
-                Image.network(
-                  imgPath,
+            children: [
+              Container(
+                width: double.infinity,
+                height: ratio.height * 320,
+                decoration: BoxDecoration(
+                  image: DecorationImage(image: NetworkImage(imgPath), fit: BoxFit.fitWidth),
                 ),
-                Container(
-                  width: double.infinity,
-                  height: ratio.height * 150,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.center, // 그라데이션 끝나는 지점
-                      colors: [
-                        Colors.black.withOpacity(0.8),
-                        Colors.transparent
-                      ],
-                    ),
+              ),
+              Container(
+                width: double.infinity,
+                height: ratio.height * 150,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.center, // 그라데이션 끝나는 지점
+                    colors: [Colors.black.withOpacity(0.8), Colors.transparent],
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -240,42 +264,57 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
               ),
               PopupMenuButton<String>(
                 color: Colors.white,
-                onSelected: (String? val){
-                  if(val == "수정"){
+                onSelected: (String? val) {
+                  if (val == "수정") {
                     context.pushNamed(ProductReviseScreen.routeName);
                   }
-                  if(val == "삭제"){
+                  if (val == "삭제") {
                     print("삭제");
                   }
                 },
                 itemBuilder: (BuildContext context) => [
-                  popupItem(text: "수정하기", value: "수정",),
+                  popupItem(
+                    text: "수정하기",
+                    value: "수정",
+                  ),
                   PopupMenuDivider(),
-                  popupItem(text: "삭제하기", value: "삭제",),
+                  popupItem(
+                    text: "삭제하기",
+                    value: "삭제",
+                  ),
                 ],
-                icon: Icon(Icons.more_vert),
+                icon: Icon(Icons.more_vert, color: Colors.white,),
               ),
             ],
           ),
           Positioned(
             bottom: 25,
             right: 17,
-            child: Container(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 8.5, horizontal: 12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Icon(Icons.favorite_outline),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Text('4'),
-                ],
+            child: GestureDetector(
+              // 좋아요하기
+              onTap: () async {
+                final productId = int.parse(widget.id);
+                final isPlus = !liked;
+                ref.read(productDetailProvider.notifier).liked(productId: productId, isPlus: isPlus);
+              },
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8.5, horizontal: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    // 좋아요 했는지에 따라 UI 변경
+                    liked ? Icon(Icons.favorite, color: auctionColor.mainColor,) : Icon(Icons.favorite_outline),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text('$likeCount'),
+                  ],
+                ),
               ),
             ),
           )
@@ -285,13 +324,14 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
   }
 
   Padding productInfo({
-    required String category,
-    required String userName,
-    required String name,
-    required int nowPrice,
-    required int startPrice,
-    required String tradeMethod,
-    required String place,
+    required List<String> categories,
+    required String createdBy,
+    required String title,
+    required int current_price,
+    required int initial_price,
+    required List<String> tradeTypes,
+    required String conditions,
+    String? tradeLocation,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -301,21 +341,45 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 11, vertical: 4),
-                decoration: BoxDecoration(
-                  border: Border.all(color: auctionColor.mainColor),
-                  borderRadius: BorderRadius.circular(100),
-                ),
-                child: Text(
-                  category,
-                  style: tsInter(
-                    fontSize: 12,
-                    fontWeight: FontWeight.normal,
-                    color: auctionColor.mainColor,
+              Row(
+                children: [
+                  ...List.generate(
+                    categories.length, (index) {
+                      return Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 4),
+                        margin: const EdgeInsets.only(right: 6),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: auctionColor.mainColor),
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: Text(
+                          categories[index],
+                          style: tsInter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.normal,
+                            color: auctionColor.mainColor,
+                          ),
+                        ),
+                      );
+                    }
                   ),
-                ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 4),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: auctionColor.subBlackColor49, width: 3),
+                      borderRadius: BorderRadius.circular(100),
+                      color: auctionColor.subBlackColor49,
+                    ),
+                    child: Text(
+                      conditions,
+                      style: tsInter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               Row(
                 children: [
@@ -361,7 +425,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                     width: 8,
                   ),
                   Text(
-                    userName,
+                    createdBy,
                     style: tsNotoSansKR(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -376,7 +440,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
             height: 15,
           ),
           Text(
-            name,
+            title,
             style: tsNotoSansKR(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -386,7 +450,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 2),
             child: Text(
-              "입찰중 ${nowPrice}",
+              "입찰중 ${current_price}원",
               style: tsNotoSansKR(
                 fontSize: 20,
                 fontWeight: FontWeight.w900,
@@ -395,7 +459,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
             ),
           ),
           Text(
-            "시작가격 ${startPrice}",
+            "시작가격 ${current_price}원",
             style: tsNotoSansKR(
               fontSize: 14,
               fontWeight: FontWeight.w400,
@@ -404,17 +468,23 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
           ),
           Padding(
             padding: const EdgeInsets.only(top: 16, bottom: 8),
-            child: Text(
-              "거래방식 ${tradeMethod}",
-              style: tsNotoSansKR(
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-                color: auctionColor.subBlackColor49,
-              ),
+            child: Row(
+              children: [
+                ...List.generate(tradeTypes.length, (index) {
+                  return Text(
+                    "거래방식 ${tradeTypes[index]}",
+                    style: tsNotoSansKR(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      color: auctionColor.subBlackColor49,
+                    ),
+                  );
+                })
+              ],
             ),
           ),
-          Text(
-            "거래장소 ${place}",
+          tradeLocation == null ? SizedBox() : Text(
+            "거래장소 ${tradeLocation}",
             style: tsNotoSansKR(
               fontSize: 12,
               fontWeight: FontWeight.w400,
@@ -430,7 +500,9 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
   }
 
   // TabBar
-  SliverToBoxAdapter TabBarWidget() {
+  SliverToBoxAdapter TabBarWidget({
+    required String limitTime,
+  }) {
     return SliverToBoxAdapter(
       child: TabBar(
         indicatorWeight: 3,
@@ -454,28 +526,36 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
           Stack(
             clipBehavior: Clip.none,
             children: [
-              Positioned(
-                top: -10,
-                right: 25,
-                left: 25,
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: auctionColor.mainColorE2,
-                      borderRadius: BorderRadius.circular(8)),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 5,
-                    vertical: 3,
-                  ),
-                  child: Text(
-                    '남은 시간 21:00:52',
-                    style: tsInter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: auctionColor.mainColor,
+              StreamBuilder<DateTime>(
+                stream: Stream.periodic(Duration(seconds: 1), (_) => DateTime.now()),
+                builder: (context, snapshot) {
+                  currentTime = snapshot.data!;
+                  final limitedTime = DateTime.parse(limitTime);
+                  Duration timeDifference = limitedTime.difference(currentTime);
+                  return Positioned(
+                    top: -10,
+                    right: 25,
+                    left: 25,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: auctionColor.mainColorE2,
+                          borderRadius: BorderRadius.circular(8)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 5,
+                        vertical: 3,
+                      ),
+                      child: Text(
+                        '남은 시간 ${timeDifference.inHours}:${timeDifference.inMinutes % 60}:${timeDifference.inSeconds % 60}',
+                        style: tsInter(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: auctionColor.mainColor,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
+                  );
+                }
               ),
               Align(
                 alignment: Alignment.center,

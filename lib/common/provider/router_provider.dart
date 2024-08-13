@@ -11,7 +11,7 @@ final routerProvider = Provider<GoRouter>(
 
     return GoRouter(
       routes: provider.routes,
-      initialLocation: '/login',
+      initialLocation: '/',
       refreshListenable: provider,
       redirect: (_, state) {
         return provider.redirectLogic(state);

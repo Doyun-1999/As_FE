@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:auction_shop/common/dio/dio.dart';
+import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/user/model/Q&A_model.dart';
 import 'package:auction_shop/user/model/pk_id_model.dart';
 import 'package:auction_shop/user/model/user_model.dart';
@@ -24,9 +25,26 @@ class UserRepository {
     required this.baseUrl,
   });
 
+  // 유저 판매 목록
+  Future<ProductListModel> getMyBid() async {
+    final resp = await dio.get(
+      baseUrl + '/sell',
+      options: Options(headers: {'accessToken': 'true'}),
+    );
+    print(resp.statusCode);
+    print(resp.data);
+    final data = {"data": resp.data};
+    final dataList = ProductListModel.fromJson(data);
+    return dataList;
+  }
+
   // 문의 상세 조회
-  Future<AnswerModel> answerData({required int inquiryId,}) async {
-    final resp = await dio.get(baseUrl + '/inquiry/$inquiryId',);
+  Future<AnswerModel> answerData({
+    required int inquiryId,
+  }) async {
+    final resp = await dio.get(
+      baseUrl + '/inquiry/$inquiryId',
+    );
 
     print(resp.statusCode);
     print(resp.data);
@@ -35,60 +53,89 @@ class UserRepository {
   }
 
   // 문의 전체 조회
-  Future<List<AnswerModel>> allAnswerData({required int memberId, }) async {
-    final resp = await dio.get(baseUrl + '/inquiry', data: {"memberId" : memberId,},);
+  Future<AnswerListModel> allAnswerData() async {
+    final resp = await dio.get(
+      baseUrl + '/inquiry',
+      options: Options(headers: {'accessToken': 'true'}),
+    );
     print(resp.statusCode);
     print(resp.data);
-    final dataList = (resp.data as List<dynamic>).map((e) => AnswerModel.fromJson(e)).toList();
+    // 데이터가 없으면 빈 리스트 데이터 반환
+    if (resp.statusCode == 204) {
+      return AnswerListModel(list: []);
+    }
+    final dataList = AnswerListModel(
+        list: (resp.data as List<dynamic>)
+            .map((e) => AnswerModel.fromJson(e))
+            .toList());
     return dataList;
   }
 
-  // 문의 등록
-  Future<void> question({required FormData data,}) async {
-    try{
-      final resp = await dio.post(baseUrl + '/inquiry', data: data,);
+  // 문의 수정
+  Future<void> reviseQuestion({
+    required int inquiryId,
+    required FormData formData,
+  }) async {
+    try {
+      final resp =
+          await dio.put(baseUrl + '/inquiry/${inquiryId}', data: formData);
+      print(resp.statusCode);
+      print(resp.data);
+    } catch (e) {
+      print(e);
+    }
+  }
 
-      if(resp.statusCode == 200){
+  // 문의 등록
+  Future<void> question({
+    required FormData formData,
+  }) async {
+    try {
+      final resp = await dio.post(
+        baseUrl + '/inquiry',
+        data: formData,
+        options: Options(
+          headers: {'accessToken': 'true'},
+        ),
+      );
+
+      if (resp.statusCode == 201) {
         print("성공");
         print(resp);
         print(resp.data);
         return;
-      }else{
+      } else {
         print("실패요");
         print(resp.statusCode);
         print(resp);
       }
-    }on DioException catch(e){
+    } on DioException catch (e) {
       print("실패");
       print(e);
     }
   }
 
   // 소셜이 아닌 서버로 사용자 데이터 요청
-  Future<UserModel> getMe(String memberId) async {
+  Future<UserModel> getMe() async {
+    final resp = await dio.get(
+      options: Options(headers: {'accessToken': 'true'}),
+      baseUrl + '/member',
+    );
 
-      final resp = await dio.get(
-        baseUrl + '/member/$memberId',
-      );
+    print('성공---------------');
+    print(resp.data);
+    print(resp.statusCode);
+    print(resp.headers);
 
-      print('성공---------------');
-      print(resp.data);
-      print(resp.statusCode);
-      print(resp.headers);
-
-      return UserModel.fromJson(resp.data);
-
+    return UserModel.fromJson(resp.data);
   }
 
   // 서버와 회원가입
   // 애초에 소셜 로그인을 진행한 것부터 회원가입이 진행된 상태이지만,
   // 사용자에 대해 추가 정보를 수집하고 서버 데이터베이스에 저장하기 위해 다시 회원가입
   Future<UserModel?> signup(String memberId, FormData formdata) async {
-    final dio = Dio();
     final url = baseUrl + '/member/${memberId}';
-    print("서버 요청 전 데이터 점검");
     try {
-      
       final resp = await dio.patch(
         url,
         data: formdata,
@@ -96,11 +143,10 @@ class UserRepository {
           contentType: 'multipart/form-data',
         ),
       );
-      
+
       print(resp.data);
       print(resp.statusCode);
       return UserModel.fromJson(resp.data);
-
     } on DioException catch (e) {
       print(e);
       return null;
@@ -112,7 +158,8 @@ class UserRepository {
     User user = await UserApi.instance.me();
 
     return PkIdModel(
-        pkId: (user.id).toString(),);
+      pkId: (user.id).toString(),
+    );
   }
 
   // 구글 사용자 정보 불러오기
@@ -123,7 +170,8 @@ class UserRepository {
 
       if (user != null) {
         return PkIdModel(
-            pkId: user.uid,);
+          pkId: user.uid,
+        );
       } else {
         return null;
       }
@@ -136,6 +184,7 @@ class UserRepository {
   Future<PkIdModel> naverGetMe() async {
     final NaverLoginResult result = await FlutterNaverLogin.logIn();
     return PkIdModel(
-        pkId: result.account.id,);
+      pkId: result.account.id,
+    );
   }
 }
