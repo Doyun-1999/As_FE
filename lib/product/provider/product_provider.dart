@@ -121,7 +121,7 @@ class ProductNotifier extends PaginationProvider<ProductModel, ProductRepository
     final sortedData = pState.data;
     // 시간순으로 나열
     if(isDate){
-      sortedData.sort((a, b) => a.current_price.compareTo(b.current_price));
+      sortedData.sort((b, a) => a.product_id.compareTo(b.product_id));
     }
     // 가격 순으로 나열
     if(!isDate){
