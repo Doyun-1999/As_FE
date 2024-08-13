@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:auction_shop/user/model/Q&A_model.dart';
-import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:auction_shop/user/repository/user_repository.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -90,7 +89,7 @@ class QandANotifier extends StateNotifier<QandABaseModel?>{
         );
       }
     }
-
+    
     // 문의 수정
     if(inquiryId != null){
       await repo.reviseQuestion(formData: formData, inquiryId: inquiryId);

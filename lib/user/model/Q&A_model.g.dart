@@ -46,3 +46,23 @@ Map<String, dynamic> _$AnswerModelToJson(AnswerModel instance) =>
       'imageUrl': instance.imageUrl,
       'status': instance.status,
     };
+
+AnswerDetailModel _$AnswerDetailModelFromJson(Map<String, dynamic> json) =>
+    AnswerDetailModel(
+      id: (json['id'] as num).toInt(),
+      title: json['title'] as String,
+      content: json['content'] as String,
+      imageUrl: (json['imageUrl'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+      status: json['status'] as bool,
+    );
+
+Map<String, dynamic> _$AnswerDetailModelToJson(AnswerDetailModel instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'title': instance.title,
+      'content': instance.content,
+      'imageUrl': instance.imageUrl,
+      'status': instance.status,
+    };

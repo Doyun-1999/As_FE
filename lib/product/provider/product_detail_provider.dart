@@ -4,12 +4,15 @@ import 'package:auction_shop/product/repository/product_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:collection/collection.dart';
 
+// 실제 상세 조회할 때 Provider.family를 이용하여
+// productId를 비교하여 필요한 데이터만 가져온다.
 final getProductDetailProvider = Provider.family<ProductDetailModel?, int>((ref, id) {
   final data = ref.watch(productDetailProvider);
-
+  print("detail length : ${data.length}");
   return data.firstWhereOrNull((e) => e.product_id == id);
 });
 
+// 상세 조회했던 데이트들의 리스트
 final productDetailProvider = StateNotifierProvider<ProductDetailNotifier, List<ProductDetailModel>>((ref) {
   final repo = ref.watch(productRepositoryProvider);
   
@@ -26,17 +29,26 @@ class ProductDetailNotifier extends StateNotifier<List<ProductDetailModel>>{
   }):super([]);
 
   // 경매 상세 데이터 추가
+  // isUpdate일 경우에는
+  // 데이터 유무와는 관계없이 데이터를 다시 불러온다.
   void getProductDetail({
     required int productId,
+    bool isUpdate = false,
   }) async {
-    // firstWhere를 사용하여 성공시
-    // 해당 productId를 관련한 ID가 있으므로 return
-    // 없으면 데이터 요청
-    try{
-      state.firstWhere((e) => productId == e.product_id);
-    }catch(e){
+    // 1. 데이터가 없어서 요청을 해야하는 상황
+    final data = state.firstWhereOrNull((e) => e.product_id == productId);
+    if(data == null){
       final resp = await repo.getDetail(productId);
       state = [...state, resp];
+      return;
+    }
+    // 2. 데이터가 있지만 업데이트를 해야하는 상황 ex) 좋아요
+    if(isUpdate){
+      final resp = await repo.getDetail(productId);
+      final updatedList = state.map((item) {
+        return item.product_id == productId ? resp : item;
+      }).toList();
+      state = updatedList;
     }
   }
 

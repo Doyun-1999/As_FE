@@ -79,8 +79,12 @@ class _QuestionScreenState extends ConsumerState<QuestionScreen> {
       final answerData = widget.answer!;
       _titleController = TextEditingController(text: answerData.title);
       _contentController = TextEditingController(text: answerData.content);
-      if (answerData.imageUrl != null) {
-        _setImages.add(answerData.imageUrl!);
+
+      final serverImages = answerData.imageUrl;
+      if (serverImages != null) {
+        for(int i = 0; i<serverImages.length; i++){
+          _setImages.add(serverImages[i]);
+        }
       }
       return;
     }

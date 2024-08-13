@@ -214,6 +214,14 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
                 setState(() {
                   dropDownValue = val!;
                 });
+                if(dropDownValue == '최신순'){
+                  ref.read(productProvider.notifier).sortState(true);
+                  return;
+                }
+                if(dropDownValue == '가격순'){
+                  ref.read(productProvider.notifier).sortState(false);
+                  return;
+                }
               },
               value: dropDownValue,
             ),

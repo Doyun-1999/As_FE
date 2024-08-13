@@ -65,3 +65,24 @@ class AnswerModel{
 
   Map<String, dynamic> toJson() => _$AnswerModelToJson(this);
 }
+
+@JsonSerializable()
+class AnswerDetailModel{
+  final int id;
+  final String title;
+  final String content;
+  final List<String>? imageUrl;
+  final bool status;
+
+  AnswerDetailModel({
+    required this.id,
+    required this.title,
+    required this.content,
+    required this.imageUrl,
+    required this.status,
+  });
+
+  factory AnswerDetailModel.fromJson(Map<String, dynamic> json) => _$AnswerDetailModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$AnswerDetailModelToJson(this);
+}

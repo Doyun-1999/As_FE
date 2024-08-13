@@ -35,6 +35,15 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
   List<bool> isSelected = [true, false];
   TextEditingController _priceController = TextEditingController();
   TextEditingController _inquiryController = TextEditingController();
+  
+  late DateTime currentTime;
+
+  void updateCurrentTime() {
+    setState(() {
+      currentTime = DateTime.now();
+    });
+    Future.delayed(Duration(seconds: 1), updateCurrentTime);
+  }
 
   @override
   void initState() {
@@ -124,7 +133,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
               ),
 
               // Tabbar
-              TabBarWidget(),
+              TabBarWidget(limitTime: data.endTime),
 
               // Custom TabBarView
               SliverFillRemaining(
@@ -491,7 +500,9 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
   }
 
   // TabBar
-  SliverToBoxAdapter TabBarWidget() {
+  SliverToBoxAdapter TabBarWidget({
+    required String limitTime,
+  }) {
     return SliverToBoxAdapter(
       child: TabBar(
         indicatorWeight: 3,
@@ -515,28 +526,36 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
           Stack(
             clipBehavior: Clip.none,
             children: [
-              Positioned(
-                top: -10,
-                right: 25,
-                left: 25,
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: auctionColor.mainColorE2,
-                      borderRadius: BorderRadius.circular(8)),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 5,
-                    vertical: 3,
-                  ),
-                  child: Text(
-                    '남은 시간 21:00:52',
-                    style: tsInter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: auctionColor.mainColor,
+              StreamBuilder<DateTime>(
+                stream: Stream.periodic(Duration(seconds: 1), (_) => DateTime.now()),
+                builder: (context, snapshot) {
+                  currentTime = snapshot.data!;
+                  final limitedTime = DateTime.parse(limitTime);
+                  Duration timeDifference = limitedTime.difference(currentTime);
+                  return Positioned(
+                    top: -10,
+                    right: 25,
+                    left: 25,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: auctionColor.mainColorE2,
+                          borderRadius: BorderRadius.circular(8)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 5,
+                        vertical: 3,
+                      ),
+                      child: Text(
+                        '남은 시간 ${timeDifference.inHours}:${timeDifference.inMinutes % 60}:${timeDifference.inSeconds % 60}',
+                        style: tsInter(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: auctionColor.mainColor,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
+                  );
+                }
               ),
               Align(
                 alignment: Alignment.center,
