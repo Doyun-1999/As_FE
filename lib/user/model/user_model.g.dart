@@ -15,7 +15,7 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
       point: (json['point'] as num).toInt(),
       available: json['available'] as bool,
       role: json['role'] as String,
-      profileImageUrl: json['profileImageUrl'] as String,
+      profileImageUrl: json['profileImageUrl'] as String?,
     );
 
 Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{

@@ -18,9 +18,9 @@ class TokenModel{
 // 로그인 요청 후 들어오는 반환 모델
 @JsonSerializable()
 class BaseTokenModel{
+  final int id;
   final String accessToken;
   final bool available;
-  final int id;
 
   BaseTokenModel({
     required this.accessToken,

@@ -49,15 +49,11 @@ class CustomTextFormField extends StatelessWidget {
       obscureText: obsecure,
       validator: validator == null ? null : validator,
       textAlignVertical: TextAlignVertical.top,
-      style: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w500,
-        fontFamily: "NotoSansKR",
-        color: auctionColor.subBlackColor49,
-      ),
+      style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.w500,),
       onChanged: onChanged,
       controller: controller,
       decoration: InputDecoration(
+        errorStyle: tsNotoSansKR(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.red,),
         counterText: '',
         suffixIcon: suffixIcon,
         prefixIcon: prefixIcon,
@@ -73,10 +69,8 @@ class CustomTextFormField extends StatelessWidget {
             color: Colors.red,
           ),
         ),
-        errorBorder:
-            OutlineInputBorder(borderSide: BorderSide(color: Colors.red)),
-        contentPadding:
-            const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+        errorBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.red)),
+        contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
         hintText: hintText,
         hintStyle: TextStyle(
           fontSize: 16,

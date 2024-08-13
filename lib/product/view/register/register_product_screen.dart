@@ -11,6 +11,7 @@ import 'package:auction_shop/common/variable/validator.dart';
 import 'package:auction_shop/common/view/root_tab.dart';
 import 'package:auction_shop/product/component/toggle_button.dart';
 import 'package:auction_shop/product/component/upload_image_box.dart';
+import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/product/view/select_category_screen.dart';
 import 'package:auction_shop/product/view/register/register_product_screen2.dart';
 import 'package:flutter/cupertino.dart';
@@ -31,6 +32,8 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
   // 버튼 변수
   List<bool> tradeValue = [true, false];
   List<bool> stateValue = [true, false];
+  bool isTradeVal = true;
+  List<String> categories = [];
 
   // 이미지들 데이터
   List<File> _images = [];
@@ -110,7 +113,13 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
   Widget build(BuildContext context) {
     return DefaultLayout(
       resizeToAvoidBottomInset: true,
-      appBar: CustomAppBar().noActionAppBar(title: '경매 등록', context: context, func: (){context.goNamed(RootTab.routeName);},),
+      appBar: CustomAppBar().noActionAppBar(
+        title: '경매 등록',
+        context: context,
+        func: () {
+          context.goNamed(RootTab.routeName);
+        },
+      ),
       child: Form(
         key: gKey,
         child: CustomScrollView(
@@ -169,8 +178,9 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
                     GestureDetector(
                       onTap: () async {
                         final result = await context.pushNamed(SelectCategoryScreen.routeName);
-                        if(result != null){
+                        if (result != null) {
                           setState(() {
+                            categories = result as List<String>;
                             _categoryController.text = (result as List<String>).join(', ');
                           });
                         }
@@ -180,9 +190,9 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
                           Icons.arrow_forward_ios,
                           color: auctionColor.subGreyColorB6,
                         ),
-                        validator: (String? val){
-                            return supportXValidator(val, name: '카테고리');
-                          },
+                        validator: (String? val) {
+                          return supportXValidator(val, name: '카테고리');
+                        },
                         enabled: false,
                         controller: _categoryController,
                         hintText: "상품 카테고리를 선택해주세요.",
@@ -234,19 +244,36 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
                         ),
                       ],
                     ),
-                    tradeValue[1] ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        TextLable(text: '거래 장소'),
-                        CustomTextFormField(
-                          controller: _placeController,
-                          hintText: "거래 장소를 입력해 주세요.",
-                          validator: (String? val) {
-                            return supportXValidator(val, name: '거래 장소');
-                          },
-                        ),
-                      ],
-                    ) : SizedBox(),
+                    // 거래 방식 선택안하면 안되여~
+                    !isTradeVal
+                        ? Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              "거래 방식을 선택해주세요.",
+                              style: tsNotoSansKR(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.red,
+                              ),
+                            ),
+                          )
+                        : SizedBox(),
+
+                    tradeValue[1]
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TextLable(text: '거래 장소'),
+                              CustomTextFormField(
+                                controller: _placeController,
+                                hintText: "거래 장소를 입력해 주세요.",
+                                validator: (String? val) {
+                                  return supportXValidator(val, name: '거래 장소');
+                                },
+                              ),
+                            ],
+                          )
+                        : SizedBox(),
                     TextLable(text: '설명'),
                   ],
                 ),
@@ -280,19 +307,32 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
                     CustomButton(
                       text: '다음',
                       func: () async {
+                        if (tradeTypes() == null) {
+                          setState(() {
+                            isTradeVal = false;
+                          });
+                          return;
+                        }
                         if (gKey.currentState!.validate()) {
                           // 이미지 경로 데이터 encode
                           final imagePath = _images.map((e) => e.path).toList();
                           final encodedImages = jsonEncode(imagePath);
 
+                          // 객체 데이터 정의
+                          // 제목, 거래방식, 설명, 상태, 카테고리, 장소
+                          final extra = RegisterPagingData(
+                            title: _titleController.text,
+                            tradeTypes: tradeTypes()!,
+                            details: _detailsController.text,
+                            categories: categories,
+                            conditions: conditions(),
+                            tradeLocation: _placeController.text,
+                          );
                           context.pushNamed(
                             RegisterProductScreen2.routeName,
+                            extra: extra,
                             queryParameters: {
-                              "images" : encodedImages,
-                              "title": _titleController.text,
-                              "place": _placeController.text,
-                              "details": _detailsController.text,
-                              "category": _categoryController.text,
+                              "images": encodedImages,
                             },
                           );
                         }
@@ -306,6 +346,27 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
         ),
       ),
     );
+  }
+
+  // 거래 방식 반환
+  List<String>? tradeTypes() {
+    if (tradeValue[0] && !tradeValue[1]) {
+      return ['비대면'];
+    }
+    if (!tradeValue[0] && tradeValue[1]) {
+      return ['직거래'];
+    }
+    if (tradeValue[0] && tradeValue[1]) {
+      return ['비대면', '직거래'];
+    }
+    return null;
+  }
+
+  String conditions() {
+    if (stateValue[0]) {
+      return '새상품';
+    }
+    return '중고';
   }
 
   // 이미지 상자

@@ -4,21 +4,10 @@ import 'package:auction_shop/common/model/cursor_pagination_model.dart';
 import 'package:auction_shop/common/provider/pagination_provider.dart';
 import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/product/repository/product_repository.dart';
-import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http_parser/http_parser.dart';
-
-final categoryProductProvider = Provider.family<CursorPagination<ProductModel>?, String>((ref, category) {
-  final provider = ref.watch(productProvider);
-
-  if(!(provider is CursorPagination<ProductModel>)){
-    return null;
-  }
-
-  return null;
-  // final selectedProducts = provider.data.where((e) => e.t)
-});
+import 'package:collection/collection.dart';
 
 // 전체 상품 불러오는 provider
 final productProvider = StateNotifierProvider<ProductNotifier, CursorPaginationBase>((ref) {
@@ -37,8 +26,6 @@ class ProductNotifier extends PaginationProvider<ProductModel, ProductRepository
   Future<bool> registerProduct({
     required List<String>? images,
     required RegisterProductModel data,
-    required int memberId,
-    //required 
   }) async {
     // 이전 값 저장 후 로딩 객체로 변경
     // 등록 버튼 클릭 못하도록 하기 위해서
@@ -46,7 +33,6 @@ class ProductNotifier extends PaginationProvider<ProductModel, ProductRepository
     state = CursorPaginationLoading();
     print(images);
     print(data.toJson());
-    print(memberId);
     FormData formData = FormData();
 
     // 경매 물품 데이터 추가
@@ -55,9 +41,6 @@ class ProductNotifier extends PaginationProvider<ProductModel, ProductRepository
     formData.files.add(
       MapEntry('product', MultipartFile.fromBytes(jsonBytes, contentType: MediaType.parse('application/json')))
     );
-
-    // memberId 추가
-    formData.fields.add(MapEntry('memberId', memberId.toString()));
     
     // 이미지 추가
     if(images != null && images.isNotEmpty){
@@ -79,7 +62,51 @@ class ProductNotifier extends PaginationProvider<ProductModel, ProductRepository
     return resp;
   }
 
-  void changeLike() async {
+  // 좋아요는 서버통신을 하고 후에 해당 데이터 변경(굳이 서버와 다시 통신X)
+  void liked({
+    required int productId,
+    required bool isPlus,
+  }) async {
+    late Future<bool> resp;
+    // 좋아요를 누르는건지, 취소하는건지에 따라서 다른 함수를 실행
+    if(isPlus){
+      resp = repo.liked(productId);
+    }
+    else{
+      resp = repo.deleteLiked(productId);
+    }
+    // 서버와 통신이 잘 됐으면 데이터 변경
+    if(await resp){
+      changeLike(productId: productId, isPlus: isPlus);
+    }
+  }
 
+  // state의 좋아요 값 변경
+  void changeLike({
+    required int productId,
+    required bool isPlus,
+  }){
+    final nowState = state as CursorPagination<ProductModel>;
+    final data = nowState.data.firstWhereOrNull((e) => e.product_id == productId);
+    // 해당되는 데이터가 없으면 함수 종료
+    if(data == null){
+      return;
+    }
+
+    // 좋아요를 누르는건지, 취소하는건지에 따라서
+    // 더할지 뺄지 달라진다.
+    final likeCount = isPlus ?  data.likeCount + 1 :  data.likeCount - 1;
+    final newData = data.copyWith(likeCount: likeCount, liked: !data.liked);
+    
+    // 해당 리스트는 paginationProvider에서 제너릭(T) 타입을 변수로 받기 때문에
+    // 명시적으로 List<ProductModel> 라고 선언해줘야 리스트의 타입이 설정된다.
+    // 이를 설정하지 않으면 dynamic으로 들어가서 오류가 난다.
+    final List<ProductModel> updatedList = nowState.data.map((item) {
+      return item.product_id == productId ? newData : item;
+    }).toList();
+
+    // state 업데이트
+    final newState = nowState.copyWith(data: updatedList);
+    state = newState;
   }
 }

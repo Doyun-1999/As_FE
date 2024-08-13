@@ -1,4 +1,6 @@
+import 'package:auction_shop/common/variable/data.dart';
 import 'package:flutter/widgets.dart';
+import 'package:collection/collection.dart';
 
 // ScrollController 이동 함수
 void scrollToEnd(ScrollController controller) {
@@ -25,4 +27,9 @@ String parseRefreshToken(String cookies) {
 
   // 기본값 반환 (해당하는 쿠키가 없는 경우 처리)
   return '';
+}
+
+String getCategory(int index){
+  final categoryData = category;
+  return categoryData[index];
 }

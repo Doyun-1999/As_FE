@@ -2,13 +2,15 @@ import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/product/model/product_model.dart';
+import 'package:auction_shop/product/provider/product_provider.dart';
 import 'package:auction_shop/product/view/product_info_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class ProductCard extends StatelessWidget {
+class ProductCard extends ConsumerWidget {
   final int product_id;
   final String? imageUrl;
   final String title;
@@ -16,6 +18,7 @@ class ProductCard extends StatelessWidget {
   final int nowPrice;
   final int likeCount;
   final int bidNum;
+  final bool liked;
 
   const ProductCard({
     required this.product_id,
@@ -25,6 +28,7 @@ class ProductCard extends StatelessWidget {
     required this.nowPrice,
     required this.likeCount,
     required this.bidNum,
+    required this.liked,
     super.key,
   });
 
@@ -36,18 +40,18 @@ class ProductCard extends StatelessWidget {
       imageUrl: model.imageUrl,
       title: model.title,
       initial_price: model.initial_price,
-      nowPrice: 10000,
+      nowPrice: model.current_price,
       likeCount: model.likeCount,
+      liked: model.liked,
       bidNum: 100,
     );
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return InkWell(
       onTap: () {
-        context.pushNamed(ProductInfoScreen.routeName,
-            pathParameters: {'pid': (product_id).toString()});
+        context.pushNamed(ProductInfoScreen.routeName,pathParameters: {'pid': (product_id).toString()});
       },
       child: Row(
         children: [
@@ -125,21 +129,19 @@ class ProductCard extends StatelessWidget {
                     SizedBox(
                       width: 8,
                     ),
-                    Icon(
-                      Icons.favorite_outline,
-                      color: auctionColor.subBlackColor54,
-                    ),
                     GestureDetector(
                       onTap: (){
-                        print('object');
+                        final isPlus = !liked;
+                        ref.read(productProvider.notifier).liked(productId: product_id, isPlus: isPlus);
                       },
-                      child: Text(
-                        '${likeCount}',
-                        style: tsNotoSansKR(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: auctionColor.subBlackColor49,
-                        ),
+                      child: liked ? Icon(Icons.favorite, color: auctionColor.mainColor,) : Icon(Icons.favorite_outline, color: auctionColor.subBlackColor54,),
+                    ),
+                    Text(
+                      '${likeCount}',
+                      style: tsNotoSansKR(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: auctionColor.subBlackColor49,
                       ),
                     ),
                   ],

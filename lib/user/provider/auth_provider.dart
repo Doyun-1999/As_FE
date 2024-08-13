@@ -3,6 +3,7 @@ import 'package:auction_shop/chat/view/chat_info_screen.dart';
 import 'package:auction_shop/chat/view/chat_list_screen.dart';
 import 'package:auction_shop/common/view/splash_screen.dart';
 import 'package:auction_shop/notification/view/notification_screen.dart';
+import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/product/view/select_category_screen.dart';
 import 'package:auction_shop/product/view/product_category_screen.dart';
 import 'package:auction_shop/product/view/product_info_screen.dart';
@@ -116,6 +117,7 @@ class AuthNotifier extends ChangeNotifier {
               path: 'mypage',
               name: MyPageScreen.routeName,
               builder: (_, __) => MyPageScreen(),
+              // 마이페이지 내부에서 이동하는 화면들
               routes: [
                 GoRoute(
                   path: 'mybid',
@@ -146,6 +148,7 @@ class AuthNotifier extends ChangeNotifier {
                       path: 'question',
                       name: QuestionScreen.routeName,
                       builder: (_, __) {
+                        // __.extra를 이용하여 goRouter를 이용할 때 객체를 전달받을 수 있다.
                         // 데이터가 없으면 일반 문의하기 화면으로
                         if(__.extra == null){
                           return QuestionScreen();
@@ -172,22 +175,13 @@ class AuthNotifier extends ChangeNotifier {
               path: 'register2',
               name: RegisterProductScreen2.routeName,
               builder: (_, __) {
+                final data = __.extra;
                 // 이미지 데이터 리스트화
                 final encodedImagePaths = __.uri.queryParameters['images'];
                 final List<String> images = encodedImagePaths != null
                     ? List<String>.from(jsonDecode(encodedImagePaths))
                     : [];
-                final title = __.uri.queryParameters['title']!;
-                final place = __.uri.queryParameters['place']!;
-                final details = __.uri.queryParameters['details']!;
-                final category = __.uri.queryParameters['category']!;
-                return RegisterProductScreen2(
-                    images: images,
-                    title: title,
-                    place: place,
-                    details: details,
-                    category : category,
-                    );
+                 return RegisterProductScreen2(data: data as RegisterPagingData, images: images,);
               },
             ),
             GoRoute(
@@ -221,12 +215,14 @@ class AuthNotifier extends ChangeNotifier {
       ];
 
   // 앱을 처음 시작했을 때
-  // 토큰이 존재하는지 확인하고
+  // 유저 정보가 존재하는지 확인하고
   // 로그인 스크린으로 보내줄지
   // 홈 스크린으로 보내줄지 확인하는 과정
   String? redirectLogic(GoRouterState gState) {
     print('redirect 실행');
     final UserModelBase? user = ref.read(userProvider);
+    // 현재 넘어가는 화면에 따른 변수 설정
+    // 로그인 / 회원가입 / 스플래쉬
     final isLoggin = gState.fullPath == '/login';
     final isSignup = gState.fullPath == '/signup';
     final isSplash = gState.fullPath == '/splash';
@@ -254,6 +250,7 @@ class AuthNotifier extends ChangeNotifier {
 
     // 유저 정보가 존재한 상태에서
     // 로그인/회원가입/스플래쉬 화면이라면, 홈화면으로 이동
+    // 그 외는 기존에 이동하려던 경로로 정상 이동
     if (user is UserModel) {
       print('로그인 상태');
       return (isLoggin || isSignup || isSplash) ? '/' : null;
@@ -266,7 +263,7 @@ class AuthNotifier extends ChangeNotifier {
       return '/login';
     }
 
-    // 그 이외의 상황시에는 전부 null
+    // 그 이외의 상황시에는 전부 null => 기존 경로로 이동
     print('그 외 상황');
     return null;
   }

@@ -41,7 +41,7 @@ class QandANotifier extends StateNotifier<QandABaseModel?>{
   }
 
   // 문의 전체 조회
-  Future<void> allAnswerData({required int memberId, }) async {
+  Future<void> allAnswerData() async {
     // 만약 데이터 모델이 이미 존재한다면,
     // 서버로 요청을 보내지 않고 기존의 데이터를 그대로 출력한다.
     if(state is AnswerListModel){
@@ -51,7 +51,7 @@ class QandANotifier extends StateNotifier<QandABaseModel?>{
     // 서버로 문의 데이터 요청
     state = QandABaseLoading();
     print("로딩 상태");
-    final resp = await repo.allAnswerData(memberId: memberId);
+    final resp = await repo.allAnswerData();
     state = resp;
   }
 
@@ -75,7 +75,7 @@ class QandANotifier extends StateNotifier<QandABaseModel?>{
     );
 
     // memberId 추가
-    formData.fields.add(MapEntry('memberId', memberId.toString()));
+    //formData.fields.add(MapEntry('memberId', memberId.toString()));
     
     // 이미지 추가
     if(images != null && images.isNotEmpty){
@@ -100,6 +100,6 @@ class QandANotifier extends StateNotifier<QandABaseModel?>{
       await repo.question(formData: formData);
     }
     // 요청 후 완료되면 다시 로딩
-    allAnswerData(memberId: int.parse(memberId));
+    allAnswerData();
   }
 }

@@ -10,8 +10,6 @@ import 'package:auction_shop/common/view/root_tab.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/product/provider/product_provider.dart';
-import 'package:auction_shop/user/model/user_model.dart';
-import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -22,17 +20,11 @@ import 'package:intl/intl.dart';
 
 class RegisterProductScreen2 extends ConsumerStatefulWidget {
   static String get routeName => 'register2';
+  final RegisterPagingData data;
   final List<String>? images;
-  final String title;
-  final String place;
-  final String details;
-  final String category;
   const RegisterProductScreen2({
+    required this.data,
     required this.images,
-    required this.title,
-    required this.place,
-    required this.details,
-    required this.category,
     super.key,
   });
 
@@ -69,8 +61,6 @@ class _RegisterProductScreen2State
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(userProvider);
-    final userData = state as UserModel;
     final productState = ref.watch(productProvider);
     return DefaultLayout(
       resizeToAvoidBottomInset: true,
@@ -206,20 +196,24 @@ class _RegisterProductScreen2State
 
                       // 경매 물품 데이터
                       final data = RegisterProductModel(
-                        title: widget.title,
-                        product_type: widget.category,
+                        title: widget.data.title,
+                        tradeTypes: widget.data.tradeTypes,
+                        details: widget.data.details,
+                        categories: widget.data.categories,
+                        conditions: widget.data.conditions,
+                        tradeLocation: widget.data.tradeLocation,
+                        product_type: "아무거나",
                         trade: trade,
-                        tradeLocation: widget.place,
                         initial_price: startPrice,
                         minimum_price: minPrice,
                         startTime: formattedNowDate,
                         endTime: formattedAddedDate,
-                        details: widget.details,
                       );
+
+                      // 등록 요청
                       final resp = await ref.read(productProvider.notifier).registerProduct(
                             images: widget.images,
                             data: data,
-                            memberId: userData.id,
                           );
                       if (resp) {
                         print("성공!");

@@ -2,6 +2,7 @@ import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/model/cursor_pagination_model.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/data.dart';
+import 'package:auction_shop/common/variable/function.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/product/component/product_card.dart';
 import 'package:auction_shop/product/model/product_model.dart';
@@ -35,8 +36,7 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
   @override
   void initState() {
     super.initState();
-    controller = TabController(
-        length: category.length, vsync: this, initialIndex: widget.index + 1);
+    controller = TabController(length: category.length, vsync: this, initialIndex: widget.index + 1);
     controller.addListener(tabListener);
   }
 
@@ -58,6 +58,7 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
     // 로딩 화면
     if (state is CursorPaginationLoading) {
       return DefaultLayout(
+        bgColor: Colors.white,
         appBar: AppBar(
           leading: IconButton(
             onPressed: () {
@@ -94,7 +95,13 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
     }
 
     // 정상적으로 데이터 출력
-    final data = state as CursorPagination<ProductModel>;
+    final nState = state as CursorPagination<ProductModel>;
+    // 카테고리에 해당하는 데이터들만 분류
+    // 카테고리가 "전체"일 경우에는 기존의 데이터값 전부 출력
+    final data = getCategory(controller.index) == "전체"
+    ? nState.data
+    : nState.data.where((e) => e.categories.contains(getCategory(controller.index))).toList();
+    
     return DefaultLayout(
       appBar: AppBar(
         leading: IconButton(
@@ -133,7 +140,7 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
             dropDownWidget(),
 
             // 경매 상품 리스트
-            productList(dataList: data.data),
+            productList(dataList: data),
           ],
         ),
       )),
@@ -169,11 +176,8 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
           ),
           controller: controller,
           // 카테고리 String 리스트는 따로 정의
-          tabs: category
-              .map((e) => Tab(
-                    text: e,
-                  ))
-              .toList(),
+          
+          tabs: category.map((e) => Tab(text: e,)).toList(),
         ),
       ),
       pinned: true,
@@ -226,6 +230,13 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
   SliverPadding productList({
     required List<ProductModel> dataList,
   }) {
+    if(dataList.length == 0){
+      return SliverPadding(
+        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 100),
+        sliver: SliverToBoxAdapter(
+          child: Center(
+            child: Text("해당 카테고리의 데이터가 없습니다.", textAlign: TextAlign.center,),),),);
+    }
     return SliverPadding(
       padding: const EdgeInsets.only(left: 16, right: 16, bottom: 40),
       sliver: SliverList.separated(

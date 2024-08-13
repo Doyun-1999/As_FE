@@ -15,19 +15,6 @@ TextStyle tsNotoSansKR({
   );
 }
 
-TextStyle tsPretendard({
-  required double fontSize,
-  required FontWeight fontWeight,
-  Color color = auctionColor.subBlackColor49,
-}) {
-  return TextStyle(
-    fontFamily: 'Pretendard',
-    fontSize: fontSize,
-    fontWeight: fontWeight,
-    color: color,
-  );
-}
-
 TextStyle tsInter({
   required double fontSize,
   required FontWeight fontWeight,

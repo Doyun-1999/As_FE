@@ -26,7 +26,7 @@ class CustomAppBar {
           color: Colors.white,
           onSelected: vertFunc,
           itemBuilder: (BuildContext context) => popupList,
-          icon: Icon(Icons.more_vert),
+          icon: Icon(Icons.more_vert, color: Colors.white,),
         ),
       ],
     );
@@ -90,7 +90,7 @@ class CustomAppBar {
           color: Colors.white,
           onSelected: vertFunc,
           itemBuilder: (BuildContext context) => popupList,
-          icon: Icon(Icons.more_vert),
+          icon: Icon(Icons.more_vert, color: Colors.white,),
         ),
       ],
     );

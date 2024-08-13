@@ -20,6 +20,7 @@ class PaginationProvider<T, U extends BasePaginationRepository> extends StateNot
   // 데이터 첨부터 다시 불러오기
   void refetching() async {
     print("refetching 실행");
+    state = CursorPaginationLoading();
     final resp = await repo.paginate();  
     state = resp;
   }

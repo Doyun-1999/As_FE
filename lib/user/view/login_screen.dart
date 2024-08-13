@@ -23,6 +23,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   void initState() {
     // 자동 로그인함수
+    print("자동로그인 실행");
     ref.read(userProvider.notifier).autoLogin();
     super.initState();
   }
@@ -61,9 +62,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               func: (state is UserModelLoading)
                   ? null
                   : () async {
-                      await ref
-                          .read(userProvider.notifier)
-                          .login(platform: LoginPlatform.kakao);
+                      await ref.read(userProvider.notifier).login(platform: LoginPlatform.kakao);
                     },
               bgColor: (state is UserModelLoading)
                   ? auctionColor.subGreyColor94
@@ -89,9 +88,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               func: (state is UserModelLoading)
                   ? null
                   : () async {
-                      await ref
-                          .read(userProvider.notifier)
-                          .login(platform: LoginPlatform.google);
+                      await ref.read(userProvider.notifier).login(platform: LoginPlatform.google);
                     },
               bgColor: (state is UserModelLoading)
                   ? auctionColor.subGreyColor94
@@ -110,7 +107,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   final access = await storage.read(key: ACCESS_TOKEN);
                   print(refresh);
                   print(access);
-                  //ref.read(userProvider.notifier).getAccessToken();
                 },
                 borderColor: (state is UserModelLoading)
                     ? auctionColor.subGreyColor94
@@ -122,7 +118,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             Spacer(),
             Text(
               "로그인 오류시 cs@juyo.com",
-              style: tsPretendard(
+              style: tsNotoSansKR(
                 fontWeight: FontWeight.w300,
                 fontSize: 12,
                 color: Colors.white,

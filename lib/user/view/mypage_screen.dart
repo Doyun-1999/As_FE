@@ -106,8 +106,7 @@ class MyPageScreen extends ConsumerWidget {
                 text: "내 문의",
                 // 화면 넘어갈 때 데이터 로딩
                 func: () {
-                  final memberId = ref.read(userProvider.notifier).getMemberId();
-                  ref.read(QandAProvider.notifier).allAnswerData(memberId: memberId);
+                  ref.read(QandAProvider.notifier).allAnswerData();
                   context.pushNamed(AnswerScreen.routeName);
                 },
               ),

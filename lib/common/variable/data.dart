@@ -1,9 +1,6 @@
-import 'package:auction_shop/common/variable/color.dart';
-import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:go_router/go_router.dart';
 
 List<String> get category => [
       "전체",

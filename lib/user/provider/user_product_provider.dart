@@ -2,7 +2,7 @@ import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/user/repository/user_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final userProductProvider = Provider<UserProductNotifier>((ref) {
+final userProductProvider = StateNotifierProvider<UserProductNotifier, ProductListModel>((ref) {
   final repo = ref.watch(userRepositoryProvider);
   
   return UserProductNotifier(repo: repo);
@@ -15,7 +15,7 @@ class UserProductNotifier extends StateNotifier<ProductListModel>{
   }):super(ProductListModel(data: []));
 
   void getMyBid(int memberId) async {
-    final resp = await repo.getMyBid(memberId);
+    final resp = await repo.getMyBid();
     state = resp;
   }
 }

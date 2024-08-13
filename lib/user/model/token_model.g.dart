@@ -15,7 +15,7 @@ BaseTokenModel _$BaseTokenModelFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$BaseTokenModelToJson(BaseTokenModel instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'accessToken': instance.accessToken,
       'available': instance.available,
-      'id': instance.id,
     };

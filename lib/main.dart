@@ -17,6 +17,7 @@ void main() async {
     javaScriptAppKey: 'b99a3f3f3294082043cd71ff9aa00255',
   );
 
+  // 파이어베이스 연동
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
