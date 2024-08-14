@@ -74,7 +74,7 @@ class CustomInterceptor extends Interceptor {
     final isStatus401 = err.response?.statusCode == 401;
     final isPathRefresh = err.requestOptions.path == '/auth/refresh';
 
-    // 현재 토큰을 받는 요청이 아닌데도 오류가 발생했다면,
+    // 현재 토큰을 받는 요청이 아니고 인증 관련 오류가 발생했다면,
     // 해당 if문 진행
     if (!isPathRefresh) {
       final dio = Dio();

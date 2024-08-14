@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:auction_shop/common/model/cursor_pagination_model.dart';
 import 'package:auction_shop/common/provider/pagination_provider.dart';
+import 'package:auction_shop/common/variable/function.dart';
 import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/product/provider/product_detail_provider.dart';
 import 'package:auction_shop/product/repository/product_repository.dart';
@@ -25,7 +26,7 @@ class ProductNotifier extends PaginationProvider<ProductModel, ProductRepository
   });
 
   // 경매 물품 등록
-  Future<bool> registerProduct({
+  Future<ProductModel?> registerProduct({
     required List<String>? images,
     required RegisterProductModel data,
   }) async {
@@ -35,35 +36,20 @@ class ProductNotifier extends PaginationProvider<ProductModel, ProductRepository
     state = CursorPaginationLoading();
     print(images);
     print(data.toJson());
-    FormData formData = FormData();
 
-    // 경매 물품 데이터 추가
-    final jsonString = jsonEncode(data.toJson());
-    final Uint8List jsonBytes = utf8.encode(jsonString) as Uint8List;
-    formData.files.add(
-      MapEntry('product', MultipartFile.fromBytes(jsonBytes, contentType: MediaType.parse('application/json')))
-    );
+    // formData 만들어주고 반환
+    FormData formData = await makeFormData(images: images, data: data);
     
-    // 이미지 추가
-    if(images != null && images.isNotEmpty){
-      for (String imagePath in images) {
-        formData.files.add(
-          MapEntry(
-            'images',
-            await MultipartFile.fromFile(
-              imagePath,
-            ),
-          ),
-        );
-      }
-    }
     // 요청
     final resp = await repo.registerProduct(formData);
     // 요청 완료 후 다시 state에 값 반환
     state = pState;
+    if(resp != null){
+      addData(resp);
+    }
     return resp;
   }
-
+ 
   // 좋아요는 서버통신을 하고 후에 해당 데이터 변경(굳이 서버와 다시 통신X)
   void liked({
     required int productId,
@@ -116,6 +102,7 @@ class ProductNotifier extends PaginationProvider<ProductModel, ProductRepository
     state = newState;
   }
 
+  // dropDown을 이용한 정렬 함수
   void sortState(bool isDate){
     final pState = state as CursorPagination<ProductModel>;
     final sortedData = pState.data;
@@ -130,4 +117,13 @@ class ProductNotifier extends PaginationProvider<ProductModel, ProductRepository
     final newState = pState.copyWith(data: sortedData);
     state = newState;
   }
+
+  // 경매등록 후 해당 데이터를 기존의 있는
+  // provider에 추가하는 함수
+  void addData(ProductModel data){
+    final tmp = state as CursorPagination<ProductModel>;
+    final newState = tmp.copyWith(data: [data, ...tmp.data]);
+    state = newState;
+  }
 }
+

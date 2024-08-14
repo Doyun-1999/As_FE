@@ -32,7 +32,6 @@ ProductModel _$ProductModelFromJson(Map<String, dynamic> json) => ProductModel(
       tradeLocation: json['tradeLocation'] as String?,
       initial_price: (json['initial_price'] as num).toInt(),
       current_price: (json['current_price'] as num).toInt(),
-      createdBy: json['createdBy'] as String,
       likeCount: (json['likeCount'] as num).toInt(),
       liked: json['liked'] as bool,
       sold: json['sold'] as bool,
@@ -49,7 +48,6 @@ Map<String, dynamic> _$ProductModelToJson(ProductModel instance) =>
       'initial_price': instance.initial_price,
       'current_price': instance.current_price,
       'imageUrl': instance.imageUrl,
-      'createdBy': instance.createdBy,
       'likeCount': instance.likeCount,
       'liked': instance.liked,
       'sold': instance.sold,
@@ -116,6 +114,7 @@ ProductDetailModel _$ProductDetailModelFromJson(Map<String, dynamic> json) =>
       details: json['details'] as String,
       imageUrls:
           (json['imageUrls'] as List<dynamic>).map((e) => e as String).toList(),
+      owner: json['owner'] as bool,
       sold: json['sold'] as bool,
       liked: json['liked'] as bool,
     );
@@ -138,6 +137,7 @@ Map<String, dynamic> _$ProductDetailModelToJson(ProductDetailModel instance) =>
       'endTime': instance.endTime,
       'details': instance.details,
       'imageUrls': instance.imageUrls,
+      'owner': instance.owner,
       'sold': instance.sold,
       'liked': instance.liked,
     };

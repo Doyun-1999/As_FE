@@ -1,20 +1,28 @@
 import 'dart:io';
 import 'package:auction_shop/common/component/button.dart';
 import 'package:auction_shop/common/component/textformfield.dart';
+import 'package:auction_shop/common/component/user_image.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/variable/function.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
+import 'package:auction_shop/common/view/root_tab.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/product/component/toggle_button.dart';
 import 'package:auction_shop/product/component/upload_image_box.dart';
+import 'package:auction_shop/product/model/product_model.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ProductReviseScreen extends StatefulWidget {
   static String get routeName => "revise";
-  const ProductReviseScreen({super.key});
+  final ProductDetailModel data;
+  const ProductReviseScreen({
+    required this.data,
+    super.key,
+  });
 
   @override
   State<ProductReviseScreen> createState() => _ProductReviseScreenState();
@@ -22,11 +30,13 @@ class ProductReviseScreen extends StatefulWidget {
 
 class _ProductReviseScreenState extends State<ProductReviseScreen> {
   // 토글 변수
-  List<bool> tradeSelected = [true, false];
-  List<bool> bidSelected = [true, false];
+  late List<bool> tradeSelected;
+  late List<bool> bidSelected;
 
   // 이미지들 데이터
   List<File> _images = [];
+  // 기존 데이터의 이미지 데이터
+  List<String> _setImages = [];
 
   // 이미지 picker
   final ImagePicker picker = ImagePicker();
@@ -91,11 +101,36 @@ class _ProductReviseScreenState extends State<ProductReviseScreen> {
   }
 
   @override
+  void initState() {
+    // 원래 있는 이미지들 데이터 세팅
+    final pData = widget.data;
+    final serverImages = pData.imageUrls;
+    if (serverImages.length != 0) {
+      for(int i = 0; i<serverImages.length; i++){
+        _setImages.add(serverImages[i]);
+      }
+    }
+    _titleController = TextEditingController(text: pData.title);
+    _placeController = TextEditingController(text: pData.tradeLocation);
+    _detailsController = TextEditingController(text: pData.details);
+    _priceController = TextEditingController(text: (pData.initial_price).toString());
+    tradeSelected = getTradeTypes(pData.tradeTypes);
+    bidSelected = [true, false];
+    
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final data = widget.data;
+    print(data);
     return DefaultLayout(
       appBar: CustomAppBar().allAppBar(
+        func: () {
+          context.goNamed(RootTab.routeName);
+        },
         vertFunc: (String? val){
-          print('object');
+          print('${val}');
         },
         popupList: [
           PopupMenuItem(child: Text('수정하기',),),
@@ -118,6 +153,9 @@ class _ProductReviseScreenState extends State<ProductReviseScreen> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
+                      ...List.generate(_setImages.length, (index) {
+                        return setImage(imgPath: _setImages[index]);
+                      }),
                       ...List.generate(_images.length, (index) {
                         return Padding(
                           padding: const EdgeInsets.only(right: 12),
@@ -168,20 +206,20 @@ class _ProductReviseScreenState extends State<ProductReviseScreen> {
               SizedBox(height: 25,),
               
               // 경매 방식
-              TextLable(text: '경매 방식'),
+              TextLable(text: '경매 방식', style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.bold, color: auctionColor.subGreyColorE2,),),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  ToggleBox(isSelected: bidSelected[0], func: (){toggleSelect(0, type: "bid");}, text: "상향식",),
+                  ToggleBox(isSelected: bidSelected[0], func: (){toggleSelect(0, type: "bid");}, text: "상향식", selectedColor: auctionColor.subGreyColorE2,),
                   SizedBox(width: 10,),
-                  ToggleBox(isSelected: bidSelected[1], func: (){toggleSelect(1, type: "bid");}, text: "하향식",),
+                  ToggleBox(isSelected: bidSelected[1], func: (){toggleSelect(1, type: "bid");}, text: "하향식", selectedColor: auctionColor.subGreyColorE2,),
                 ],
               ),
 
               // 가격
               SizedBox(height: 25,),
-              TextLable(text: '시작 가격'),
-              CustomTextFormField(inputFormatters: [] ,controller: _priceController, hintText: "₩ 가격을 입력해 주세요",),
+              TextLable(text: '시작 가격', style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.bold, color: auctionColor.subGreyColorE2,),),
+              CustomTextFormField(inputFormatters: [] ,controller: _priceController, hintText: "₩ 가격을 입력해 주세요", style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.bold, color: auctionColor.subGreyColorE2,),),
               
               // 버튼
               SizedBox(height: 20,),

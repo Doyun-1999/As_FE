@@ -34,7 +34,9 @@ AnswerModel _$AnswerModelFromJson(Map<String, dynamic> json) => AnswerModel(
       id: (json['id'] as num).toInt(),
       title: json['title'] as String,
       content: json['content'] as String,
-      imageUrl: json['imageUrl'] as String?,
+      imageUrl: (json['imageUrl'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
       status: json['status'] as bool,
     );
 
@@ -56,6 +58,7 @@ AnswerDetailModel _$AnswerDetailModelFromJson(Map<String, dynamic> json) =>
           ?.map((e) => e as String)
           .toList(),
       status: json['status'] as bool,
+      answer: json['answer'] as String?,
     );
 
 Map<String, dynamic> _$AnswerDetailModelToJson(AnswerDetailModel instance) =>
@@ -65,4 +68,5 @@ Map<String, dynamic> _$AnswerDetailModelToJson(AnswerDetailModel instance) =>
       'content': instance.content,
       'imageUrl': instance.imageUrl,
       'status': instance.status,
+      'answer': instance.answer,
     };

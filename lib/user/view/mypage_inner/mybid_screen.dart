@@ -1,6 +1,7 @@
 import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/component/user_image.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
+import 'package:auction_shop/common/model/cursor_pagination_model.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/product/component/product_card.dart';
@@ -31,8 +32,6 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
   void initState() {
     controller = TabController(length: 2, vsync: this);
     controller.addListener(tabListener);
-    final memberId = ref.read(userProvider.notifier).getMemberId();
-    ref.read(userProductProvider.notifier).getMyBid(memberId);
     super.initState();
   }
 
@@ -51,10 +50,37 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
   @override
   Widget build(BuildContext context) {
     // 유저 데이터
-    final state = ref.read(userProvider.notifier).getUser();
-    
+    final userState = ref.read(userProvider.notifier).getUser();
+
     // 전체 경매 물품
-    final products = ref.watch(userProductProvider);
+    final productState = ref.watch(userProductProvider);
+    
+    if (productState is CursorPaginationLoading) {
+      return DefaultLayout(
+        appBar: CustomAppBar().noActionAppBar(
+          title: "내 경매장",
+          context: context,
+        ),
+        child: Center(
+          child: CircularProgressIndicator(color: auctionColor.mainColor,),
+        ),
+      );
+    }
+
+    if (productState is CursorPaginationLoading) {
+      return DefaultLayout(
+        appBar: CustomAppBar().noActionAppBar(
+          title: "내 경매장",
+          context: context,
+        ),
+        child: Center(
+          child: Text("오류가 발생하였습니다.\n다시 시도해주세요."),
+        ),
+      );
+    }
+
+    // 위의 상황들을 제외하면 CursorPagination<ProductModel>가 된다.
+    final products = productState as CursorPagination<ProductModel>;
     
     // 팔린 경매 물품
     final soldProducts = products.data.where((e) => e.sold == true).toList();
@@ -62,17 +88,6 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
     // 안팔린 경매 물품
     final notSoldProducts = products.data.where((e) => e.sold == false).toList();
 
-    if (products.data.length == 0) {
-      return DefaultLayout(
-        appBar: CustomAppBar().noActionAppBar(
-          title: "내 경매장",
-          context: context,
-        ),
-        child: Center(
-          child: Text("경매 물품이 없습니다."),
-        ),
-      );
-    }
 
     return DefaultLayout(
       appBar: AppBar(
@@ -112,8 +127,8 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
             return [
               // userInfo
               userInfo(
-                name: state.name,
-                imgPath: state.profileImageUrl,
+                name: userState.name,
+                imgPath: userState.profileImageUrl,
               ),
 
               // TabBar

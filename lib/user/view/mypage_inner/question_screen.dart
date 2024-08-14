@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:auction_shop/common/component/button.dart';
 import 'package:auction_shop/common/component/textformfield.dart';
+import 'package:auction_shop/common/component/user_image.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/variable/color.dart';
@@ -113,7 +114,7 @@ class _QuestionScreenState extends ConsumerState<QuestionScreen> {
               child: Row(
                 children: [
                   ...List.generate(_setImages.length, (index) {
-                    return setImages(_setImages[index]);
+                    return setImage(imgPath: _setImages[index]);
                   }),
                   ...List.generate(_images.length, (index) {
                     return Padding(
@@ -197,27 +198,4 @@ class _QuestionScreenState extends ConsumerState<QuestionScreen> {
     );
   }
 
-  // 수정할 때 있었던 이미지
-  Padding setImages(String imgPath) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 12),
-      child: Container(
-        width: 85,
-        height: 85,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: Colors.black.withOpacity(
-              0.3,
-            ),
-          ),
-          image: DecorationImage(
-            image: NetworkImage(
-              imgPath,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }

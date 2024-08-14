@@ -6,10 +6,12 @@ import 'package:auction_shop/common/model/cursor_pagination_model.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/variable/validator.dart';
+import 'package:auction_shop/common/view/error_screen.dart';
 import 'package:auction_shop/common/view/root_tab.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/product/provider/product_provider.dart';
+import 'package:auction_shop/product/view/product_info_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -185,7 +187,7 @@ class _RegisterProductScreen2State
                       // 시간 데이터
                       final now = DateTime.now();
                       final adjustedTime = now.add(
-                        Duration(hours: _selectedHour)
+                        Duration(hours: _selectedHour + 1)
                       );
                       // 현재 시간
                       final formattedNowDate = DateFormat('yyyy-MM-ddTHH:mm').format(now);
@@ -215,11 +217,11 @@ class _RegisterProductScreen2State
                             images: widget.images,
                             data: data,
                           );
-                      if (resp) {
+                      if (resp != null) {
                         print("성공!");
-                        context.goNamed(RootTab.routeName);
+                        context.goNamed(ProductInfoScreen.routeName,pathParameters: {'pid': (resp.product_id).toString()});
                       } else {
-                        print("실패..");
+                        context.goNamed(ErrorScreen.routeName);
                       }
                     }
                   },

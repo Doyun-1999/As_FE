@@ -6,10 +6,12 @@ class ToggleBox extends StatelessWidget {
   final bool isSelected;
   final VoidCallback func;
   final String text;
+  final Color? selectedColor;
   const ToggleBox({
     required this.isSelected,
     required this.func,
     required this.text,
+    this.selectedColor,
     super.key,
   });
 
@@ -24,12 +26,12 @@ class ToggleBox extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: isSelected ? auctionColor.subBlackColor49 : Colors.white,
+          color: isSelected ? selectedColor ?? auctionColor.subBlackColor49 : Colors.white,
           border: Border.all(
             width: 1.6,
             color: isSelected
-                ? auctionColor.subBlackColor49
-                : auctionColor.subGreyColorB6,
+                ? selectedColor ?? auctionColor.subBlackColor49
+                : selectedColor ?? auctionColor.subGreyColorB6,
           ),
         ),
         child: Center(
@@ -44,7 +46,7 @@ class ToggleBox extends StatelessWidget {
                 : tsNotoSansKR(
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
-                    color: auctionColor.subGreyColorB6,
+                    color: selectedColor ?? auctionColor.subGreyColorB6,
                   ),
           ),
         ),

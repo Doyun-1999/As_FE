@@ -50,7 +50,7 @@ class AnswerModel{
   final int id;
   final String title;
   final String content;
-  final String? imageUrl;
+  final List<String>? imageUrl;
   final bool status;
 
   AnswerModel({
@@ -73,6 +73,7 @@ class AnswerDetailModel{
   final String content;
   final List<String>? imageUrl;
   final bool status;
+  final String? answer;
 
   AnswerDetailModel({
     required this.id,
@@ -80,6 +81,7 @@ class AnswerDetailModel{
     required this.content,
     required this.imageUrl,
     required this.status,
+    required this.answer,
   });
 
   factory AnswerDetailModel.fromJson(Map<String, dynamic> json) => _$AnswerDetailModelFromJson(json);

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:auction_shop/common/dio/dio.dart';
+import 'package:auction_shop/common/model/cursor_pagination_model.dart';
 import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/user/model/Q&A_model.dart';
 import 'package:auction_shop/user/model/pk_id_model.dart';
@@ -9,6 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter_naver_login/flutter_naver_login.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+import 'package:auction_shop/common/repository/base_cursorpagination_repository.dart';
 
 final userRepositoryProvider = Provider<UserRepository>((ref) {
   final dio = ref.watch(dioProvider);
@@ -16,7 +18,7 @@ final userRepositoryProvider = Provider<UserRepository>((ref) {
   return UserRepository(dio: dio, baseUrl: BASE_URL);
 });
 
-class UserRepository {
+class UserRepository extends BasePaginationRepository {
   final Dio dio;
   final String baseUrl;
 
@@ -26,7 +28,7 @@ class UserRepository {
   });
 
   // 유저 판매 목록
-  Future<ProductListModel> getMyBid() async {
+  Future<CursorPagination<ProductModel>> paginate() async {
     final resp = await dio.get(
       baseUrl + '/sell',
       options: Options(headers: {'accessToken': 'true'}),
@@ -34,7 +36,7 @@ class UserRepository {
     print(resp.statusCode);
     print(resp.data);
     final data = {"data": resp.data};
-    final dataList = ProductListModel.fromJson(data);
+    final dataList = CursorPagination.fromJson(data, (json) => ProductModel.fromJson(json as Map<String, dynamic>));
     return dataList;
   }
 
@@ -64,10 +66,7 @@ class UserRepository {
     if (resp.statusCode == 204) {
       return AnswerListModel(list: []);
     }
-    final dataList = AnswerListModel(
-        list: (resp.data as List<dynamic>)
-            .map((e) => AnswerModel.fromJson(e))
-            .toList());
+    final dataList = AnswerListModel(list: (resp.data as List<dynamic>).map((e) => AnswerModel.fromJson(e)).toList());
     return dataList;
   }
 

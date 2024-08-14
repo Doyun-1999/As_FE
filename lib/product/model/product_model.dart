@@ -32,7 +32,7 @@ class ProductModel{
   final int initial_price;
   final int current_price;
   final String? imageUrl;
-  final String createdBy;
+  // final String createdBy;
   final int likeCount;
   final bool liked;
   final bool sold;
@@ -48,7 +48,7 @@ class ProductModel{
     this.tradeLocation,
     required this.initial_price,
     required this.current_price,
-    required this.createdBy,
+    // required this.createdBy,
     required this.likeCount,
     required this.liked,
     required this.sold,
@@ -79,7 +79,7 @@ class ProductModel{
       tradeLocation: tradeLocation ?? this.tradeLocation,
       initial_price: initial_price ?? this.initial_price,
       current_price: current_price ?? this.current_price,
-      createdBy: createdBy ?? this.createdBy,
+      // createdBy: createdBy ?? this.createdBy,
       likeCount: likeCount ?? this.likeCount,
       liked: liked ?? this.liked,
       sold: sold ?? this.sold,
@@ -88,6 +88,7 @@ class ProductModel{
 
   factory ProductModel.fromJson(Map<String, dynamic> json) => _$ProductModelFromJson(json);
 }
+
 
 // 경매 물품 등록 모델
 @JsonSerializable()
@@ -148,6 +149,7 @@ class ProductDetailModel{
   final String endTime;
   final String details;
   final List<String> imageUrls;
+  final bool owner;
   final bool sold;
   final bool liked;
   
@@ -169,6 +171,7 @@ class ProductDetailModel{
     required this.endTime,
     required this.details,
     required this.imageUrls,
+    required this.owner,
     required this.sold,
     required this.liked,
   });
@@ -190,6 +193,7 @@ class ProductDetailModel{
     String? endTime,
     String? details,
     List<String>? imageUrls,
+    bool? owner,
     bool? sold,
     bool? liked,
   }) {
@@ -210,6 +214,7 @@ class ProductDetailModel{
       endTime: endTime ?? this.endTime,
       details: details ?? this.details,
       imageUrls: imageUrls ?? this.imageUrls,
+      owner: owner ?? this.owner,
       sold: sold ?? this.sold,
       liked: liked ?? this.liked,
     );

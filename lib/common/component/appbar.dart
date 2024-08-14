@@ -26,7 +26,10 @@ class CustomAppBar {
           color: Colors.white,
           onSelected: vertFunc,
           itemBuilder: (BuildContext context) => popupList,
-          icon: Icon(Icons.more_vert, color: Colors.white,),
+          icon: Icon(
+            Icons.more_vert,
+            color: auctionColor.subGreyColorB6,
+          ),
         ),
       ],
     );
@@ -65,6 +68,7 @@ class CustomAppBar {
     required String? Function(String?) vertFunc,
     required String title,
     required BuildContext context,
+    VoidCallback? func,
   }) {
     return AppBar(
       backgroundColor: Colors.white,
@@ -78,9 +82,10 @@ class CustomAppBar {
         ),
       ),
       leading: IconButton(
-        onPressed: () {
-          context.pop();
-        },
+        onPressed: func ??
+            () {
+              context.pop();
+            },
         icon: Icon(
           Icons.arrow_back_ios,
         ),
@@ -90,7 +95,10 @@ class CustomAppBar {
           color: Colors.white,
           onSelected: vertFunc,
           itemBuilder: (BuildContext context) => popupList,
-          icon: Icon(Icons.more_vert, color: Colors.white,),
+          icon: Icon(
+            Icons.more_vert,
+            color: auctionColor.subGreyColorB6,
+          ),
         ),
       ],
     );
@@ -100,15 +108,14 @@ class CustomAppBar {
 PopupMenuItem<String> popupItem({
   required String text,
   required String value,
-}){
+}) {
   return PopupMenuItem(
-      value: value,
-      height: 30,
-      padding:
-          EdgeInsets.only(right: ratio.width * 117, left: ratio.width * 30),
-      child: Text(
-        text,
-        style: tsSFPro(),
-      ),
-    );
+    value: value,
+    height: 30,
+    padding: EdgeInsets.only(right: ratio.width * 117, left: ratio.width * 30),
+    child: Text(
+      text,
+      style: tsSFPro(),
+    ),
+  );
 }
