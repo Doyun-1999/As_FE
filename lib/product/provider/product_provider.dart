@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'dart:typed_data';
 import 'package:auction_shop/common/model/cursor_pagination_model.dart';
 import 'package:auction_shop/common/provider/pagination_provider.dart';
 import 'package:auction_shop/common/variable/function.dart';
@@ -8,7 +6,6 @@ import 'package:auction_shop/product/provider/product_detail_provider.dart';
 import 'package:auction_shop/product/repository/product_repository.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:http_parser/http_parser.dart';
 import 'package:collection/collection.dart';
 
 // 전체 상품 불러오는 provider
@@ -39,7 +36,7 @@ class ProductNotifier extends PaginationProvider<ProductModel, ProductRepository
 
     // formData 만들어주고 반환
     FormData formData = await makeFormData(images: images, data: data);
-    
+
     // 요청
     final resp = await repo.registerProduct(formData);
     // 요청 완료 후 다시 state에 값 반환
@@ -125,5 +122,19 @@ class ProductNotifier extends PaginationProvider<ProductModel, ProductRepository
     final newState = tmp.copyWith(data: [data, ...tmp.data]);
     state = newState;
   }
+
+  // 해당 데이터 삭제
+  void deleteData(int productId){
+    final newState = state as CursorPagination<ProductModel>;
+    final data = newState.data.firstWhereOrNull((e) => e.product_id == productId);
+    // 해당되는 데이터가 없으면 함수 종료
+    if(data == null){
+      return;
+    }
+
+    // 데이터 삭제
+    newState.data.removeWhere((e) => e.product_id == productId);
+    state = newState;
+  }  
 }
 

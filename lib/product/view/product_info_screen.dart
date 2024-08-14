@@ -5,11 +5,13 @@ import 'package:auction_shop/common/component/user_image.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
+import 'package:auction_shop/common/view/error_screen.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/product/component/toggle_button.dart';
 import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/product/provider/product_detail_provider.dart';
 import 'package:auction_shop/product/provider/product_provider.dart';
+import 'package:auction_shop/product/view/product_category_screen.dart';
 import 'package:auction_shop/product/view/product_revise_screen.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/cupertino.dart';
@@ -229,6 +231,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
   IntrinsicHeight imageWidget({
     required ProductDetailModel data,
   }) {
+    final productId = data.product_id;
     return IntrinsicHeight(
       // Swiper의 값을 원래 int로 설정해서 setState로 변경했으나,
       // 해당 방법으로 하면 다른 모든 위젯들이 새로 빌드가 되므로
@@ -288,12 +291,27 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                 ),
                 data.owner ? PopupMenuButton<String>(
                   color: Colors.white,
-                  onSelected: (String? val) {
+                  onSelected: (String? val) async {
                     if (val == "수정") {
                       context.goNamed(ProductReviseScreen.routeName, extra: data);
                     }
                     if (val == "삭제") {
-                      print("삭제");
+                      final resp = await ref.read(productDetailProvider.notifier).deleteData(productId);
+                      // 삭제에 성공하면 경매 물품 목록 화면으로 이동
+                      if(resp){
+                        context.pushNamed(
+                          ProductCategoryScreen.routeName,
+                          pathParameters: {
+                            'cid': '0',
+                          },
+                        );
+                        return;
+                      }
+                      // 실패하면 에러 화면으로
+                      if(!resp){
+                        context.goNamed(ErrorScreen.routeName);
+                        return;
+                      }
                     }
                   },
                   itemBuilder: (BuildContext context) => [

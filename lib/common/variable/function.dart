@@ -79,3 +79,25 @@ Future<FormData> makeFormData({
   }
   return formData;
 }
+
+// 거래 방식 반환
+List<String>? tradeTypes(List<bool> tradeValue) {
+  if (tradeValue[0] && !tradeValue[1]) {
+    return ['비대면'];
+  }
+  if (!tradeValue[0] && tradeValue[1]) {
+    return ['직거래'];
+  }
+  if (tradeValue[0] && tradeValue[1]) {
+    return ['비대면', '직거래'];
+  }
+  return null;
+}
+
+// 상태 데이터 반환
+String conditions(List<bool> stateValue) {
+  if (stateValue[0]) {
+    return '새상품';
+  }
+  return '중고';
+}

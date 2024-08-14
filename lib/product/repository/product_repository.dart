@@ -109,6 +109,9 @@ class ProductRepository extends BasePaginationRepository {
     if (resp.statusCode != 200) {
       return false;
     }
+    print('삭제 성공---------------');
+    print(resp.data);
+    print(resp.statusCode);
     return true;
   }
 

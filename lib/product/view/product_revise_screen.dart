@@ -12,11 +12,13 @@ import 'package:auction_shop/main.dart';
 import 'package:auction_shop/product/component/toggle_button.dart';
 import 'package:auction_shop/product/component/upload_image_box.dart';
 import 'package:auction_shop/product/model/product_model.dart';
+import 'package:auction_shop/product/provider/product_detail_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
-class ProductReviseScreen extends StatefulWidget {
+class ProductReviseScreen extends ConsumerStatefulWidget {
   static String get routeName => "revise";
   final ProductDetailModel data;
   const ProductReviseScreen({
@@ -25,10 +27,10 @@ class ProductReviseScreen extends StatefulWidget {
   });
 
   @override
-  State<ProductReviseScreen> createState() => _ProductReviseScreenState();
+  ConsumerState<ProductReviseScreen> createState() => _ProductReviseScreenState();
 }
 
-class _ProductReviseScreenState extends State<ProductReviseScreen> {
+class _ProductReviseScreenState extends ConsumerState<ProductReviseScreen> {
   // 토글 변수
   late List<bool> tradeSelected;
   late List<bool> bidSelected;
@@ -133,7 +135,7 @@ class _ProductReviseScreenState extends State<ProductReviseScreen> {
           print('${val}');
         },
         popupList: [
-          PopupMenuItem(child: Text('수정하기',),),
+          PopupMenuItem(child: Text('삭제하기',),),
         ],
         title: "경매 수정",
         context: context,
@@ -223,7 +225,26 @@ class _ProductReviseScreenState extends State<ProductReviseScreen> {
               
               // 버튼
               SizedBox(height: 20,),
-              CustomButton(text: "등록완료", func: (){},),
+              CustomButton(text: "등록완료", func: (){
+                // // 이미지 경로들
+                // final imagePathData = _images.map((e) => e.path).toList();
+                // // 경매 물품 데이터
+                //       final data = RegisterProductModel(
+                //         title: _titleController.text,
+                //         tradeTypes: tradeTypes(tradeSelected)!,
+                //         details: _detailsController.text,
+                //         categories: widget.data.categories, // 추후 수정해야함
+                //         conditions: widget.data.conditions, // 추후 수정해야함
+                //         tradeLocation: _placeController.text,
+                //         product_type: "아무거나",
+                //         trade: '하향식',
+                //         initial_price: widget.data.initial_price,
+                //         minimum_price: minPrice,
+                //         startTime: formattedNowDate,
+                //         endTime: formattedAddedDate,
+                //       );
+                // ref.read(productDetailProvider.notifier).reviseProduct(images: imagePathData, data: data, productId: widget.data.product_id);
+              },),
               SizedBox(height: 60,),
             ],
           ),

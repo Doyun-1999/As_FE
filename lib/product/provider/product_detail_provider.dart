@@ -1,6 +1,8 @@
+import 'package:auction_shop/common/variable/function.dart';
 import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/product/provider/product_provider.dart';
 import 'package:auction_shop/product/repository/product_repository.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:collection/collection.dart';
 
@@ -96,5 +98,39 @@ class ProductDetailNotifier extends StateNotifier<List<ProductDetailModel>>{
 
     // state 업데이트
     state = updatedList;
+  }
+
+  // 경매 물품 수정(미완)
+  void reviseProduct({
+    required List<String>? images,
+    required RegisterProductModel data,
+    required int productId,
+  }) async {
+    // formData 만들어주고 반환
+    FormData formData = await makeFormData(images: images, data: data);
+
+    // 요청
+    final resp = await repo.reviseProduct(formData, productId);
+    
+    if(resp){
+      getProductDetail(productId: productId, isUpdate: true);
+      // 수정에 성공하면 다시 첨부터 모든 데이터 불러오기
+      ref.read(productProvider.notifier).paginate();
+    }
+  }
+
+  // 경매 물품 삭제
+  Future<bool> deleteData(int productId) async {
+    final resp = await repo.deleteProduct(productId);
+    if(resp){
+      final pState = state;
+      
+      // 해당 데이터 제거
+      pState.removeWhere((e) => e.product_id == productId);
+      state = pState;
+      // 경매 물품 리스트에서도 데이터 삭제
+      ref.read(productProvider.notifier).deleteData(productId);
+    }
+    return resp;
   }
 }
