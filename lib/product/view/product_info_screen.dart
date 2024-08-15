@@ -293,7 +293,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                   color: Colors.white,
                   onSelected: (String? val) async {
                     if (val == "수정") {
-                      context.goNamed(ProductReviseScreen.routeName, extra: data);
+                      context.pushNamed(ProductReviseScreen.routeName, extra: data);
                     }
                     if (val == "삭제") {
                       final resp = await ref.read(productDetailProvider.notifier).deleteData(productId);
@@ -349,7 +349,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                   onTap: () async {
                     final productId = int.parse(widget.id);
                     final isPlus = !data.liked;
-                    ref.read(productDetailProvider.notifier).liked(productId: productId, isPlus: isPlus);
+                    ref.read(productProvider.notifier).liked(productId: productId, isPlus: isPlus);
                   },
                   child: Container(
                     padding:
@@ -603,7 +603,8 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                     child: Container(
                       decoration: BoxDecoration(
                           color: auctionColor.mainColorE2,
-                          borderRadius: BorderRadius.circular(8)),
+                          //borderRadius: BorderRadius.circular(8),
+                          ),
                       padding: const EdgeInsets.symmetric(
                         horizontal: 5,
                         vertical: 3,

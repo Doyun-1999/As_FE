@@ -1,6 +1,7 @@
 import 'package:auction_shop/common/component/button.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
+import 'package:auction_shop/main.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
@@ -16,8 +17,8 @@ class ErrorScreen extends StatelessWidget {
     return DefaultLayout(
       child: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Spacer(),
             Image.asset(
               'assets/img/error.png',
               width: 200,
@@ -33,12 +34,16 @@ class ErrorScreen extends StatelessWidget {
               ),
             ),
             Spacer(),
-            CustomButton(
-              text: "다시 시도",
-              func: (){
-                context.pop();
-              },
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: CustomButton(
+                text: "다시 시도",
+                func: (){
+                  context.pop();
+                },
+              ),
             ),
+            SizedBox(height: ratio.height * 50,),
           ],
         ),
       ),

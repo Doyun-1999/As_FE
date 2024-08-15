@@ -106,7 +106,7 @@ class _AnswerScreenState extends ConsumerState<AnswerScreen> {
       itemBuilder: (context, index) {
         final answerData = list[index];
         // 답변이 있을 때,
-        if (answerData.status) {
+        if (answerData.status && answerData.answer != null) {
           return InfoBox(
             sideFunc: () {},
             sideText: "삭제",
@@ -129,7 +129,7 @@ class _AnswerScreenState extends ConsumerState<AnswerScreen> {
                 TextColumn(
                   color: auctionColor.mainColor2,
                   title: '답변',
-                  content: answerData.content,
+                  content: answerData.answer!,
                 ),
               ],
             ),

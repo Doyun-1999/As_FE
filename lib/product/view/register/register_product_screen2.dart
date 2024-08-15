@@ -221,7 +221,7 @@ class _RegisterProductScreen2State
                         print("성공!");
                         context.goNamed(ProductInfoScreen.routeName,pathParameters: {'pid': (resp.product_id).toString()});
                       } else {
-                        context.goNamed(ErrorScreen.routeName);
+                        context.pushNamed(ErrorScreen.routeName);
                       }
                     }
                   },

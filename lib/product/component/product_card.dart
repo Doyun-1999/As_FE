@@ -129,6 +129,7 @@ class ProductCard extends ConsumerWidget {
                     SizedBox(
                       width: 8,
                     ),
+                    
                     GestureDetector(
                       onTap: (){
                         final isPlus = !liked;

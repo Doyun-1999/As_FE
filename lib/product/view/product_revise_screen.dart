@@ -7,12 +7,14 @@ import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/variable/function.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
+import 'package:auction_shop/common/view/error_screen.dart';
 import 'package:auction_shop/common/view/root_tab.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/product/component/toggle_button.dart';
 import 'package:auction_shop/product/component/upload_image_box.dart';
 import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/product/provider/product_detail_provider.dart';
+import 'package:auction_shop/product/view/product_category_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -27,7 +29,8 @@ class ProductReviseScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<ProductReviseScreen> createState() => _ProductReviseScreenState();
+  ConsumerState<ProductReviseScreen> createState() =>
+      _ProductReviseScreenState();
 }
 
 class _ProductReviseScreenState extends ConsumerState<ProductReviseScreen> {
@@ -79,7 +82,7 @@ class _ProductReviseScreenState extends ConsumerState<ProductReviseScreen> {
 
   // 토글 버튼 선택 함수
   void toggleSelect(int val, {required String type}) {
-    if(type == "trade"){
+    if (type == "trade") {
       if (val == 0) {
         setState(() {
           tradeSelected = [true, false];
@@ -89,7 +92,7 @@ class _ProductReviseScreenState extends ConsumerState<ProductReviseScreen> {
           tradeSelected = [false, true];
         });
       }
-    }else{
+    } else {
       if (val == 0) {
         setState(() {
           bidSelected = [true, false];
@@ -108,17 +111,18 @@ class _ProductReviseScreenState extends ConsumerState<ProductReviseScreen> {
     final pData = widget.data;
     final serverImages = pData.imageUrls;
     if (serverImages.length != 0) {
-      for(int i = 0; i<serverImages.length; i++){
+      for (int i = 0; i < serverImages.length; i++) {
         _setImages.add(serverImages[i]);
       }
     }
     _titleController = TextEditingController(text: pData.title);
     _placeController = TextEditingController(text: pData.tradeLocation);
     _detailsController = TextEditingController(text: pData.details);
-    _priceController = TextEditingController(text: (pData.initial_price).toString());
+    _priceController =
+        TextEditingController(text: (pData.initial_price).toString());
     tradeSelected = getTradeTypes(pData.tradeTypes);
     bidSelected = [true, false];
-    
+
     super.initState();
   }
 
@@ -127,19 +131,60 @@ class _ProductReviseScreenState extends ConsumerState<ProductReviseScreen> {
     final data = widget.data;
     print(data);
     return DefaultLayout(
-      appBar: CustomAppBar().allAppBar(
-        func: () {
-          context.goNamed(RootTab.routeName);
-        },
-        vertFunc: (String? val){
-          print('${val}');
-        },
-        popupList: [
-          PopupMenuItem(child: Text('삭제하기',),),
+      // AppBar
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        centerTitle: true,
+        title: Text(
+          "경매 수정",
+          style: tsNotoSansKR(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: auctionColor.subBlackColor49,
+          ),
+        ),
+        leading: IconButton(
+          onPressed: () {
+            context.pop();
+          },
+          icon: Icon(
+            Icons.arrow_back_ios,
+          ),
+        ),
+        actions: [
+          PopupMenuButton<String>(
+            color: Colors.white,
+            onSelected: (String? val) async {
+              final resp = await ref
+                  .read(productDetailProvider.notifier)
+                  .deleteData(data.product_id);
+              // 삭제에 성공하면 경매 물품 목록 화면으로 이동
+              if (resp) {
+                context.pushNamed(
+                  ProductCategoryScreen.routeName,
+                  pathParameters: {
+                    'cid': '0',
+                  },
+                );
+                return;
+              }
+              // 실패하면 에러 화면으로
+              if (!resp) {
+                context.goNamed(ErrorScreen.routeName);
+                return;
+              }
+            },
+            itemBuilder: (BuildContext context) =>
+                [popupItem(text: "삭제하기", value: "삭제")],
+            icon: Icon(
+              Icons.more_vert,
+              color: auctionColor.subGreyColorB6,
+            ),
+          ),
         ],
-        title: "경매 수정",
-        context: context,
       ),
+
+      // Body
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -151,101 +196,178 @@ class _ProductReviseScreenState extends ConsumerState<ProductReviseScreen> {
 
               // 이미지 추가 Row
               SingleChildScrollView(
-                  controller: _scrollController,
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      ...List.generate(_setImages.length, (index) {
-                        return setImage(imgPath: _setImages[index]);
-                      }),
-                      ...List.generate(_images.length, (index) {
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 12),
-                          child: UploadImageBox(
-                            image: _images[index],
-                            index: index,
+                controller: _scrollController,
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    ...List.generate(_setImages.length, (index) {
+                      return setImage(imgPath: _setImages[index]);
+                    }),
+                    ...List.generate(_images.length, (index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: UploadImageBox(
+                          image: _images[index],
+                          index: index,
+                          func: () {
+                            _pickImage(index: index);
+                          },
+                        ),
+                      );
+                    }),
+                    _images.length == 10
+                        ? SizedBox()
+                        : UploadImageBox(
                             func: () {
-                              _pickImage(index: index);
+                              _pickImage();
                             },
                           ),
-                        );
-                      }),
-                      _images.length == 10
-                          ? SizedBox()
-                          : UploadImageBox(
-                              func: () {
-                                _pickImage();
-                              },
-                            ),
-                    ],
-                  ),
+                  ],
                 ),
-              
+              ),
+
               // 상품명
               TextLable(text: '상품명'),
-              CustomTextFormField(controller: _titleController, hintText: "상품명을 입력해 주세요.",),
-              
+              CustomTextFormField(
+                controller: _titleController,
+                hintText: "상품명을 입력해 주세요.",
+              ),
+
               // 거래 방식
-              SizedBox(height: 25,),
+              SizedBox(
+                height: 25,
+              ),
               TextLable(text: '거래 방식'),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  ToggleBox(isSelected: tradeSelected[0], func: (){toggleSelect(0, type: "trade");}, text: "비대면",),
-                  SizedBox(width: 10,),
-                  ToggleBox(isSelected: tradeSelected[1], func: (){toggleSelect(1, type: "trade");}, text: "직거래",),
+                  ToggleBox(
+                    isSelected: tradeSelected[0],
+                    func: () {
+                      toggleSelect(0, type: "trade");
+                    },
+                    text: "비대면",
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  ToggleBox(
+                    isSelected: tradeSelected[1],
+                    func: () {
+                      toggleSelect(1, type: "trade");
+                    },
+                    text: "직거래",
+                  ),
                 ],
               ),
 
               // 장소
               TextLable(text: '거래 장소'),
-              CustomTextFormField(controller: _placeController, hintText: "거래 장소를 입력해 주세요.",),
-              SizedBox(height: 25,),
+              CustomTextFormField(
+                controller: _placeController,
+                hintText: "거래 장소를 입력해 주세요.",
+              ),
+              SizedBox(
+                height: 25,
+              ),
 
               // 설명
               TextLable(text: '설명'),
-              CustomTextFormField(controller: _detailsController, hintText: "상세 설명을 작성해 주세요.",),
-              SizedBox(height: 25,),
-              
+              CustomTextFormField(
+                controller: _detailsController,
+                hintText: "상세 설명을 작성해 주세요.",
+              ),
+              SizedBox(
+                height: 25,
+              ),
+
               // 경매 방식
-              TextLable(text: '경매 방식', style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.bold, color: auctionColor.subGreyColorE2,),),
+              TextLable(
+                text: '경매 방식',
+                style: tsNotoSansKR(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: auctionColor.subGreyColorE2,
+                ),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  ToggleBox(isSelected: bidSelected[0], func: (){toggleSelect(0, type: "bid");}, text: "상향식", selectedColor: auctionColor.subGreyColorE2,),
-                  SizedBox(width: 10,),
-                  ToggleBox(isSelected: bidSelected[1], func: (){toggleSelect(1, type: "bid");}, text: "하향식", selectedColor: auctionColor.subGreyColorE2,),
+                  ToggleBox(
+                    isSelected: bidSelected[0],
+                    func: () {
+                      toggleSelect(0, type: "bid");
+                    },
+                    text: "상향식",
+                    selectedColor: auctionColor.subGreyColorE2,
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  ToggleBox(
+                    isSelected: bidSelected[1],
+                    func: () {
+                      toggleSelect(1, type: "bid");
+                    },
+                    text: "하향식",
+                    selectedColor: auctionColor.subGreyColorE2,
+                  ),
                 ],
               ),
 
               // 가격
-              SizedBox(height: 25,),
-              TextLable(text: '시작 가격', style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.bold, color: auctionColor.subGreyColorE2,),),
-              CustomTextFormField(inputFormatters: [] ,controller: _priceController, hintText: "₩ 가격을 입력해 주세요", style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.bold, color: auctionColor.subGreyColorE2,),),
-              
+              SizedBox(
+                height: 25,
+              ),
+              TextLable(
+                text: '시작 가격',
+                style: tsNotoSansKR(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: auctionColor.subGreyColorE2,
+                ),
+              ),
+              CustomTextFormField(
+                inputFormatters: [],
+                controller: _priceController,
+                hintText: "₩ 가격을 입력해 주세요",
+                style: tsNotoSansKR(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: auctionColor.subGreyColorE2,
+                ),
+              ),
+
               // 버튼
-              SizedBox(height: 20,),
-              CustomButton(text: "등록완료", func: (){
-                // // 이미지 경로들
-                // final imagePathData = _images.map((e) => e.path).toList();
-                // // 경매 물품 데이터
-                //       final data = RegisterProductModel(
-                //         title: _titleController.text,
-                //         tradeTypes: tradeTypes(tradeSelected)!,
-                //         details: _detailsController.text,
-                //         categories: widget.data.categories, // 추후 수정해야함
-                //         conditions: widget.data.conditions, // 추후 수정해야함
-                //         tradeLocation: _placeController.text,
-                //         product_type: "아무거나",
-                //         trade: '하향식',
-                //         initial_price: widget.data.initial_price,
-                //         minimum_price: minPrice,
-                //         startTime: formattedNowDate,
-                //         endTime: formattedAddedDate,
-                //       );
-                // ref.read(productDetailProvider.notifier).reviseProduct(images: imagePathData, data: data, productId: widget.data.product_id);
-              },),
-              SizedBox(height: 60,),
+              SizedBox(
+                height: 20,
+              ),
+              CustomButton(
+                text: "등록완료",
+                func: () {
+                  // // 이미지 경로들
+                  // final imagePathData = _images.map((e) => e.path).toList();
+                  // // 경매 물품 데이터
+                  //       final data = RegisterProductModel(
+                  //         title: _titleController.text,
+                  //         tradeTypes: tradeTypes(tradeSelected)!,
+                  //         details: _detailsController.text,
+                  //         categories: widget.data.categories, // 추후 수정해야함
+                  //         conditions: widget.data.conditions, // 추후 수정해야함
+                  //         tradeLocation: _placeController.text,
+                  //         product_type: "아무거나",
+                  //         trade: '하향식',
+                  //         initial_price: widget.data.initial_price,
+                  //         minimum_price: minPrice,
+                  //         startTime: formattedNowDate,
+                  //         endTime: formattedAddedDate,
+                  //       );
+                  // ref.read(productDetailProvider.notifier).reviseProduct(images: imagePathData, data: data, productId: widget.data.product_id);
+                },
+              ),
+              SizedBox(
+                height: 60,
+              ),
             ],
           ),
         ),

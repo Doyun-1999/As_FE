@@ -4,8 +4,10 @@ import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/main.dart';
+import 'package:auction_shop/user/view/mypage_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class BlockScreen extends StatelessWidget {
   static String get routeName => 'block';
@@ -17,11 +19,14 @@ class BlockScreen extends StatelessWidget {
       bgColor: auctionColor.subGreyColorF6,
       appBar: CustomAppBar().allAppBar(
         context: context,
+        func: (){
+          context.goNamed(MyPageScreen.routeName);
+        },
         vertFunc: (String? val){
           print('object');
         },
         popupList: [
-          PopupMenuItem(child: Text('수정하기',),),
+          popupItem(text: "수정하기", value: "수정"),
         ],
         title: '차단 내역',
       ),

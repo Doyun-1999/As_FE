@@ -54,7 +54,7 @@ class ProductRepository extends BasePaginationRepository {
         print(resp.statusCode);
         final respData = ProductDetailModel.fromJson(resp.data);
         final data = ProductModel(
-            imageUrl: respData.imageUrls[0],
+            imageUrl: respData.imageUrls.length == 0 ? null : respData.imageUrls[0],
             tradeLocation: respData.tradeLocation,
             product_id: respData.product_id,
             title: respData.title,

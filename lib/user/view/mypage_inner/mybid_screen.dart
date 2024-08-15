@@ -1,3 +1,4 @@
+import 'package:auction_shop/chat/view/chat_list_screen.dart';
 import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/component/user_image.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
@@ -6,9 +7,9 @@ import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/product/component/product_card.dart';
 import 'package:auction_shop/product/model/product_model.dart';
-import 'package:auction_shop/product/provider/product_provider.dart';
 import 'package:auction_shop/user/provider/user_product_provider.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
+import 'package:auction_shop/user/view/mypage_inner/block_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -54,7 +55,8 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
 
     // 전체 경매 물품
     final productState = ref.watch(userProductProvider);
-    
+
+    // 로딩 화면
     if (productState is CursorPaginationLoading) {
       return DefaultLayout(
         appBar: CustomAppBar().noActionAppBar(
@@ -62,12 +64,15 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
           context: context,
         ),
         child: Center(
-          child: CircularProgressIndicator(color: auctionColor.mainColor,),
+          child: CircularProgressIndicator(
+            color: auctionColor.mainColor,
+          ),
         ),
       );
     }
 
-    if (productState is CursorPaginationLoading) {
+    // 에러 화면
+    if (productState is CursorPaginationError) {
       return DefaultLayout(
         appBar: CustomAppBar().noActionAppBar(
           title: "내 경매장",
@@ -81,41 +86,32 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
 
     // 위의 상황들을 제외하면 CursorPagination<ProductModel>가 된다.
     final products = productState as CursorPagination<ProductModel>;
-    
+
     // 팔린 경매 물품
     final soldProducts = products.data.where((e) => e.sold == true).toList();
-    
+
     // 안팔린 경매 물품
     final notSoldProducts = products.data.where((e) => e.sold == false).toList();
 
-
     return DefaultLayout(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(
-          '내 경매장',
-          style: tsNotoSansKR(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: auctionColor.subBlackColor49,
-          ),
-        ),
-        leading: IconButton(
-          onPressed: () {
-            context.pop();
-          },
-          icon: Icon(
-            Icons.arrow_back_ios,
-          ),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.more_vert,
-            ),
-          ),
+      appBar: CustomAppBar().allAppBar(
+        popupList: [
+          popupItem(text: "채팅 문의하기", value: "채팅"),
+          PopupMenuDivider(),
+          popupItem(text: "계정 차단하기", value: "차단"),
         ],
+        vertFunc: (String? val) {
+          if(val == '채팅'){
+            //context.goNamed(ChatListScreen.routeName);
+            return;
+          }
+          if(val == '차단'){
+            context.goNamed(BlockScreen.routeName);
+            return;
+          }
+        },
+        title: "내 경매장",
+        context: context,
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(
@@ -130,7 +126,7 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
                 name: userState.name,
                 imgPath: userState.profileImageUrl,
               ),
-
+        
               // TabBar
               SliverPersistentHeader(
                 delegate: CustomAppBarDelegate(
@@ -146,7 +142,7 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
               // 첫 번째 탭: CustomScrollView 사용
               // 경매 미완료
               bidListData(notSoldProducts),
-
+        
               // 두 번째 탭
               // 경매 완료
               bidListData(soldProducts),
@@ -229,24 +225,29 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
       padding: const EdgeInsets.only(
         top: 25,
       ),
-      child: ListView.separated(
-        separatorBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(
-              vertical: 12,
-            ),
-            child: Divider(
-              color: auctionColor.subGreyColorE2,
-            ),
-          );
-        },
-        itemCount: list.length,
-        itemBuilder: (context, index) {
-          final model = list[index];
-          return IntrinsicHeight(
-            child: ProductCard.fromModel(model: model),
-          );
-        },
+      child: RefreshIndicator(
+        onRefresh: () async {
+            ref.read(userProductProvider.notifier).refetching();
+          },
+        child: ListView.separated(
+          separatorBuilder: (context, index) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 12,
+              ),
+              child: Divider(
+                color: auctionColor.subGreyColorE2,
+              ),
+            );
+          },
+          itemCount: list.length,
+          itemBuilder: (context, index) {
+            final model = list[index];
+            return IntrinsicHeight(
+              child: ProductCard.fromModel(model: model),
+            );
+          },
+        ),
       ),
     );
   }

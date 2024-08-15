@@ -52,6 +52,7 @@ class AnswerModel{
   final String content;
   final List<String>? imageUrl;
   final bool status;
+  final String? answer;
 
   AnswerModel({
     required this.id,
@@ -59,6 +60,7 @@ class AnswerModel{
     required this.content,
     required this.imageUrl,
     required this.status,
+    this.answer,
   });
 
   factory AnswerModel.fromJson(Map<String, dynamic> json) => _$AnswerModelFromJson(json);
