@@ -1,4 +1,5 @@
 
+import 'package:auction_shop/common/model/formdata_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'product_model.g.dart';
@@ -92,7 +93,7 @@ class ProductModel{
 
 // 경매 물품 등록 모델
 @JsonSerializable()
-class RegisterProductModel{
+class RegisterProductModel extends FormDataBase{
   
   // 등록 데이터
   final String title;
@@ -101,7 +102,6 @@ class RegisterProductModel{
   final List<String> categories;
   final String conditions;
   final String? tradeLocation;
-  final String product_type;
   final String trade;
   final int initial_price;
   final int minimum_price;
@@ -115,7 +115,6 @@ class RegisterProductModel{
     required this.details,
     required this.categories,
     required this.conditions,
-    required this.product_type,
     this.tradeLocation,
     required this.trade,
     required this.initial_price,
@@ -134,7 +133,6 @@ class RegisterProductModel{
 class ProductDetailModel{
   final int product_id;
   final String title;
-  final String product_type;
   //final String trade;
   final String conditions;
   final List<String> categories;
@@ -156,7 +154,6 @@ class ProductDetailModel{
   ProductDetailModel({
     required this.product_id,
     required this.title,
-    required this.product_type,
     //required this.trade,
     required this.conditions,
     required this.categories,
@@ -179,7 +176,6 @@ class ProductDetailModel{
   ProductDetailModel copyWith({
     int? product_id,
     String? title,
-    String? product_type,
     String? conditions,
     List<String>? categories,
     List<String>? tradeTypes,
@@ -200,7 +196,6 @@ class ProductDetailModel{
     return ProductDetailModel(
       product_id: product_id ?? this.product_id,
       title: title ?? this.title,
-      product_type: product_type ?? this.product_type,
       conditions: conditions ?? this.conditions,
       categories: categories ?? this.categories,
       tradeTypes: tradeTypes ?? this.tradeTypes,

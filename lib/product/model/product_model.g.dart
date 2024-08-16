@@ -65,7 +65,6 @@ RegisterProductModel _$RegisterProductModelFromJson(
           .map((e) => e as String)
           .toList(),
       conditions: json['conditions'] as String,
-      product_type: json['product_type'] as String,
       tradeLocation: json['tradeLocation'] as String?,
       trade: json['trade'] as String,
       initial_price: (json['initial_price'] as num).toInt(),
@@ -83,7 +82,6 @@ Map<String, dynamic> _$RegisterProductModelToJson(
       'categories': instance.categories,
       'conditions': instance.conditions,
       'tradeLocation': instance.tradeLocation,
-      'product_type': instance.product_type,
       'trade': instance.trade,
       'initial_price': instance.initial_price,
       'minimum_price': instance.minimum_price,
@@ -95,7 +93,6 @@ ProductDetailModel _$ProductDetailModelFromJson(Map<String, dynamic> json) =>
     ProductDetailModel(
       product_id: (json['product_id'] as num).toInt(),
       title: json['title'] as String,
-      product_type: json['product_type'] as String,
       conditions: json['conditions'] as String,
       categories: (json['categories'] as List<dynamic>)
           .map((e) => e as String)
@@ -123,7 +120,6 @@ Map<String, dynamic> _$ProductDetailModelToJson(ProductDetailModel instance) =>
     <String, dynamic>{
       'product_id': instance.product_id,
       'title': instance.title,
-      'product_type': instance.product_type,
       'conditions': instance.conditions,
       'categories': instance.categories,
       'tradeTypes': instance.tradeTypes,

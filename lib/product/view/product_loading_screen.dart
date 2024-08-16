@@ -13,6 +13,7 @@ class ProductLoadingScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final data = ref.read(productProvider.notifier).getFakeData();
     return Skeletonizer(
+      textBoneBorderRadius: TextBoneBorderRadius.fromHeightFactor(.3),
       child: Padding(
         padding: const EdgeInsets.only(left: 16, right: 16, bottom: 40),
         child: ListView.separated(

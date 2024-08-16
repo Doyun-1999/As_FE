@@ -204,7 +204,6 @@ class _RegisterProductScreen2State
                         categories: widget.data.categories,
                         conditions: widget.data.conditions,
                         tradeLocation: widget.data.tradeLocation,
-                        product_type: "아무거나",
                         trade: trade,
                         initial_price: startPrice,
                         minimum_price: minPrice,

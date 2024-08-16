@@ -9,9 +9,7 @@ import 'package:auction_shop/common/variable/function.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/product/component/upload_image_box.dart';
 import 'package:auction_shop/user/model/Q&A_model.dart';
-import 'package:auction_shop/user/model/user_model.dart';
 import 'package:auction_shop/user/provider/Q&A_provider.dart';
-import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:auction_shop/user/view/mypage_inner/answer_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -114,7 +112,14 @@ class _QuestionScreenState extends ConsumerState<QuestionScreen> {
               child: Row(
                 children: [
                   ...List.generate(_setImages.length, (index) {
-                    return setImage(imgPath: _setImages[index]);
+                    return GestureDetector(
+                      onTap: (){
+                        setState(() {
+                          _setImages.removeAt(index);
+                          print("$_setImages");
+                        });
+                      },
+                      child: setImage(imgPath: _setImages[index]));
                   }),
                   ...List.generate(_images.length, (index) {
                     return Padding(
@@ -164,26 +169,23 @@ class _QuestionScreenState extends ConsumerState<QuestionScreen> {
               func: (state is QandABaseLoading)
                   ? null
                   : () async {
-                      // memberId를 얻기 위한 변수 할당
-                      // 해당 화면에 존재한 상태에서 userProvider의 상태는 무조건 UserModel이다.
-                      final user = ref.watch(userProvider);
-                      final state = user as UserModel;
-
-                      // 문의 데이터
-                      final data = QuestionModel(
-                          title: _titleController.text,
-                          content: _contentController.text);
-
-                      // 이미지 데이터 경로
+                     // 이미지 데이터 경로
                       final images = _images.map((e) => e.path).toList();
 
                       // 요청
-                      await ref.read(QandAProvider.notifier).question(
-                            memberId: (state.id).toString(),
-                            data: data,
-                            images: images,
-                            inquiryId: widget.answer != null ? widget.answer!.id : null,
-                          );
+                      if(widget.answer == null){
+                        // 문의 데이터
+                        print("생성하기");
+                        final data = QuestionModel(title: _titleController.text, content: _contentController.text);
+                        await ref.read(QandAProvider.notifier).question(data: data,images: images);
+                      }
+
+                      if(widget.answer != null){
+                        // 문의 수정 데이터
+                        print("수정하기");
+                        final data = QuestionReviseModel(title: _titleController.text, content: _contentController.text, imageUrlsToKeep: _setImages);
+                        await ref.read(QandAProvider.notifier).revise(data: data, images: images, inquiryId: widget.answer!.id);
+                      }
 
                       // 요청이 완료되면 다시 페이지 전환
                       context.pop(AnswerScreen.routeName);

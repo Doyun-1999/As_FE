@@ -1,7 +1,6 @@
 import 'package:auction_shop/common/model/cursor_pagination_model.dart';
 import 'package:auction_shop/common/provider/pagination_provider.dart';
 import 'package:auction_shop/product/model/product_model.dart';
-import 'package:auction_shop/user/model/Q&A_model.dart';
 import 'package:auction_shop/user/repository/my_like_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -11,7 +10,7 @@ final MyLikeProvider = StateNotifierProvider<MyLikeNotifier, CursorPaginationBas
   return MyLikeNotifier(repo: repo);
 });
 
-class MyLikeNotifier extends PaginationProvider<AnswerModel, MyLikeRepository>{
+class MyLikeNotifier extends PaginationProvider<ProductModel, MyLikeRepository>{
   MyLikeNotifier({
     required super.repo,
   });

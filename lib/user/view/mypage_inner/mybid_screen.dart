@@ -170,14 +170,19 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
             },
             body: TabBarView(
               controller: controller,
-              children: [
+              // 만약 어떤 데이터도 없다면
+              // 다른 UI 출력
+              children: products.data.length == 0 ? [
                 // 첫 번째 탭: CustomScrollView 사용
                 // 경매 미완료
-                products.data.length == 0 ? allNoData(false) : bidListData(notSoldProducts, false),
+                allNoData("아직 아무 상품도\n등록하지 않으셨어요."),
 
                 // 두 번째 탭
                 // 경매 완료
-                products.data.length == 0 ? allNoData(true) : bidListData(soldProducts, true),
+                allNoData("아직 아무 상품도\n등록하지 않으셨어요."),
+              ] : [
+                bidListData(notSoldProducts, false),
+                bidListData(soldProducts, true),
               ],
             ),
           ),
@@ -248,7 +253,7 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
     if (list.length == 0) {
       return Padding(
         padding: const EdgeInsets.all(8.0),
-        child: isComplete ? SizedBox() : allNoData(isComplete)
+        child: isComplete ? SizedBox() : allNoData("새로운 경매 등록이 없어요")
       );
     }
     return Padding(
@@ -282,12 +287,12 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
     );
   }
 
-  Column allNoData(bool isComplete) {
+  Column allNoData(String text) {
     return Column(
       children: [
-        SizedBox(height: ratio.height * 85),
+        SizedBox(height: ratio.height * 120),
         Text(
-          !isComplete ? "새로운 경매 등록이 없어요" : "아직 아무 상품도\n등록하지 않으셨어요.",
+          text,
           style: tsNotoSansKR(
             fontSize: 20,
             fontWeight: FontWeight.bold,

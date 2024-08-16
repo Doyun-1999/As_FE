@@ -24,6 +24,7 @@ class ProductRepository extends BasePaginationRepository {
   Future<ProductDetailModel> getDetail(int productId) async {
     print(productId);
     final resp = await dio.get(baseUrl + '/product/search/$productId');
+    print("상세 product provider 데이터");
     print(resp.statusCode);
     print(resp.data);
     return ProductDetailModel.fromJson(resp.data);
@@ -33,7 +34,8 @@ class ProductRepository extends BasePaginationRepository {
   @override
   Future<CursorPagination<ProductModel>> paginate() async {
     final resp = await dio.get(baseUrl + '/product',
-        options: Options(headers: {'accessToken': 'true'}));
+        options: Options(headers: {'accessToken': 'true'},),);
+    print("일반 product provider 데이터");
     print(resp.statusCode);
     print(resp.data);
     final data = {"data": resp.data};

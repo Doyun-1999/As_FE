@@ -30,6 +30,23 @@ Map<String, dynamic> _$QuestionModelToJson(QuestionModel instance) =>
       'content': instance.content,
     };
 
+QuestionReviseModel _$QuestionReviseModelFromJson(Map<String, dynamic> json) =>
+    QuestionReviseModel(
+      title: json['title'] as String,
+      content: json['content'] as String,
+      imageUrlsToKeep: (json['imageUrlsToKeep'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+    );
+
+Map<String, dynamic> _$QuestionReviseModelToJson(
+        QuestionReviseModel instance) =>
+    <String, dynamic>{
+      'title': instance.title,
+      'content': instance.content,
+      'imageUrlsToKeep': instance.imageUrlsToKeep,
+    };
+
 AnswerModel _$AnswerModelFromJson(Map<String, dynamic> json) => AnswerModel(
       id: (json['id'] as num).toInt(),
       title: json['title'] as String,
@@ -38,6 +55,7 @@ AnswerModel _$AnswerModelFromJson(Map<String, dynamic> json) => AnswerModel(
           ?.map((e) => e as String)
           .toList(),
       status: json['status'] as bool,
+      answer: json['answer'] as String?,
     );
 
 Map<String, dynamic> _$AnswerModelToJson(AnswerModel instance) =>
@@ -47,6 +65,7 @@ Map<String, dynamic> _$AnswerModelToJson(AnswerModel instance) =>
       'content': instance.content,
       'imageUrl': instance.imageUrl,
       'status': instance.status,
+      'answer': instance.answer,
     };
 
 AnswerDetailModel _$AnswerDetailModelFromJson(Map<String, dynamic> json) =>

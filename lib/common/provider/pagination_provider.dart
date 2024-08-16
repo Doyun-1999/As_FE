@@ -31,10 +31,12 @@ class PaginationProvider<T, U extends BasePaginationRepository> extends StateNot
   // 해당 provider에서 productId와 일치하는 데이터의
   // likeCount 및 like의 값을 변화 시킨다.
   // ※ 제너릭 타입이 ProductModel이 아닐 경우 사용하면 안됩니다.
-  void changeLike({
+  Future<void> changeLike({
     required int productId,
     required bool isPlus,
-  }){
+  }) async {
+    // 만약 CursorPagination<ProductModel>이 아니라면
+    // 함수 취소 => 오류 방지
     if(!(state is CursorPagination<ProductModel>)){
       return;
     }
@@ -59,6 +61,33 @@ class PaginationProvider<T, U extends BasePaginationRepository> extends StateNot
 
     // state 업데이트
     final newState = nowState.copyWith(data: updatedList);
+    state = newState;
+  }
+
+  // CursorPagination의 제너릭 타입이 ProductModel 일 경우,
+  // 해당 provider에서 productId와 일치하는 데이터를 삭제한다.
+  // ※ 제너릭 타입이 ProductModel이 아닐 경우 사용하면 안됩니다.
+  void deleteData(int productId){
+    if(!(state is CursorPagination<ProductModel>)){
+      return;
+    }
+    final newState = state as CursorPagination<ProductModel>;
+    final data = newState.data.firstWhereOrNull((e) => e.product_id == productId);
+    // 해당되는 데이터가 없으면 함수 종료
+    if(data == null){
+      return;
+    }
+
+    // 데이터 삭제
+    newState.data.removeWhere((e) => e.product_id == productId);
+    state = newState;
+  }
+
+  // CursorPagination의 제너릭 타입이 ProductModel 일 경우,
+  // 해당 provider에서 productId와 일치하는 데이터를 추가한다.
+  void addData(ProductModel data){
+    final tmp = state as CursorPagination<ProductModel>;
+    final newState = tmp.copyWith(data: [data, ...tmp.data]);
     state = newState;
   }
 }

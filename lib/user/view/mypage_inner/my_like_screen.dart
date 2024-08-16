@@ -55,7 +55,7 @@ class _MyLikeScreenState extends ConsumerState<MyLikeScreen> {
           child: Column(
             children: [
               SizedBox(
-                height: 75,
+                height: 48,
               ),
               ProductLoadingScreen(),
             ],
@@ -89,46 +89,64 @@ class _MyLikeScreenState extends ConsumerState<MyLikeScreen> {
         title: "관심 목록",
         context: context,
       ),
-      child: Column(
-        children: [
-          // DropDown Widget
-          ProductDropDown(
-            onChanged: (String? val) {
-              setState(() {
-                dropDownValue = val!;
-              });
-              if (dropDownValue == '최신순') {
-                ref.read(MyLikeProvider.notifier).sortState(true);
-                return;
-              }
-              if (dropDownValue == '가격순') {
-                ref.read(MyLikeProvider.notifier).sortState(true);
-                return;
-              }
-            },
-            dropDownList: dropDownList,
-            dropDownValue: dropDownValue,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: RefreshIndicator(
+          onRefresh: () async {
+            ref.read(MyLikeProvider.notifier).refetching();
+          },
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                // DropDown Widget
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ProductDropDown(
+                      onChanged: (String? val) {
+                        setState(() {
+                          dropDownValue = val!;
+                        });
+                        if (dropDownValue == '최신순') {
+                          ref.read(MyLikeProvider.notifier).sortState(true);
+                          return;
+                        }
+                        if (dropDownValue == '가격순') {
+                          ref.read(MyLikeProvider.notifier).sortState(false);
+                          return;
+                        }
+                      },
+                      dropDownList: dropDownList,
+                      dropDownValue: dropDownValue,
+                    ),
+                  ],
+                ),
+                ListView.separated(
+                  physics: NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  separatorBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                      ),
+                      child: Divider(
+                        color: auctionColor.subGreyColorE2,
+                      ),
+                    );
+                  },
+                  itemCount: list.length,
+                  itemBuilder: (context, index) {
+                    final model = list[index];
+                    return IntrinsicHeight(
+                      child: ProductCard.fromModel(model: model),
+                    );
+                  },
+                ),
+                SizedBox(height: 20,),
+              ],
+            ),
           ),
-          ListView.separated(
-            separatorBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 12,
-                ),
-                child: Divider(
-                  color: auctionColor.subGreyColorE2,
-                ),
-              );
-            },
-            itemCount: list.length,
-            itemBuilder: (context, index) {
-              final model = list[index];
-              return IntrinsicHeight(
-                child: ProductCard.fromModel(model: model),
-              );
-            },
-          )
-        ],
+        ),
       ),
     );
   }

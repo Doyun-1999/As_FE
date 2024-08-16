@@ -42,7 +42,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
   List<bool> isSelected = [true, false];
   TextEditingController _priceController = TextEditingController();
   TextEditingController _inquiryController = TextEditingController();
-  
+
   late DateTime currentTime;
 
   void updateCurrentTime() {
@@ -60,7 +60,9 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
     );
     controller.addListener(tabListener);
     // 데이터 얻기
-    ref.read(productDetailProvider.notifier).getProductDetail(productId: int.parse(widget.id));
+    ref
+        .read(productDetailProvider.notifier)
+        .getProductDetail(productId: int.parse(widget.id));
     super.initState();
   }
 
@@ -100,7 +102,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
         ),
       );
     }
-    
+
     return DefaultLayout(
       child: Stack(
         children: [
@@ -139,10 +141,10 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                     ],
                   ),
                 ),
-            
+
                 // Tabbar
                 TabBarWidget(limitTime: data.endTime),
-            
+
                 // Custom TabBarView
                 SliverFillRemaining(
                   hasScrollBody: false,
@@ -236,146 +238,174 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
       // Swiper의 값을 원래 int로 설정해서 setState로 변경했으나,
       // 해당 방법으로 하면 다른 모든 위젯들이 새로 빌드가 되므로
       // => 이렇게 되면 시간이 자꾸 리빌딩돼서 사용자에게 보이기에 적합하지 않다.
-      // 따라서 해당 스와이퍼의 인덱스 변화 감지는 
+      // 따라서 해당 스와이퍼의 인덱스 변화 감지는
       // ValueListenableBuilder에서만 이루어지도록 한다.
       child: ValueListenableBuilder(
         valueListenable: swiperIndex,
-        builder: (context, value, child){
+        builder: (context, value, child) {
           return Stack(
-          children: [
-            //Image.network(imgPath),
-            Stack(
-              children: [
-                Container(
-                  width: double.infinity,
-                  height: ratio.height * 320,
-                  child: data.imageUrls.length == 0
-                  ? Image.network('https://search.pstatic.net/sunny/?src=https%3A%2F%2Fwww.shutterstock.com%2Fshutterstock%2Fphotos%2F261719003%2Fdisplay_1500%2Fstock-vector-no-image-available-sign-internet-web-icon-to-indicate-the-absence-of-image-until-it-will-be-261719003.jpg&type=sc960_832', fit: BoxFit.fitWidth,)
-                  : Swiper(
-                    loop: false,
-                      index: value,
-                      onIndexChanged: (val){
-                        swiperIndex.value = val;
-                        print("swiperIndex : ${swiperIndex}");
-                      },
-                      itemCount: data.imageUrls.length,
-                      itemBuilder: (BuildContext context, int index){
-                        return Image.network(data.imageUrls[index], fit: BoxFit.fitWidth,);
-                      },
-                    ),
-                ),
-                Container(
-                  width: double.infinity,
-                  height: ratio.height * 150,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.center, // 그라데이션 끝나는 지점
-                      colors: [Colors.black.withOpacity(0.8), Colors.transparent],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  onPressed: () {
-                    context.pop();
-                  },
-                  icon: Icon(
-                    Icons.arrow_back_ios,
-                    color: Colors.white,
-                  ),
-                ),
-                data.owner ? PopupMenuButton<String>(
-                  color: Colors.white,
-                  onSelected: (String? val) async {
-                    if (val == "수정") {
-                      context.pushNamed(ProductReviseScreen.routeName, extra: data);
-                    }
-                    if (val == "삭제") {
-                      final resp = await ref.read(productDetailProvider.notifier).deleteData(productId);
-                      // 삭제에 성공하면 경매 물품 목록 화면으로 이동
-                      if(resp){
-                        context.pushNamed(
-                          ProductCategoryScreen.routeName,
-                          pathParameters: {
-                            'cid': '0',
-                          },
-                        );
-                        return;
-                      }
-                      // 실패하면 에러 화면으로
-                      if(!resp){
-                        context.goNamed(ErrorScreen.routeName);
-                        return;
-                      }
-                    }
-                  },
-                  itemBuilder: (BuildContext context) => [
-                    popupItem(
-                      text: "수정하기",
-                      value: "수정",
-                    ),
-                    PopupMenuDivider(),
-                    popupItem(
-                      text: "삭제하기",
-                      value: "삭제",
-                    ),
-                  ],
-                  icon: Icon(Icons.more_vert, color: Colors.white,),
-                ) : SizedBox(),
-              ],
-            ),
-            Positioned(
-              bottom: 25,
-              right: 17,
-              left: 16,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              //Image.network(imgPath),
+              Stack(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8.5),
-                    decoration: BoxDecoration(
-                      color: auctionColor.subBlackColor49.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text('${swiperIndex.value + 1}/${data.imageUrls.length == 0 ? 1 : data.imageUrls.length}', style: tsInter(fontSize: 15, fontWeight: FontWeight.w400, color: Colors.white,),),
+                    width: double.infinity,
+                    height: ratio.height * 320,
+                    child: data.imageUrls.length == 0
+                        ? Image.network(
+                            'https://search.pstatic.net/sunny/?src=https%3A%2F%2Fwww.shutterstock.com%2Fshutterstock%2Fphotos%2F261719003%2Fdisplay_1500%2Fstock-vector-no-image-available-sign-internet-web-icon-to-indicate-the-absence-of-image-until-it-will-be-261719003.jpg&type=sc960_832',
+                            fit: BoxFit.fitWidth,
+                          )
+                        : Swiper(
+                            loop: false,
+                            index: value,
+                            onIndexChanged: (val) {
+                              swiperIndex.value = val;
+                              print("swiperIndex : ${swiperIndex}");
+                            },
+                            itemCount: data.imageUrls.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Image.network(
+                                data.imageUrls[index],
+                                fit: BoxFit.fitWidth,
+                              );
+                            },
+                          ),
                   ),
-                  GestureDetector(
-                  // 좋아요하기
-                  onTap: () async {
-                    final productId = int.parse(widget.id);
-                    final isPlus = !data.liked;
-                    ref.read(productProvider.notifier).liked(productId: productId, isPlus: isPlus);
-                  },
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 8.5, horizontal: 12),
+                  Container(
+                    width: double.infinity,
+                    height: ratio.height * 150,
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        // 좋아요 했는지에 따라 UI 변경
-                        data.liked ? Icon(Icons.favorite, color: auctionColor.mainColor,) : Icon(Icons.favorite_outline),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Text('${data.likeCount}'),
-                      ],
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.center, // 그라데이션 끝나는 지점
+                        colors: [
+                          Colors.black.withOpacity(0.8),
+                          Colors.transparent
+                        ],
+                      ),
                     ),
                   ),
-                ),
                 ],
-              )
-            )
-          ],
-        );
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      context.pop();
+                    },
+                    icon: Icon(
+                      Icons.arrow_back_ios,
+                      color: Colors.white,
+                    ),
+                  ),
+                  data.owner
+                      ? PopupMenuButton<String>(
+                          color: Colors.white,
+                          onSelected: (String? val) async {
+                            if (val == "수정") {
+                              context.pushNamed(ProductReviseScreen.routeName,extra: data);
+                            }
+                            if (val == "삭제") {
+                              final resp = await ref.read(productDetailProvider.notifier).deleteData(productId);
+                              // 삭제에 성공하면 경매 물품 목록 화면으로 이동
+                              if (resp) {
+                                context.goNamed(
+                                  ProductCategoryScreen.routeName,
+                                  pathParameters: {
+                                    'cid': '0',
+                                  },
+                                );
+                                return;
+                              }
+                              // 실패하면 에러 화면으로
+                              if (!resp) {
+                                context.goNamed(ErrorScreen.routeName);
+                                return;
+                              }
+                            }
+                          },
+                          itemBuilder: (BuildContext context) => [
+                            popupItem(
+                              text: "수정하기",
+                              value: "수정",
+                            ),
+                            PopupMenuDivider(),
+                            popupItem(
+                              text: "삭제하기",
+                              value: "삭제",
+                            ),
+                          ],
+                          icon: Icon(
+                            Icons.more_vert,
+                            color: Colors.white,
+                          ),
+                        )
+                      : SizedBox(),
+                ],
+              ),
+              Positioned(
+                  bottom: 25,
+                  right: 17,
+                  left: 16,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8.5),
+                        decoration: BoxDecoration(
+                          color: auctionColor.subBlackColor49.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          '${swiperIndex.value + 1}/${data.imageUrls.length == 0 ? 1 : data.imageUrls.length}',
+                          style: tsInter(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        // 좋아요하기
+                        onTap: () async {
+                          final productId = int.parse(widget.id);
+                          final isPlus = !data.liked;
+                          ref
+                              .read(productProvider.notifier)
+                              .liked(productId: productId, isPlus: isPlus);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8.5, horizontal: 12),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              // 좋아요 했는지에 따라 UI 변경
+                              data.liked
+                                  ? Icon(
+                                      Icons.favorite,
+                                      color: auctionColor.mainColor,
+                                    )
+                                  : Icon(Icons.favorite_outline),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text('${data.likeCount}'),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ))
+            ],
+          );
         },
       ),
     );
@@ -401,42 +431,25 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
             children: [
               Row(
                 children: [
-                  ...List.generate(
-                    categories.length, (index) {
-                      return Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 4),
-                        margin: const EdgeInsets.only(right: 6),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: auctionColor.mainColor),
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        child: Text(
-                          categories[index],
-                          style: tsInter(
-                            fontSize: 12,
-                            fontWeight: FontWeight.normal,
-                            color: auctionColor.mainColor,
-                          ),
-                        ),
-                      );
-                    }
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 4),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: auctionColor.subBlackColor49, width: 3),
-                      borderRadius: BorderRadius.circular(100),
-                      color: auctionColor.subBlackColor49,
-                    ),
-                    child: Text(
-                      conditions,
-                      style: tsInter(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                  ...List.generate(categories.length, (index) {
+                    return Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 11, vertical: 4),
+                      margin: const EdgeInsets.only(right: 6),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: auctionColor.mainColor),
+                        borderRadius: BorderRadius.circular(100),
                       ),
-                    ),
-                  ),
+                      child: Text(
+                        categories[index],
+                        style: tsInter(
+                          fontSize: 12,
+                          fontWeight: FontWeight.normal,
+                          color: auctionColor.mainColor,
+                        ),
+                      ),
+                    );
+                  }),
                 ],
               ),
               Row(
@@ -494,8 +507,22 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
               )
             ],
           ),
-          SizedBox(
-            height: 15,
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 4),
+            decoration: BoxDecoration(
+              border: Border.all(color: auctionColor.subBlackColor49, width: 3),
+              borderRadius: BorderRadius.circular(100),
+              color: auctionColor.subBlackColor49,
+            ),
+            child: Text(
+              conditions,
+              style: tsInter(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
           ),
           Text(
             title,
@@ -541,14 +568,16 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
               ],
             ),
           ),
-          tradeLocation == null ? SizedBox() : Text(
-            "거래장소 ${tradeLocation}",
-            style: tsNotoSansKR(
-              fontSize: 12,
-              fontWeight: FontWeight.w400,
-              color: auctionColor.subBlackColor49,
-            ),
-          ),
+          tradeLocation == null
+              ? SizedBox()
+              : Text(
+                  "거래장소 ${tradeLocation}",
+                  style: tsNotoSansKR(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                    color: auctionColor.subBlackColor49,
+                  ),
+                ),
           SizedBox(
             height: 20,
           ),
@@ -585,43 +614,49 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
             clipBehavior: Clip.none,
             children: [
               StreamBuilder<DateTime>(
-                stream: Stream.periodic(Duration(seconds: 1), (_) => DateTime.now()),
-                builder: (context, snapshot) {
-                  // snapshot 데이터가 로딩중이거나, 에러가 있거나, 데이터가 없거나 제한 시간 데이터가 아직 들어오지 않았을 때,
-                  // 로딩 화면 출력
-                  if((limitTime == null) || (snapshot.connectionState == ConnectionState.waiting) || (snapshot.hasError) || (!snapshot.hasData)){
-                    return Center(child: Text('-'),);
-                  }
-                  currentTime = snapshot.data!;
-                  final limitedTime = DateTime.parse(limitTime);
-                  Duration timeDifference = limitedTime.difference(currentTime);
-                  
-                  return Positioned(
-                    top: -10,
-                    right: 25,
-                    left: 25,
-                    child: Container(
-                      decoration: BoxDecoration(
+                  stream: Stream.periodic(
+                      Duration(seconds: 1), (_) => DateTime.now()),
+                  builder: (context, snapshot) {
+                    // snapshot 데이터가 로딩중이거나, 에러가 있거나, 데이터가 없거나 제한 시간 데이터가 아직 들어오지 않았을 때,
+                    // 로딩 화면 출력
+                    if ((limitTime == null) ||
+                        (snapshot.connectionState == ConnectionState.waiting) ||
+                        (snapshot.hasError) ||
+                        (!snapshot.hasData)) {
+                      return Center(
+                        child: Text('-'),
+                      );
+                    }
+                    currentTime = snapshot.data!;
+                    final limitedTime = DateTime.parse(limitTime);
+                    Duration timeDifference =
+                        limitedTime.difference(currentTime);
+
+                    return Positioned(
+                      top: -10,
+                      right: 25,
+                      left: 25,
+                      child: Container(
+                        decoration: BoxDecoration(
                           color: auctionColor.mainColorE2,
                           //borderRadius: BorderRadius.circular(8),
-                          ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 5,
-                        vertical: 3,
-                      ),
-                      child: Text(
-                        '남은 시간 ${timeDifference.inHours}:${timeDifference.inMinutes % 60}:${timeDifference.inSeconds % 60}',
-                        style: tsInter(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: auctionColor.mainColor,
                         ),
-                        textAlign: TextAlign.center,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 5,
+                          vertical: 3,
+                        ),
+                        child: Text(
+                          '남은 시간 ${timeDifference.inHours}:${timeDifference.inMinutes % 60}:${timeDifference.inSeconds % 60}',
+                          style: tsInter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: auctionColor.mainColor,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
-                    ),
-                  );
-                }
-              ),
+                    );
+                  }),
               Align(
                 alignment: Alignment.center,
                 child: Tab(

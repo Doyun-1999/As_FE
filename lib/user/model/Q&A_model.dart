@@ -1,3 +1,4 @@
+import 'package:auction_shop/common/model/formdata_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'Q&A_model.g.dart';
@@ -30,7 +31,7 @@ class AnswerListModel extends QandABaseModel{
 
 // 문의 모델
 @JsonSerializable()
-class QuestionModel{
+class QuestionModel extends FormDataBase{
   final String title;
   final String content;
 
@@ -42,6 +43,24 @@ class QuestionModel{
   factory QuestionModel.fromJson(Map<String, dynamic> json) => _$QuestionModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$QuestionModelToJson(this);
+}
+
+// 문의 수정 모델
+@JsonSerializable()
+class QuestionReviseModel extends FormDataBase{
+  final String title;
+  final String content;
+  final List<String> imageUrlsToKeep;
+
+  QuestionReviseModel({
+    required this.title,
+    required this.content,
+    required this.imageUrlsToKeep,
+  });
+
+  factory QuestionReviseModel.fromJson(Map<String, dynamic> json) => _$QuestionReviseModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$QuestionReviseModelToJson(this);
 }
 
 // 답변 모델
@@ -67,6 +86,8 @@ class AnswerModel{
 
   Map<String, dynamic> toJson() => _$AnswerModelToJson(this);
 }
+
+
 
 @JsonSerializable()
 class AnswerDetailModel{

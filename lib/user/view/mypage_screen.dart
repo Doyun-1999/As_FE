@@ -60,7 +60,7 @@ class MyPageScreen extends ConsumerWidget {
                 imgName: 'like',
                 text: "좋아요 목록",
                 func: () {
-                  context.goNamed(MyLikeScreen.routeName);
+                  context.pushNamed(MyLikeScreen.routeName);
                 },
               ),
               IconText(

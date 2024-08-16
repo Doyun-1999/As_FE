@@ -1,3 +1,4 @@
+import 'package:auction_shop/common/model/debouncer_model.dart';
 import 'package:auction_shop/common/provider/router_provider.dart';
 import 'package:auction_shop/common/variable/function.dart';
 import 'package:auction_shop/common/view/error_screen.dart';
@@ -28,6 +29,7 @@ final dioProvider = Provider<Dio>((ref) {
 class CustomInterceptor extends Interceptor {
   final FlutterSecureStorage storage;
   final Ref ref;
+  //final Debouncer debounce;
 
   CustomInterceptor({
     required this.storage,
