@@ -225,7 +225,13 @@ class AuthNotifier extends ChangeNotifier {
         GoRoute(
           path: '/error',
           name: ErrorScreen.routeName,
-          builder: (_, __) => ErrorScreen(),
+          builder: (_, __) {
+            final route = __.uri.queryParameters['route'];
+            if(route != null){
+              return ErrorScreen(route: route);
+            }
+            return ErrorScreen();
+          },
         ),
       ];
 

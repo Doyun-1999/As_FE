@@ -1,3 +1,4 @@
+import 'package:auction_shop/common/model/debouncer_model.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/main.dart';
@@ -49,6 +50,8 @@ class ProductCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // debounce 기간을 2초로 설정
+    final Debouncer debounce = Debouncer(seconds: 2);
     return InkWell(
       onTap: () {
         context.pushNamed(ProductInfoScreen.routeName,pathParameters: {'pid': (product_id).toString()});
@@ -59,6 +62,7 @@ class ProductCard extends ConsumerWidget {
               width: ratio.height * 140,
               height: ratio.height * 140,
               decoration: BoxDecoration(
+                color: imageUrl == null ? Colors.grey.withOpacity(0.4) : null,
                 image: imageUrl == null ? null : DecorationImage(image: NetworkImage(imageUrl!), fit: BoxFit.fill),
               ),
             ),
@@ -132,8 +136,10 @@ class ProductCard extends ConsumerWidget {
                     
                     GestureDetector(
                       onTap: (){
-                        final isPlus = !liked;
-                        ref.read(productProvider.notifier).liked(productId: product_id, isPlus: isPlus);
+                        debounce.run(() {
+                          final isPlus = !liked;
+                          ref.read(productProvider.notifier).liked(productId: product_id, isPlus: isPlus);
+                        });
                       },
                       child: liked ? Icon(Icons.favorite, color: auctionColor.mainColor,) : Icon(Icons.favorite_outline, color: auctionColor.subBlackColor54,),
                     ),

@@ -6,20 +6,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http_parser/http_parser.dart';
 
-
-final answerStateProvider = Provider.family<AnswerListModel?, bool>((ref, status){
-  final state = ref.watch(QandAProvider);
-
-  if(!(state is AnswerListModel)){
-    return null;
-  }
-
-  // 같은 status인 것들만 다시 추출
-  final data = state.copyWith(list: state.list.where((e) => e.status == status).toList());
-  
-  return data;
-});
-
 final QandAProvider = StateNotifierProvider<QandANotifier, QandABaseModel?>((ref) {
   final repo = ref.watch(userRepositoryProvider);
 

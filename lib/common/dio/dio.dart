@@ -1,6 +1,8 @@
+import 'package:auction_shop/common/provider/router_provider.dart';
 import 'package:auction_shop/common/variable/function.dart';
+import 'package:auction_shop/common/view/error_screen.dart';
+import 'package:auction_shop/common/view/root_tab.dart';
 import 'package:auction_shop/user/model/token_model.dart';
-import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:auction_shop/user/secure_storage/secure_storage.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -102,9 +104,13 @@ class CustomInterceptor extends Interceptor {
         // 결과에서 accessToken만 가져오고
         // 헤더에서 refreshToken을 가져온다.
         final tokenModel = BaseTokenModel.fromJson(resp.data);
+        print("토큰 모델 : ${tokenModel}");
         final accessToken = tokenModel.accessToken;
+        print("어세스 토큰 모델 : ${accessToken}");
         final cookies = resp.headers['set-cookie'];
         final rToken = parseRefreshToken(cookies![0]);
+        print("리프레쉬 모델 : ${rToken}");
+        print('-----------------------');
         print("새로 받은 리프레쉬 토큰값 : $rToken");
         print("새로 받은 accessToken 토큰값 : $accessToken");
         // 토큰 저장
@@ -147,7 +153,9 @@ class CustomInterceptor extends Interceptor {
         // A => B => A => B 무한 반복
         // 이므로 provider 자체를 부르는게 아니라 read를 이용하여 함수만 호출
 
-        ref.read(userProvider.notifier).logout();
+        print("에러 화면으로 이동하겠습니다.");
+        ref.read(routerProvider).pushNamed(ErrorScreen.routeName, queryParameters: {'route' : RootTab.routeName});
+        //ref.read(userProvider.notifier).logout();
         print(e);
       }
     }

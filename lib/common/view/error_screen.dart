@@ -8,7 +8,9 @@ import 'package:go_router/go_router.dart';
 class ErrorScreen extends StatelessWidget {
   static String get routeName => 'error';
 
+  final String? route;
   const ErrorScreen({
+    this.route,
     super.key
   });
 
@@ -39,6 +41,12 @@ class ErrorScreen extends StatelessWidget {
               child: CustomButton(
                 text: "다시 시도",
                 func: (){
+                  // 이동하라는 설정된 라우트가 있으면
+                  // 해당 경로로 이동
+                  if(route != null){
+                    context.goNamed(route!);
+                    return;
+                  }
                   context.pop();
                 },
               ),

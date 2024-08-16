@@ -7,11 +7,14 @@ import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/product/component/product_card.dart';
 import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/product/provider/product_provider.dart';
+import 'package:auction_shop/product/view/product_loading_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class ProductCategoryScreen extends ConsumerStatefulWidget {
   static String get routeName => 'products';
@@ -36,7 +39,8 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
   @override
   void initState() {
     super.initState();
-    controller = TabController(length: category.length, vsync: this, initialIndex: widget.index + 1);
+    controller = TabController(
+        length: category.length, vsync: this, initialIndex: widget.index + 1);
     controller.addListener(tabListener);
   }
 
@@ -57,6 +61,8 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
     final state = ref.watch(productProvider);
     // 로딩 화면
     if (state is CursorPaginationLoading) {
+      final data = ref.read(productProvider.notifier).getFakeData();
+
       return DefaultLayout(
         bgColor: Colors.white,
         appBar: AppBar(
@@ -79,8 +85,14 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
             ),
           ],
         ),
-        child: Center(
-          child: CircularProgressIndicator(),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              tabBar(),
+              SizedBox(height: 75,),
+              ProductLoadingScreen(),
+            ],
+          ),
         ),
       );
     }
@@ -99,9 +111,11 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
     // 카테고리에 해당하는 데이터들만 분류
     // 카테고리가 "전체"일 경우에는 기존의 데이터값 전부 출력
     final data = getCategory(controller.index) == "전체"
-    ? nState.data
-    : nState.data.where((e) => e.categories.contains(getCategory(controller.index))).toList();
-    
+        ? nState.data
+        : nState.data
+            .where((e) => e.categories.contains(getCategory(controller.index)))
+            .toList();
+
     return DefaultLayout(
       appBar: AppBar(
         leading: IconButton(
@@ -126,61 +140,64 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
       child: SafeArea(
         // 새로고침을 위한 widget
         // 위로 당기면 새로고침됨
-          child: RefreshIndicator(
-        onRefresh: () async {
-          ref.read(productProvider.notifier).refetching();
-        },
-        child: CustomScrollView(
-          slivers: [
-            // 상단 카테고리 탭바
-            // 고정된 채로 스크롤
-            tabBar(),
+        child: RefreshIndicator(
+          onRefresh: () async {
+            ref.read(productProvider.notifier).refetching();
+          },
+          child: CustomScrollView(
+            slivers: [
+              // 상단 카테고리 탭바
+              // 고정된 채로 스크롤
+              SliverPersistentHeader(
+                delegate: CustomAppBarDelegate(tabBar()),
+                pinned: true,
+              ),
 
-            // 드롭다운(최신순, 가격순 등)
-            dropDownWidget(),
+              // 드롭다운(최신순, 가격순 등)
+              dropDownWidget(),
 
-            // 경매 상품 리스트
-            productList(dataList: data),
-          ],
+              // 경매 상품 리스트
+              productList(dataList: data),
+            ],
+          ),
         ),
-      )),
+      ),
     );
   }
 
   // 상단 탭바
-  SliverPersistentHeader tabBar() {
-    return SliverPersistentHeader(
-      delegate: CustomAppBarDelegate(
-        TabBar(
-          isScrollable: true,
-          labelPadding: EdgeInsets.only(left: 16, right: 8),
-          // indicator 설정
-          indicator: BoxDecoration(
-              borderRadius: BorderRadius.circular(0), // 인디케이터의 모서리 둥글기
-              border: Border(
-                  bottom: BorderSide(
-                color: auctionColor.mainColor,
-                width: 3,
-              ))),
-          // 탭바 왼쪽에 생기는 빈공간 메꾸기
-          tabAlignment: TabAlignment.start,
-          labelStyle: tsNotoSansKR(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: auctionColor.subBlackColor49,
-          ),
-          unselectedLabelStyle: tsNotoSansKR(
-            fontSize: 16,
-            fontWeight: FontWeight.normal,
-            color: auctionColor.subGreyColorB6,
-          ),
-          controller: controller,
-          // 카테고리 String 리스트는 따로 정의
-          
-          tabs: category.map((e) => Tab(text: e,)).toList(),
-        ),
+  TabBar tabBar() {
+    return TabBar(
+      isScrollable: true,
+      labelPadding: EdgeInsets.only(left: 16, right: 8),
+      // indicator 설정
+      indicator: BoxDecoration(
+          borderRadius: BorderRadius.circular(0), // 인디케이터의 모서리 둥글기
+          border: Border(
+              bottom: BorderSide(
+            color: auctionColor.mainColor,
+            width: 3,
+          ))),
+      // 탭바 왼쪽에 생기는 빈공간 메꾸기
+      tabAlignment: TabAlignment.start,
+      labelStyle: tsNotoSansKR(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        color: auctionColor.subBlackColor49,
       ),
-      pinned: true,
+      unselectedLabelStyle: tsNotoSansKR(
+        fontSize: 16,
+        fontWeight: FontWeight.normal,
+        color: auctionColor.subGreyColorB6,
+      ),
+      controller: controller,
+      // 카테고리 String 리스트는 따로 정의
+
+      tabs: category
+          .map((e) => Tab(
+                text: e,
+              ))
+          .toList(),
     );
   }
 
@@ -214,11 +231,11 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
                 setState(() {
                   dropDownValue = val!;
                 });
-                if(dropDownValue == '최신순'){
+                if (dropDownValue == '최신순') {
                   ref.read(productProvider.notifier).sortState(true);
                   return;
                 }
-                if(dropDownValue == '가격순'){
+                if (dropDownValue == '가격순') {
                   ref.read(productProvider.notifier).sortState(false);
                   return;
                 }
@@ -238,12 +255,18 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
   SliverPadding productList({
     required List<ProductModel> dataList,
   }) {
-    if(dataList.length == 0){
+    if (dataList.length == 0) {
       return SliverPadding(
         padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 100),
         sliver: SliverToBoxAdapter(
           child: Center(
-            child: Text("해당 카테고리의 데이터가 없습니다.", textAlign: TextAlign.center,),),),);
+            child: Text(
+              "해당 카테고리의 데이터가 없습니다.",
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      );
     }
     return SliverPadding(
       padding: const EdgeInsets.only(left: 16, right: 16, bottom: 40),
