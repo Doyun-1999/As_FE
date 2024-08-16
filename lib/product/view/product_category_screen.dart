@@ -1,3 +1,4 @@
+import 'package:auction_shop/common/component/dropdown.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/model/cursor_pagination_model.dart';
 import 'package:auction_shop/common/variable/color.dart';
@@ -89,7 +90,9 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
           child: Column(
             children: [
               tabBar(),
-              SizedBox(height: 75,),
+              SizedBox(
+                height: 75,
+              ),
               ProductLoadingScreen(),
             ],
           ),
@@ -209,24 +212,7 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            DropdownButton(
-              icon: Icon(
-                Icons.keyboard_arrow_down,
-                size: 30,
-              ),
-              items: dropDownList.map<DropdownMenuItem<String>>((String val) {
-                return DropdownMenuItem(
-                  child: Text(
-                    val,
-                    style: tsNotoSansKR(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: auctionColor.subBlackColor49,
-                    ),
-                  ),
-                  value: val,
-                );
-              }).toList(),
+            ProductDropDown(
               onChanged: (String? val) {
                 setState(() {
                   dropDownValue = val!;
@@ -240,7 +226,8 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
                   return;
                 }
               },
-              value: dropDownValue,
+              dropDownList: dropDownList,
+              dropDownValue: dropDownValue,
             ),
             SizedBox(
               width: 18,

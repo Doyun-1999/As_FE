@@ -57,7 +57,8 @@ class CustomInterceptor extends Interceptor {
 
       // refreshToken을 이용하여 accessToken 재발급
       final dio = Dio();
-      final resp = await dio.post(BASE_URL + '/auth/refresh', data: {'refreshToken': token});
+      final resp = await dio
+          .post(BASE_URL + '/auth/refresh', data: {'refreshToken': token});
       // Token 값들 가져와서 사용
       final tokenModel = BaseTokenModel.fromJson(resp.data);
       final accessToken = tokenModel.accessToken;
@@ -88,7 +89,6 @@ class CustomInterceptor extends Interceptor {
 
     //final isStatus401 = err.response?.statusCode == 401;
     final isPathRefresh = err.requestOptions.path == '/auth/refresh';
-    final isRegister = err.requestOptions.path == '/product/registration';
 
     // 현재 토큰을 받는 요청이 아니고 인증 관련 오류가 발생했다면,
     // 해당 if문 진행
@@ -97,8 +97,11 @@ class CustomInterceptor extends Interceptor {
 
       try {
         print("리프레쉬 토큰으로 어세스 토큰을 재발급 받도록 다시 요청 보내기");
-        final resp = await dio.post(BASE_URL + '/auth/refresh',
-            data: {'refreshToken': refreshToken});
+        final resp = await dio.post(
+          BASE_URL + '/auth/refresh',
+          data: {'refreshToken': refreshToken},
+        );
+        print("요청 결과 : ${resp.data}");
 
         // 결과는 BaseTokenModel로 가져온다(id, accessToken, available)
         // 결과에서 accessToken만 가져오고
@@ -128,7 +131,7 @@ class CustomInterceptor extends Interceptor {
             statusCode: 600,
             data: requestOptions,
           );
-         return handler.resolve(response);  
+          return handler.resolve(response);
         }
 
         print("토큰 새로 저장 완료");
@@ -154,7 +157,8 @@ class CustomInterceptor extends Interceptor {
         // 이므로 provider 자체를 부르는게 아니라 read를 이용하여 함수만 호출
 
         print("에러 화면으로 이동하겠습니다.");
-        ref.read(routerProvider).pushNamed(ErrorScreen.routeName, queryParameters: {'route' : RootTab.routeName});
+        ref.read(routerProvider).pushNamed(ErrorScreen.routeName,
+            queryParameters: {'route': RootTab.routeName});
         //ref.read(userProvider.notifier).logout();
         print(e);
       }

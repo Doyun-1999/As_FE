@@ -71,7 +71,9 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
         child: SingleChildScrollView(
           child: Column(
             children: [
-              SizedBox(height: 20,),
+              SizedBox(
+                height: 20,
+              ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: userInfo(
@@ -83,7 +85,9 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: myBidTabBar(),
               ),
-              SizedBox(height: 20,),
+              SizedBox(
+                height: 20,
+              ),
               ProductLoadingScreen(),
             ],
           ),
@@ -154,7 +158,7 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
                     imgPath: userState.profileImageUrl,
                   ),
                 ),
-          
+
                 // TabBar
                 SliverPersistentHeader(
                   delegate: CustomAppBarDelegate(
@@ -169,11 +173,11 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
               children: [
                 // 첫 번째 탭: CustomScrollView 사용
                 // 경매 미완료
-                bidListData(notSoldProducts),
-          
+                products.data.length == 0 ? allNoData(false) : bidListData(notSoldProducts, false),
+
                 // 두 번째 탭
                 // 경매 완료
-                bidListData(soldProducts),
+                products.data.length == 0 ? allNoData(true) : bidListData(soldProducts, true),
               ],
             ),
           ),
@@ -237,25 +241,14 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
     );
   }
 
-  Padding bidListData(List<ProductModel> list) {
+  Padding bidListData(
+    List<ProductModel> list,
+    bool isComplete,
+  ) {
     if (list.length == 0) {
       return Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            SizedBox(height: ratio.height * 85),
-            Text("아직 아무 상품도\n등록하지 않으셨어요.", style: tsNotoSansKR(fontSize: 20, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
-            SizedBox(height: 16,),
-            Text("경매로 올려 내 물건을 적재적소에 팔아봐요!", style: tsNotoSansKR(fontSize: 14, fontWeight: FontWeight.w400,), textAlign: TextAlign.center,),
-            SizedBox(height: ratio.height * 70),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: ratio.width * 80),
-              child: CustomButton(text: "판매하기", func: (){
-                context.goNamed(RegisterProductScreen.routeName);
-              },),
-            ),
-          ],
-        ),
+        child: isComplete ? SizedBox() : allNoData(isComplete)
       );
     }
     return Padding(
@@ -286,6 +279,43 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
           },
         ),
       ),
+    );
+  }
+
+  Column allNoData(bool isComplete) {
+    return Column(
+      children: [
+        SizedBox(height: ratio.height * 85),
+        Text(
+          !isComplete ? "새로운 경매 등록이 없어요" : "아직 아무 상품도\n등록하지 않으셨어요.",
+          style: tsNotoSansKR(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        SizedBox(
+          height: 16,
+        ),
+        Text(
+          "경매로 올려 내 물건을 적재적소에 팔아봐요!",
+          style: tsNotoSansKR(
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        SizedBox(height: ratio.height * 70),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: ratio.width * 80),
+          child: CustomButton(
+            text: "판매하기",
+            func: () {
+              context.goNamed(RegisterProductScreen.routeName);
+            },
+          ),
+        ),
+      ],
     );
   }
 }

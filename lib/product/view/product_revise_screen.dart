@@ -109,6 +109,7 @@ class _ProductReviseScreenState extends ConsumerState<ProductReviseScreen> {
   void initState() {
     // 원래 있는 이미지들 데이터 세팅
     final pData = widget.data;
+    print(pData.toJson());
     final serverImages = pData.imageUrls;
     if (serverImages.length != 0) {
       for (int i = 0; i < serverImages.length; i++) {

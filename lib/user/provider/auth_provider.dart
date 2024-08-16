@@ -17,7 +17,7 @@ import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:auction_shop/user/view/mypage_inner/address_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/block_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/answer_screen.dart';
-import 'package:auction_shop/user/view/mypage_inner/my_interest_screen.dart';
+import 'package:auction_shop/user/view/mypage_inner/my_like_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/mybid_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/question_screen.dart';
 import 'package:auction_shop/user/view/mypage_screen.dart';
@@ -136,9 +136,9 @@ class AuthNotifier extends ChangeNotifier {
                   builder: (_, __) => AddressScreen(),
                 ),
                 GoRoute(
-                  path: 'interest',
-                  name: MyInterestScreen.routeName,
-                  builder: (_, __) => MyInterestScreen(),
+                  path: 'mylike',
+                  name: MyLikeScreen.routeName,
+                  builder: (_, __) => MyLikeScreen(),
                 ),
                 GoRoute(
                   path: 'answer',
