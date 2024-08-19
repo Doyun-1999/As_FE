@@ -1,6 +1,7 @@
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/product/component/product_card.dart';
 import 'package:auction_shop/product/provider/product_provider.dart';
+import 'package:auction_shop/product/view/product_info_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,6 +25,7 @@ class ProductLoadingScreen extends ConsumerWidget {
             return IntrinsicHeight(
               child: ProductCard.fromModel(
                 model: model,
+                isSkeletion: true,
               ),
             );
           },
@@ -36,6 +38,20 @@ class ProductLoadingScreen extends ConsumerWidget {
             );
           },
         ),
+      ),
+    );
+  }
+}
+
+class ProductInfoLoadingScreen extends StatelessWidget {
+  const ProductInfoLoadingScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Skeletonizer(
+      child: ProductInfoScreen(
+        isSkeleton: true,
+        id: '0',
       ),
     );
   }

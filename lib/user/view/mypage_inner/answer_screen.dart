@@ -108,7 +108,9 @@ class _AnswerScreenState extends ConsumerState<AnswerScreen> {
         // 답변이 있을 때,
         if (answerData.status && answerData.answer != null) {
           return InfoBox(
-            sideFunc: () {},
+            sideFunc: () {
+              ref.read(QandAProvider.notifier).delete(answerData.id);
+            },
             sideText: "삭제",
             firstBoxText: '답변 완료',
             widget: ListView(
@@ -116,19 +118,19 @@ class _AnswerScreenState extends ConsumerState<AnswerScreen> {
               physics: NeverScrollableScrollPhysics(),
               children: [
                 TextColumn(
-                  title: '제목',
+                  title: answerData.title,
                   content: answerData.title,
                 ),
                 SizedBox(
                   height: 26,
                 ),
                 TextColumn(
-                  title: '내용',
+                  title: answerData.content,
                   content: answerData.content,
                 ),
                 TextColumn(
                   color: auctionColor.mainColor2,
-                  title: '답변',
+                  title: answerData.answer!,
                   content: answerData.answer!,
                 ),
               ],

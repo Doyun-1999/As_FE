@@ -40,18 +40,12 @@ class UserRepository extends BasePaginationRepository {
     return dataList;
   }
 
-  // 문의 상세 조회
-  Future<AnswerModel> answerData({
-    required int inquiryId,
-  }) async {
-    final resp = await dio.get(
-      baseUrl + '/inquiry/$inquiryId',
-    );
-
-    print(resp.statusCode);
-    print(resp.data);
-    final data = AnswerModel.fromJson(resp.data);
-    return data;
+  Future<bool> deleteQandA(int inquiryId) async {
+    final resp = await dio.delete(baseUrl + '/inquiry/${inquiryId}');
+    if(resp.statusCode != 200){
+      return false;
+    }
+    return true;
   }
 
   // 문의 전체 조회

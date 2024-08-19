@@ -9,6 +9,7 @@ import 'package:auction_shop/product/component/product_card.dart';
 import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/product/provider/product_provider.dart';
 import 'package:auction_shop/product/view/product_loading_screen.dart';
+import 'package:auction_shop/product/view/register/register_product_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -62,8 +63,6 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
     final state = ref.watch(productProvider);
     // 로딩 화면
     if (state is CursorPaginationLoading) {
-      final data = ref.read(productProvider.notifier).getFakeData();
-
       return DefaultLayout(
         bgColor: Colors.white,
         appBar: AppBar(
@@ -80,7 +79,7 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
               onPressed: () {},
               icon: Icon(
                 Icons.search,
-                color: auctionColor.mainColor,
+                color: auctionColor.subBlackColor49,
                 size: 34,
               ),
             ),
@@ -131,10 +130,20 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
         ),
         actions: [
           IconButton(
+            onPressed: () {
+              context.goNamed(RegisterProductScreen.routeName);
+            },
+            icon: Icon(
+              Icons.add_circle_outline,
+              color: auctionColor.subBlackColor49,
+              size: 34,
+            ),
+          ),
+          IconButton(
             onPressed: () {},
             icon: Icon(
               Icons.search,
-              color: auctionColor.mainColor,
+              color: auctionColor.subBlackColor49,
               size: 34,
             ),
           ),

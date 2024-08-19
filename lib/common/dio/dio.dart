@@ -39,12 +39,12 @@ class CustomInterceptor extends Interceptor {
   @override
   void onRequest(
       RequestOptions options, RequestInterceptorHandler handler) async {
+        print("요청 주소 : ${options.path}");
     // 현재 저장된 accessToken을 Header에 넣어서 서버 요청
     if (options.headers['accessToken'] == 'true') {
       options.headers.remove('accessToken');
 
       final token = await storage.read(key: ACCESS_TOKEN);
-      print("현재 가진 accessToken을 헤더에 포함하여 요청 보내겠습니다.");
 
       // 실제 토큰 대체
       options.headers.addAll({'Authorization': 'Bearer $token'});
@@ -59,8 +59,7 @@ class CustomInterceptor extends Interceptor {
 
       // refreshToken을 이용하여 accessToken 재발급
       final dio = Dio();
-      final resp = await dio
-          .post(BASE_URL + '/auth/refresh', data: {'refreshToken': token});
+      final resp = await dio.post(BASE_URL + '/auth/refresh', data: {'refreshToken': token});
       // Token 값들 가져와서 사용
       final tokenModel = BaseTokenModel.fromJson(resp.data);
       final accessToken = tokenModel.accessToken;
@@ -82,7 +81,6 @@ class CustomInterceptor extends Interceptor {
     print("Error : ${err.requestOptions.method}, ${err.requestOptions.uri}");
 
     final refreshToken = await storage.read(key: REFRESH_TOKEN);
-    print("리프레시 토큰값 : $refreshToken");
     // refreshToken이 없으면 에러
     if (refreshToken == null) {
       print("refreshToken이 없어요");
@@ -109,12 +107,9 @@ class CustomInterceptor extends Interceptor {
         // 결과에서 accessToken만 가져오고
         // 헤더에서 refreshToken을 가져온다.
         final tokenModel = BaseTokenModel.fromJson(resp.data);
-        print("토큰 모델 : ${tokenModel}");
         final accessToken = tokenModel.accessToken;
-        print("어세스 토큰 모델 : ${accessToken}");
         final cookies = resp.headers['set-cookie'];
         final rToken = parseRefreshToken(cookies![0]);
-        print("리프레쉬 모델 : ${rToken}");
         print('-----------------------');
         print("새로 받은 리프레쉬 토큰값 : $rToken");
         print("새로 받은 accessToken 토큰값 : $accessToken");
@@ -159,8 +154,7 @@ class CustomInterceptor extends Interceptor {
         // 이므로 provider 자체를 부르는게 아니라 read를 이용하여 함수만 호출
 
         print("에러 화면으로 이동하겠습니다.");
-        ref.read(routerProvider).pushNamed(ErrorScreen.routeName,
-            queryParameters: {'route': RootTab.routeName});
+        ref.read(routerProvider).pushNamed(ErrorScreen.routeName,queryParameters: {'route': RootTab.routeName});
         //ref.read(userProvider.notifier).logout();
         print(e);
       }

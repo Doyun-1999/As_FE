@@ -20,12 +20,6 @@ class QandANotifier extends StateNotifier<QandABaseModel?>{
     required this.repo,
   }):super(null);
 
-  // 문의 상세 조회
-  Future<AnswerModel> answerData({required int inquiryId,}) async {
-    final resp = await repo.answerData(inquiryId: inquiryId);
-    return resp;
-  }
-
   // 문의 전체 조회
   Future<void> allAnswerData() async {
     // 만약 데이터 모델이 이미 존재한다면,
@@ -69,5 +63,10 @@ class QandANotifier extends StateNotifier<QandABaseModel?>{
     await repo.reviseQuestion(formData: formData, inquiryId: inquiryId);
     // 요청 후 완료되면 다시 로딩
     allAnswerData();
+  }
+
+  Future<bool> delete(int inquiryId) async {
+    final resp = repo.deleteQandA(inquiryId);
+    return resp;
   }
 }

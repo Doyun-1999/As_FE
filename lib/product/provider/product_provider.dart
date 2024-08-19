@@ -62,13 +62,16 @@ class ProductNotifier extends PaginationProvider<ProductModel, ProductRepository
     late Future<bool> resp;
     // 좋아요를 누르는건지, 취소하는건지에 따라서 다른 함수를 실행
     if(isPlus){
+      print("좋아요하기");
       resp = repo.liked(productId);
     }
     else{
+      print("좋아요 삭제하기");
       resp = repo.deleteLiked(productId);
     }
     // 서버와 통신이 잘 됐으면 데이터 변경
     if(await resp){
+      print("성공했으면 서버랑 통신하기");
       changeLike(productId: productId, isPlus: isPlus);
       // 경매 물품을 좋아요를 누르고 다른 내 경매장/내 판매목록/내 찜/상세 화면 등의
       // 화면에 대해서는 좋아요가 변경된 값의 UI를 새로 업데이트해준다.
@@ -79,10 +82,14 @@ class ProductNotifier extends PaginationProvider<ProductModel, ProductRepository
 
       // ※ 단, 좋아요 화면은 좋아요를 추가하는 경우는 다시 리빌딩,
       //    삭제하는 경우에서 서버와 연동없이 provider 내에서 삭제
-      if(isPlus){
+      if(isPlus) {
+        // Liked 다시 재요청
+        print("like 다시 paginate");
         ref.read(MyLikeProvider.notifier).paginate();
       }
       if(!isPlus){
+        // 삭제
+        print("나의 like에서 삭제하기");
         ref.read(MyLikeProvider.notifier).deleteData(productId);
       }
     }
@@ -116,4 +123,5 @@ class ProductNotifier extends PaginationProvider<ProductModel, ProductRepository
       ];
   }  
 }
+
 

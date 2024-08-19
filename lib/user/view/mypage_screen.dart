@@ -37,9 +37,11 @@ class MyPageScreen extends ConsumerWidget {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              ref.read(userProvider.notifier).logout();
+            },
             icon: Icon(
-              Icons.more_vert,
+              Icons.settings_outlined,
               size: 30,
               color: auctionColor.subGreyColorB6,
             ),

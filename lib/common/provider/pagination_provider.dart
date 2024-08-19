@@ -10,6 +10,7 @@ class PaginationProvider<T, U extends BasePaginationRepository> extends StateNot
   PaginationProvider({
     required this.repo,
   }):super(CursorPaginationLoading()){
+    print("paginate 호출되었음 ${T}");
     paginate();
   }
 
@@ -72,6 +73,7 @@ class PaginationProvider<T, U extends BasePaginationRepository> extends StateNot
       return;
     }
     final newState = state as CursorPagination<ProductModel>;
+    state = CursorPaginationLoading();
     final data = newState.data.firstWhereOrNull((e) => e.product_id == productId);
     // 해당되는 데이터가 없으면 함수 종료
     if(data == null){

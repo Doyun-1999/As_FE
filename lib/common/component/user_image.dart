@@ -56,6 +56,7 @@ class setImage extends StatelessWidget {
             image: NetworkImage(
               imgPath,
             ),
+            fit: BoxFit.fill
           ),
         ),
       ),

@@ -11,26 +11,29 @@ import 'package:collection/collection.dart';
 // 실제 상세 조회할 때 Provider.family를 이용하여
 // productId를 비교하여 필요한 데이터만 가져온다.
 final getProductDetailProvider = Provider.family<ProductDetailModel?, int>((ref, id) {
+  print("getprovider 호출");
   final data = ref.watch(productDetailProvider);
   print("detail length : ${data.length}");
   return data.firstWhereOrNull((e) => e.product_id == id);
 });
 
 // 상세 조회했던 데이트들의 리스트
-final productDetailProvider = StateNotifierProvider<ProductDetailNotifier, List<ProductDetailModel>>((ref) {
+final productDetailProvider =
+    StateNotifierProvider<ProductDetailNotifier, List<ProductDetailModel>>(
+        (ref) {
   final repo = ref.watch(productRepositoryProvider);
-  
+
   return ProductDetailNotifier(repo: repo, ref: ref);
 });
 
-class ProductDetailNotifier extends StateNotifier<List<ProductDetailModel>>{
+class ProductDetailNotifier extends StateNotifier<List<ProductDetailModel>> {
   final ProductRepository repo;
   final Ref ref;
-  
+
   ProductDetailNotifier({
     required this.repo,
     required this.ref,
-  }):super([]);
+  }) : super([]);
 
   // 경매 상세 데이터 추가
   // isUpdate일 경우에는
@@ -43,19 +46,19 @@ class ProductDetailNotifier extends StateNotifier<List<ProductDetailModel>>{
     final data = state.firstWhereOrNull((e) => e.product_id == productId);
     // 데이터가 없고, 업데이트하는 상황이 아니라면
     // 서버에 데이터 요청
-    if(data == null && !isUpdate){
+    if (data == null && !isUpdate) {
       print("상세 데이터 새로 얻겠습니다.");
       final resp = await repo.getDetail(productId);
       state = [...state, resp];
       return;
     }
     // 2. 데이터가 있지만 업데이트를 해야하는 상황 ex) 좋아요
-    if(data != null && isUpdate){
+    if (data != null && isUpdate) {
       print("상세 데이터 업데이트 하겠습니다.");
+      state.removeWhere((e) => e.product_id == productId);
+      print("제거");
       final resp = await repo.getDetail(productId);
-      final updatedList = state.map((item) {
-        return item.product_id == productId ? resp : item;
-      }).toList();
+      final updatedList = [...state, resp];
       state = updatedList;
     }
   }
@@ -67,12 +70,13 @@ class ProductDetailNotifier extends StateNotifier<List<ProductDetailModel>>{
     required int productId,
   }) async {
     // formData 만들어주고 반환
-    FormData formData = await makeFormData(images: images, data: data, key: "product");
+    FormData formData =
+        await makeFormData(images: images, data: data, key: "product");
 
     // 요청
     final resp = await repo.reviseProduct(formData, productId);
-    
-    if(resp){
+
+    if (resp) {
       getProductDetail(productId: productId, isUpdate: true);
       // 수정에 성공하면 다시 첨부터 모든 데이터 불러오기
       ref.read(productProvider.notifier).paginate();
@@ -82,9 +86,9 @@ class ProductDetailNotifier extends StateNotifier<List<ProductDetailModel>>{
   // 경매 물품 삭제
   Future<bool> deleteData(int productId) async {
     final resp = await repo.deleteProduct(productId);
-    if(resp){
+    if (resp) {
       final pState = state;
-      
+
       // 해당 데이터 제거
       pState.removeWhere((e) => e.product_id == productId);
       state = pState;
@@ -94,5 +98,26 @@ class ProductDetailNotifier extends StateNotifier<List<ProductDetailModel>>{
       ref.read(userProductProvider.notifier).deleteData(productId);
     }
     return resp;
+  }
+
+  ProductDetailModel fakeData() {
+    return ProductDetailModel(
+        product_id: 0,
+        title: "Fake Data",
+        conditions: "Fake Data",
+        categories: ["Fake Data", "Fake Data"],
+        tradeTypes: ["Fake Data"],
+        likeCount: 0,
+        initial_price: 30000,
+        minimum_price: 5000,
+        current_price: 15000,
+        createdBy: "createdBy",
+        startTime: "startTime",
+        endTime: "endTime",
+        details: "detailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetails",
+        imageUrls: [],
+        owner: false,
+        sold: false,
+        liked: false);
   }
 }
