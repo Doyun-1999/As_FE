@@ -7,6 +7,7 @@ import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:auction_shop/user/view/mypage_inner/address_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/block_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/answer_screen.dart';
+import 'package:auction_shop/user/view/mypage_inner/my_like_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/mybid_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -36,9 +37,11 @@ class MyPageScreen extends ConsumerWidget {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              ref.read(userProvider.notifier).logout();
+            },
             icon: Icon(
-              Icons.more_vert,
+              Icons.settings_outlined,
               size: 30,
               color: auctionColor.subGreyColorB6,
             ),
@@ -55,7 +58,13 @@ class MyPageScreen extends ConsumerWidget {
             children: [
               // 유저 이름, 포인트, 주소
               userInfo(name: state.name, point: state.point, address: "${state.address.address} ${state.address.detailAddress}", context: context, imgPath: state.profileImageUrl,),
-              
+              IconText(
+                imgName: 'like',
+                text: "좋아요 목록",
+                func: () {
+                  context.pushNamed(MyLikeScreen.routeName);
+                },
+              ),
               IconText(
                 imgName: 'bid_mypage',
                 text: "입찰 내역",

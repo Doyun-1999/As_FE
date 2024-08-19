@@ -19,6 +19,7 @@ class CustomTextFormField extends StatelessWidget {
   final bool expands;
   final int? maxLines;
   final double borderRadius;
+  final TextStyle? style;
   const CustomTextFormField({
     required this.controller,
     required this.hintText,
@@ -34,6 +35,7 @@ class CustomTextFormField extends StatelessWidget {
     this.prefixIcon,
     this.maxLength,
     this.inputFormatters,
+    this.style,
     super.key,
   });
 
@@ -49,7 +51,7 @@ class CustomTextFormField extends StatelessWidget {
       obscureText: obsecure,
       validator: validator == null ? null : validator,
       textAlignVertical: TextAlignVertical.top,
-      style: tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.w500,),
+      style: style ?? tsNotoSansKR(fontSize: 16, fontWeight: FontWeight.w500,),
       onChanged: onChanged,
       controller: controller,
       decoration: InputDecoration(
@@ -95,8 +97,10 @@ class CustomTextFormField extends StatelessWidget {
 
 class TextLable extends StatelessWidget {
   final String text;
+  final TextStyle? style;
   const TextLable({
     required this.text,
+    this.style,
     super.key,
   });
 
@@ -111,7 +115,7 @@ class TextLable extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: tsNotoSansKR(
+        style: style ?? tsNotoSansKR(
           fontSize: 16,
           fontWeight: FontWeight.bold,
         ),

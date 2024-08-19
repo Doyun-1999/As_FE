@@ -1,24 +1,11 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:auction_shop/common/variable/function.dart';
 import 'package:auction_shop/user/model/Q&A_model.dart';
 import 'package:auction_shop/user/repository/user_repository.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http_parser/http_parser.dart';
-
-
-final answerStateProvider = Provider.family<AnswerListModel?, bool>((ref, status){
-  final state = ref.watch(QandAProvider);
-
-  if(!(state is AnswerListModel)){
-    return null;
-  }
-
-  // 같은 status인 것들만 다시 추출
-  final data = state.copyWith(list: state.list.where((e) => e.status == status).toList());
-  
-  return data;
-});
 
 final QandAProvider = StateNotifierProvider<QandANotifier, QandABaseModel?>((ref) {
   final repo = ref.watch(userRepositoryProvider);
@@ -32,12 +19,6 @@ class QandANotifier extends StateNotifier<QandABaseModel?>{
   QandANotifier({
     required this.repo,
   }):super(null);
-
-  // 문의 상세 조회
-  Future<AnswerModel> answerData({required int inquiryId,}) async {
-    final resp = await repo.answerData(inquiryId: inquiryId);
-    return resp;
-  }
 
   // 문의 전체 조회
   Future<void> allAnswerData() async {
@@ -54,51 +35,38 @@ class QandANotifier extends StateNotifier<QandABaseModel?>{
     state = resp;
   }
 
-  // 문의 하기 및 수정
-  // inquiryId 유무에 따라서 요청 방식이 변경됨
-  // 데이터 정제 방식은 같다.
+  // 문의 하기
   Future<void> question({
-    required String memberId,
     required QuestionModel data,
     required List<String>? images,
-    int? inquiryId,
   }) async {
     state = QandABaseLoading();
-    FormData formData = FormData();
-
-    // 경매 물품 데이터 추가
-    final jsonString = jsonEncode(data.toJson());
-    final Uint8List jsonBytes = utf8.encode(jsonString) as Uint8List;
-    formData.files.add(
-      MapEntry('inquiry', MultipartFile.fromBytes(jsonBytes, contentType: MediaType.parse('application/json')))
-    );
-
-    // memberId 추가
-    //formData.fields.add(MapEntry('memberId', memberId.toString()));
+    final formData = await makeFormData(images: images, data: data, key: "inquiry");
     
-    // 이미지 추가
-    if(images != null && images.isNotEmpty){
-      for (String imagePath in images) {
-        formData.files.add(
-          MapEntry(
-            'images',
-            await MultipartFile.fromFile(
-              imagePath,
-            ),
-          ),
-        );
-      }
-    }
+    // 서버 요청
+    await repo.question(formData: formData);
     
-    // 문의 수정
-    if(inquiryId != null){
-      await repo.reviseQuestion(formData: formData, inquiryId: inquiryId);
-    }
-    // 문의 하기
-    if(inquiryId == null){
-      await repo.question(formData: formData);
-    }
     // 요청 후 완료되면 다시 로딩
     allAnswerData();
+  }
+
+  // 문의 수정하기
+  Future<void> revise({
+    required QuestionReviseModel data,
+    required List<String>? images,
+    required int inquiryId,
+  }) async {
+    state = QandABaseLoading();
+    final formData = await makeFormData(images: images, data: data, key: "inquiry");
+    
+    // 서버 요청
+    await repo.reviseQuestion(formData: formData, inquiryId: inquiryId);
+    // 요청 후 완료되면 다시 로딩
+    allAnswerData();
+  }
+
+  Future<bool> delete(int inquiryId) async {
+    final resp = repo.deleteQandA(inquiryId);
+    return resp;
   }
 }

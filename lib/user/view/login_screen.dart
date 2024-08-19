@@ -65,7 +65,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       await ref.read(userProvider.notifier).login(platform: LoginPlatform.kakao);
                     },
               bgColor: (state is UserModelLoading)
-                  ? auctionColor.subGreyColor94
+                  ? Color(0xFFFCDC55).withOpacity(0.5)
                   : Color(0xFFFCDC55),
               textColor: auctionColor.subBlackColor3E24,
             ),
@@ -78,7 +78,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       await ref.read(userProvider.notifier).login(platform: LoginPlatform.naver);
                     },
               bgColor: (state is UserModelLoading)
-                  ? auctionColor.subGreyColor94
+                  ? Color(0xFF45B649).withOpacity(0.5)
                   : Color(0xFF45B649),
               textColor: Colors.white,
             ),
@@ -91,7 +91,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       await ref.read(userProvider.notifier).login(platform: LoginPlatform.google);
                     },
               bgColor: (state is UserModelLoading)
-                  ? auctionColor.subGreyColor94
+                  ? Colors.white.withOpacity(0.5)
                   : Colors.white,
               textColor: auctionColor.subBlackColor3E24,
             ),

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:auction_shop/common/component/button.dart';
 import 'package:auction_shop/common/component/textformfield.dart';
+import 'package:auction_shop/common/dio/dio.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/variable/validator.dart';
@@ -8,6 +9,7 @@ import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/user/model/user_model.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:auction_shop/user/view/login_screen.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -38,6 +40,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       TextEditingController();
   Map<String, String> formData = {};
 
+  // 이름 중복 검사 변수
+  bool? nameCheck = null;
+
   Future<void> _pickImage() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
@@ -46,7 +51,6 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         _image = File(pickedFile.path);
         fileName = pickedFile.name;
       });
-      
     }
   }
 
@@ -146,12 +150,67 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   height: 12,
                 ),
                 CustomTextFormField(
-                  validator: (String? val){
-                        return supportOValidator(val, name: '이름');
-                      },
+                  readOnly: nameCheck == null ? false : nameCheck!,
+                  validator: (String? val) {
+                    return supportOValidator(val, name: '이름');
+                  },
                   controller: _nameController,
                   hintText: "이름을 입력해주세요.",
+                  suffixIcon: GestureDetector(
+                    onTap: () async {
+                      final resp = await checkNickName(_nameController.text);
+                      if (resp) {
+                        setState(() {
+                          nameCheck = true;
+                        });
+                        return;
+                      }
+                      if (!resp) {
+                        setState(() {
+                          nameCheck = false;
+                        });
+                        return;
+                      }
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: auctionColor.mainColor,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        "중복 확인",
+                        style: tsNotoSansKR(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
+                nameCheck == null
+                    ? SizedBox()
+                    : !nameCheck!
+                        ? Text(
+                            "사용 불가능한 닉네임입니다.",
+                            style: tsNotoSansKR(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.red,
+                            ),
+                          )
+                        : Text(
+                            "사용 가능한 닉네임입니다.",
+                            style: tsNotoSansKR(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xFF008CFF),
+                            ),
+                          ),
                 const SizedBox(
                   height: 40,
                 ),
@@ -213,9 +272,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       Icons.search_outlined,
                       color: auctionColor.subGreyColorBF,
                     ),
-                    validator: (String? val){
-                        return supportXValidator(val, name: '주소');
-                      },
+                    validator: (String? val) {
+                      return supportXValidator(val, name: '주소');
+                    },
                     enabled: false,
                     controller: _addressController,
                     hintText: "도로명 주소를 입력해주세요.",
@@ -226,9 +285,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 ),
                 CustomTextFormField(
                   readOnly: true,
-                  validator: (String? val){
-                        return supportXValidator(val, name: '주소');
-                      },
+                  validator: (String? val) {
+                    return supportXValidator(val, name: '주소');
+                  },
                   controller: _postcodeController,
                   hintText: "자동 입력",
                 ),
@@ -236,9 +295,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   height: 6,
                 ),
                 CustomTextFormField(
-                  validator: (String? val){
-                        return supportXValidator(val, name: '상세 주소지');
-                      },
+                  validator: (String? val) {
+                    return supportXValidator(val, name: '상세 주소지');
+                  },
                   controller: _detailAddressController,
                   hintText: "상세 주소지를 입력해주세요.",
                 ),
@@ -247,19 +306,25 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 ),
                 CustomButton(
                   text: "다음",
-                  bgColor: (state is UserModelLoading) ? Colors.grey : auctionColor.mainColor,
-                  func: (state is UserModelLoading) ? null : () async {
-                    if (gkey.currentState!.validate()) {
-                      ref.read(userProvider.notifier).signup(
-                        fileName: fileName,
-                            fileData: _image,
-                            name: _nameController.text,
-                            phone: _phoneController.text,
-                            address: _addressController.text,
-                            detailAddress: _detailAddressController.text,
-                          );
-                    }
-                  },
+                  bgColor: (state is UserModelLoading ||
+                          (nameCheck == null || !nameCheck!))
+                      ? Colors.grey
+                      : auctionColor.mainColor,
+                  func: (state is UserModelLoading ||
+                          (nameCheck == null || !nameCheck!))
+                      ? null
+                      : () async {
+                          if (gkey.currentState!.validate()) {
+                            ref.read(userProvider.notifier).signup(
+                                  fileName: fileName,
+                                  fileData: _image,
+                                  name: _nameController.text,
+                                  phone: _phoneController.text,
+                                  address: _addressController.text,
+                                  detailAddress: _detailAddressController.text,
+                                );
+                          }
+                        },
                 ),
                 SizedBox(
                   height: MediaQuery.of(context).size.height / 20,
@@ -270,5 +335,14 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         ),
       ),
     );
+  }
+
+  // 이름 중복 검사
+  Future<bool> checkNickName(String name) async {
+    final Dio dio = Dio();
+
+    final resp = await dio
+        .get(BASE_URL + '/member/name', queryParameters: {"name": name});
+    return resp.data;
   }
 }

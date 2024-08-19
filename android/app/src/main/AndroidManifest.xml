@@ -54,10 +54,12 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="auctionShopurlscheme" />
 
                 <!-- "kakao${YOUR_NATIVE_APP_KEY}://oauth" 형식의 앱 실행 스킴 설정 -->
                 <!-- 카카오 로그인 Redirect URI -->
                 <data android:scheme='kakao15d66122fbd678ea76c0651f92f55233' android:host="oauth"/>
+                
             </intent-filter>
         </activity>
 

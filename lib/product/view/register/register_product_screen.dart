@@ -307,7 +307,7 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
                     CustomButton(
                       text: '다음',
                       func: () async {
-                        if (tradeTypes() == null) {
+                        if (tradeTypes(tradeValue) == null) {
                           setState(() {
                             isTradeVal = false;
                           });
@@ -322,10 +322,10 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
                           // 제목, 거래방식, 설명, 상태, 카테고리, 장소
                           final extra = RegisterPagingData(
                             title: _titleController.text,
-                            tradeTypes: tradeTypes()!,
+                            tradeTypes: tradeTypes(tradeValue)!,
                             details: _detailsController.text,
                             categories: categories,
-                            conditions: conditions(),
+                            conditions: conditions(stateValue),
                             tradeLocation: _placeController.text,
                           );
                           context.pushNamed(
@@ -348,26 +348,7 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
     );
   }
 
-  // 거래 방식 반환
-  List<String>? tradeTypes() {
-    if (tradeValue[0] && !tradeValue[1]) {
-      return ['비대면'];
-    }
-    if (!tradeValue[0] && tradeValue[1]) {
-      return ['직거래'];
-    }
-    if (tradeValue[0] && tradeValue[1]) {
-      return ['비대면', '직거래'];
-    }
-    return null;
-  }
-
-  String conditions() {
-    if (stateValue[0]) {
-      return '새상품';
-    }
-    return '중고';
-  }
+  
 
   // 이미지 상자
   InkWell imageBox({

@@ -1,4 +1,5 @@
 
+import 'package:auction_shop/common/model/formdata_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'product_model.g.dart';
@@ -32,7 +33,7 @@ class ProductModel{
   final int initial_price;
   final int current_price;
   final String? imageUrl;
-  final String createdBy;
+  // final String createdBy;
   final int likeCount;
   final bool liked;
   final bool sold;
@@ -48,7 +49,7 @@ class ProductModel{
     this.tradeLocation,
     required this.initial_price,
     required this.current_price,
-    required this.createdBy,
+    // required this.createdBy,
     required this.likeCount,
     required this.liked,
     required this.sold,
@@ -79,7 +80,7 @@ class ProductModel{
       tradeLocation: tradeLocation ?? this.tradeLocation,
       initial_price: initial_price ?? this.initial_price,
       current_price: current_price ?? this.current_price,
-      createdBy: createdBy ?? this.createdBy,
+      // createdBy: createdBy ?? this.createdBy,
       likeCount: likeCount ?? this.likeCount,
       liked: liked ?? this.liked,
       sold: sold ?? this.sold,
@@ -89,9 +90,10 @@ class ProductModel{
   factory ProductModel.fromJson(Map<String, dynamic> json) => _$ProductModelFromJson(json);
 }
 
+
 // 경매 물품 등록 모델
 @JsonSerializable()
-class RegisterProductModel{
+class RegisterProductModel extends FormDataBase{
   
   // 등록 데이터
   final String title;
@@ -100,7 +102,6 @@ class RegisterProductModel{
   final List<String> categories;
   final String conditions;
   final String? tradeLocation;
-  final String product_type;
   final String trade;
   final int initial_price;
   final int minimum_price;
@@ -114,7 +115,6 @@ class RegisterProductModel{
     required this.details,
     required this.categories,
     required this.conditions,
-    required this.product_type,
     this.tradeLocation,
     required this.trade,
     required this.initial_price,
@@ -133,7 +133,6 @@ class RegisterProductModel{
 class ProductDetailModel{
   final int product_id;
   final String title;
-  final String product_type;
   //final String trade;
   final String conditions;
   final List<String> categories;
@@ -148,13 +147,13 @@ class ProductDetailModel{
   final String endTime;
   final String details;
   final List<String> imageUrls;
+  final bool owner;
   final bool sold;
   final bool liked;
   
   ProductDetailModel({
     required this.product_id,
     required this.title,
-    required this.product_type,
     //required this.trade,
     required this.conditions,
     required this.categories,
@@ -169,6 +168,7 @@ class ProductDetailModel{
     required this.endTime,
     required this.details,
     required this.imageUrls,
+    required this.owner,
     required this.sold,
     required this.liked,
   });
@@ -176,7 +176,6 @@ class ProductDetailModel{
   ProductDetailModel copyWith({
     int? product_id,
     String? title,
-    String? product_type,
     String? conditions,
     List<String>? categories,
     List<String>? tradeTypes,
@@ -190,13 +189,13 @@ class ProductDetailModel{
     String? endTime,
     String? details,
     List<String>? imageUrls,
+    bool? owner,
     bool? sold,
     bool? liked,
   }) {
     return ProductDetailModel(
       product_id: product_id ?? this.product_id,
       title: title ?? this.title,
-      product_type: product_type ?? this.product_type,
       conditions: conditions ?? this.conditions,
       categories: categories ?? this.categories,
       tradeTypes: tradeTypes ?? this.tradeTypes,
@@ -210,6 +209,7 @@ class ProductDetailModel{
       endTime: endTime ?? this.endTime,
       details: details ?? this.details,
       imageUrls: imageUrls ?? this.imageUrls,
+      owner: owner ?? this.owner,
       sold: sold ?? this.sold,
       liked: liked ?? this.liked,
     );

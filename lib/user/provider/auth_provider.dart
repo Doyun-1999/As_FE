@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:auction_shop/chat/view/chat_info_screen.dart';
 import 'package:auction_shop/chat/view/chat_list_screen.dart';
+import 'package:auction_shop/common/view/error_screen.dart';
 import 'package:auction_shop/common/view/splash_screen.dart';
 import 'package:auction_shop/notification/view/notification_screen.dart';
 import 'package:auction_shop/product/model/product_model.dart';
@@ -16,7 +17,7 @@ import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:auction_shop/user/view/mypage_inner/address_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/block_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/answer_screen.dart';
-import 'package:auction_shop/user/view/mypage_inner/my_interest_screen.dart';
+import 'package:auction_shop/user/view/mypage_inner/my_like_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/mybid_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/question_screen.dart';
 import 'package:auction_shop/user/view/mypage_screen.dart';
@@ -135,9 +136,9 @@ class AuthNotifier extends ChangeNotifier {
                   builder: (_, __) => AddressScreen(),
                 ),
                 GoRoute(
-                  path: 'interest',
-                  name: MyInterestScreen.routeName,
-                  builder: (_, __) => MyInterestScreen(),
+                  path: 'mylike',
+                  name: MyLikeScreen.routeName,
+                  builder: (_, __) => MyLikeScreen(),
                 ),
                 GoRoute(
                   path: 'answer',
@@ -150,7 +151,7 @@ class AuthNotifier extends ChangeNotifier {
                       builder: (_, __) {
                         // __.extra를 이용하여 goRouter를 이용할 때 객체를 전달받을 수 있다.
                         // 데이터가 없으면 일반 문의하기 화면으로
-                        if(__.extra == null){
+                        if (__.extra == null) {
                           return QuestionScreen();
                         }
                         // 데이터가 있으면 내 문의 수정 화면으로
@@ -181,7 +182,10 @@ class AuthNotifier extends ChangeNotifier {
                 final List<String> images = encodedImagePaths != null
                     ? List<String>.from(jsonDecode(encodedImagePaths))
                     : [];
-                 return RegisterProductScreen2(data: data as RegisterPagingData, images: images,);
+                return RegisterProductScreen2(
+                  data: data as RegisterPagingData,
+                  images: images,
+                );
               },
             ),
             GoRoute(
@@ -195,7 +199,13 @@ class AuthNotifier extends ChangeNotifier {
         GoRoute(
           path: '/revise',
           name: ProductReviseScreen.routeName,
-          builder: (_, __) => ProductReviseScreen(),
+          builder: (_, __) {
+            // 객체 데이터
+            // 객체의 상태 정의해줘야 넘어감
+            final data = __.extra as ProductDetailModel;
+
+            return ProductReviseScreen(data: data);
+          },
         ),
         GoRoute(
           path: '/login',
@@ -211,6 +221,17 @@ class AuthNotifier extends ChangeNotifier {
           path: '/splash',
           name: SplashScreen.routeName,
           builder: (_, __) => SplashScreen(),
+        ),
+        GoRoute(
+          path: '/error',
+          name: ErrorScreen.routeName,
+          builder: (_, __) {
+            final route = __.uri.queryParameters['route'];
+            if(route != null){
+              return ErrorScreen(route: route);
+            }
+            return ErrorScreen();
+          },
         ),
       ];
 
@@ -238,7 +259,7 @@ class AuthNotifier extends ChangeNotifier {
     }
 
     // 로딩 상태에는 스플래쉬 화면 출력
-    if(user is UserModelLoading){
+    if (user is UserModelLoading) {
       return '/splash';
     }
 

@@ -1,3 +1,4 @@
+import 'package:auction_shop/common/model/formdata_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'Q&A_model.g.dart';
@@ -30,7 +31,7 @@ class AnswerListModel extends QandABaseModel{
 
 // 문의 모델
 @JsonSerializable()
-class QuestionModel{
+class QuestionModel extends FormDataBase{
   final String title;
   final String content;
 
@@ -44,14 +45,33 @@ class QuestionModel{
   Map<String, dynamic> toJson() => _$QuestionModelToJson(this);
 }
 
+// 문의 수정 모델
+@JsonSerializable()
+class QuestionReviseModel extends FormDataBase{
+  final String title;
+  final String content;
+  final List<String> imageUrlsToKeep;
+
+  QuestionReviseModel({
+    required this.title,
+    required this.content,
+    required this.imageUrlsToKeep,
+  });
+
+  factory QuestionReviseModel.fromJson(Map<String, dynamic> json) => _$QuestionReviseModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$QuestionReviseModelToJson(this);
+}
+
 // 답변 모델
 @JsonSerializable()
 class AnswerModel{
   final int id;
   final String title;
   final String content;
-  final String? imageUrl;
+  final List<String>? imageUrl;
   final bool status;
+  final String? answer;
 
   AnswerModel({
     required this.id,
@@ -59,12 +79,15 @@ class AnswerModel{
     required this.content,
     required this.imageUrl,
     required this.status,
+    this.answer,
   });
 
   factory AnswerModel.fromJson(Map<String, dynamic> json) => _$AnswerModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$AnswerModelToJson(this);
 }
+
+
 
 @JsonSerializable()
 class AnswerDetailModel{
@@ -73,6 +96,7 @@ class AnswerDetailModel{
   final String content;
   final List<String>? imageUrl;
   final bool status;
+  final String? answer;
 
   AnswerDetailModel({
     required this.id,
@@ -80,6 +104,7 @@ class AnswerDetailModel{
     required this.content,
     required this.imageUrl,
     required this.status,
+    required this.answer,
   });
 
   factory AnswerDetailModel.fromJson(Map<String, dynamic> json) => _$AnswerDetailModelFromJson(json);

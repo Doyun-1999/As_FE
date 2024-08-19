@@ -1,15 +1,23 @@
 import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/component/button.dart';
+import 'package:auction_shop/common/component/dialog.dart';
 import 'package:auction_shop/common/component/textformfield.dart';
 import 'package:auction_shop/common/component/user_image.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
+import 'package:auction_shop/common/view/error_screen.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/product/component/toggle_button.dart';
+import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/product/provider/product_detail_provider.dart';
+import 'package:auction_shop/product/provider/product_provider.dart';
+import 'package:auction_shop/product/view/product_category_screen.dart';
+import 'package:auction_shop/product/view/product_loading_screen.dart';
 import 'package:auction_shop/product/view/product_revise_screen.dart';
+import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
@@ -19,8 +27,10 @@ import 'package:go_router/go_router.dart';
 class ProductInfoScreen extends ConsumerStatefulWidget {
   static String get routeName => 'productInfo';
   final String id;
+  final bool isSkeleton;
   const ProductInfoScreen({
     required this.id,
+    this.isSkeleton = false,
     super.key,
   });
 
@@ -32,10 +42,11 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
     with SingleTickerProviderStateMixin {
   late TabController controller;
   int index = 0;
+  ValueNotifier<int> swiperIndex = ValueNotifier<int>(0);
   List<bool> isSelected = [true, false];
   TextEditingController _priceController = TextEditingController();
   TextEditingController _inquiryController = TextEditingController();
-  
+
   late DateTime currentTime;
 
   void updateCurrentTime() {
@@ -53,7 +64,9 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
     );
     controller.addListener(tabListener);
     // 데이터 얻기
-    ref.read(productDetailProvider.notifier).getProductDetail(productId: int.parse(widget.id));
+    if(!widget.isSkeleton){
+      ref.read(productDetailProvider.notifier).getProductDetail(productId: int.parse(widget.id));
+    }
     super.initState();
   }
 
@@ -84,109 +97,109 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
 
   @override
   Widget build(BuildContext context) {
-    final data = ref.watch(getProductDetailProvider(int.parse(widget.id)));
+    final data = widget.isSkeleton ? ref.read(productDetailProvider.notifier).fakeData() : ref.watch(getProductDetailProvider(int.parse(widget.id)));
     if (data == null) {
       return DefaultLayout(
         appBar: CustomAppBar().noActionAppBar(title: "", context: context),
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
+        child: ProductInfoLoadingScreen(),
       );
     }
+
     return DefaultLayout(
       child: Stack(
         children: [
-          CustomScrollView(
-            slivers: [
-              // ProductInfo
-              SliverToBoxAdapter(
-                child: Column(
-                  children: [
-                    imageWidget(
-                      imgPath: data.imageUrls.length == 0 
-                      ? 'https://search.pstatic.net/sunny/?src=https%3A%2F%2Fwww.shutterstock.com%2Fshutterstock%2Fphotos%2F261719003%2Fdisplay_1500%2Fstock-vector-no-image-available-sign-internet-web-icon-to-indicate-the-absence-of-image-until-it-will-be-261719003.jpg&type=sc960_832'
-                      : data.imageUrls[0],
-                      likeCount: data.likeCount,
-                      liked: data.liked,
-                    ),
-                    SizedBox(
-                      height: 28,
-                    ),
-                    productInfo(
-                      categories: data.categories,
-                      createdBy: data.createdBy,
-                      title: data.title,
-                      current_price: data.current_price,
-                      initial_price: data.initial_price,
-                      tradeTypes: data.tradeTypes,
-                      conditions: data.conditions,
-                    ),
-                    Divider(
-                      thickness: 8,
-                      color: auctionColor.subGreyColorF5,
-                    ),
-                    SizedBox(
-                      height: ratio.height * 43,
-                    ),
-                  ],
-                ),
-              ),
-
-              // Tabbar
-              TabBarWidget(limitTime: data.endTime),
-
-              // Custom TabBarView
-              SliverFillRemaining(
-                hasScrollBody: false,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 33,
-                  ),
+          RefreshIndicator(
+            onRefresh: () async {
+              ref.read(productDetailProvider.notifier).getProductDetail(productId: data.product_id, isUpdate: true);
+            },
+            child: CustomScrollView(
+              slivers: [
+                // ProductInfo
+                SliverToBoxAdapter(
                   child: Column(
                     children: [
-                      index == 0
-                          ? Text(
-                              data.details,
-                              style: tsNotoSansKR(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                                color: auctionColor.subBlackColor49,
-                              ),
-                            )
-                          : Column(
-                              children: [
-                                Text(
-                                  '최근 입찰',
-                                  style: tsNotoSansKR(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    color: auctionColor.mainColor,
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 6,
-                                ),
-                                ...List.generate(
-                                  5,
-                                  (index) {
-                                    return bidBox(
-                                      date: '2024.02.03',
-                                      price: 40000,
-                                      isFirst: index == 0 ? true : false,
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
+                      imageWidget(
+                        data: data,
+                      ),
                       SizedBox(
-                        height: 90,
+                        height: 18,
+                      ),
+                      productInfo(
+                        categories: data.categories,
+                        createdBy: data.createdBy,
+                        title: data.title,
+                        current_price: data.current_price,
+                        initial_price: data.initial_price,
+                        tradeTypes: data.tradeTypes,
+                        conditions: data.conditions,
+                      ),
+                      Divider(
+                        thickness: 8,
+                        color: auctionColor.subGreyColorF5,
+                      ),
+                      SizedBox(
+                        height: 22,
                       ),
                     ],
                   ),
                 ),
-              ),
-            ],
+
+                // Tabbar
+                TabBarWidget(limitTime: data.endTime),
+
+                // Custom TabBarView
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 20,
+                    ),
+                    child: Column(
+                      children: [
+                        index == 0
+                            ? Text(
+                                data.details,
+                                style: tsNotoSansKR(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                  color: auctionColor.subBlackColor49,
+                                ),
+                              )
+                            : Column(
+                                children: [
+                                  Text(
+                                    '최근 입찰',
+                                    style: tsNotoSansKR(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: auctionColor.mainColor,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 6,
+                                  ),
+                                  ...List.generate(
+                                    5,
+                                    (index) {
+                                      return bidBox(
+                                        date: '2024.02.03',
+                                        price: 40000,
+                                        isFirst: index == 0 ? true : false,
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                        SizedBox(
+                          height: 90,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(
@@ -220,105 +233,194 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
   }
 
   IntrinsicHeight imageWidget({
-    required String imgPath,
-    required int likeCount,
-    required bool liked,
+    required ProductDetailModel data,
   }) {
+    final productId = data.product_id;
     return IntrinsicHeight(
-      child: Stack(
-        children: [
-          //Image.network(imgPath),
-          Stack(
+      // Swiper의 값을 원래 int로 설정해서 setState로 변경했으나,
+      // 해당 방법으로 하면 다른 모든 위젯들이 새로 빌드가 되므로
+      // => 이렇게 되면 시간이 자꾸 리빌딩돼서 사용자에게 보이기에 적합하지 않다.
+      // 따라서 해당 스와이퍼의 인덱스 변화 감지는
+      // ValueListenableBuilder에서만 이루어지도록 한다.
+      child: ValueListenableBuilder(
+        valueListenable: swiperIndex,
+        builder: (context, value, child) {
+          return Stack(
             children: [
-              Container(
-                width: double.infinity,
-                height: ratio.height * 320,
-                decoration: BoxDecoration(
-                  image: DecorationImage(image: NetworkImage(imgPath), fit: BoxFit.fitWidth),
-                ),
-              ),
-              Container(
-                width: double.infinity,
-                height: ratio.height * 150,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.center, // 그라데이션 끝나는 지점
-                    colors: [Colors.black.withOpacity(0.8), Colors.transparent],
+              //Image.network(imgPath),
+              // Swiper
+              Stack(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    height: ratio.height * 320,
+                    child: data.imageUrls.length == 0
+                        ? Image.asset(
+                            'assets/img/no_image.png',
+                            fit: BoxFit.fitWidth,
+                          )
+                        : Swiper(
+                            loop: false,
+                            index: value,
+                            onIndexChanged: (val) {
+                              swiperIndex.value = val;
+                              print("swiperIndex : ${swiperIndex}");
+                            },
+                            itemCount: data.imageUrls.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Image.network(
+                                data.imageUrls[index],
+                                fit: BoxFit.fitWidth,
+                              );
+                            },
+                          ),
                   ),
-                ),
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(
-                onPressed: () {
-                  context.pop();
-                },
-                icon: Icon(
-                  Icons.arrow_back_ios,
-                  color: Colors.white,
-                ),
-              ),
-              PopupMenuButton<String>(
-                color: Colors.white,
-                onSelected: (String? val) {
-                  if (val == "수정") {
-                    context.pushNamed(ProductReviseScreen.routeName);
-                  }
-                  if (val == "삭제") {
-                    print("삭제");
-                  }
-                },
-                itemBuilder: (BuildContext context) => [
-                  popupItem(
-                    text: "수정하기",
-                    value: "수정",
-                  ),
-                  PopupMenuDivider(),
-                  popupItem(
-                    text: "삭제하기",
-                    value: "삭제",
+                  Container(
+                    width: double.infinity,
+                    height: ratio.height * 150,
+                    decoration: BoxDecoration(
+                      gradient: widget.isSkeleton ? null : LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.center, // 그라데이션 끝나는 지점
+                        colors: [
+                          Colors.black.withOpacity(0.8),
+                          Colors.transparent
+                        ],
+                      ),
+                    ),
                   ),
                 ],
-                icon: Icon(Icons.more_vert, color: Colors.white,),
               ),
-            ],
-          ),
-          Positioned(
-            bottom: 25,
-            right: 17,
-            child: GestureDetector(
-              // 좋아요하기
-              onTap: () async {
-                final productId = int.parse(widget.id);
-                final isPlus = !liked;
-                ref.read(productDetailProvider.notifier).liked(productId: productId, isPlus: isPlus);
-              },
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 8.5, horizontal: 12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    // 좋아요 했는지에 따라 UI 변경
-                    liked ? Icon(Icons.favorite, color: auctionColor.mainColor,) : Icon(Icons.favorite_outline),
-                    SizedBox(
-                      width: 5,
+              // 상단 appBar
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      context.pop();
+                    },
+                    icon: Icon(
+                      Icons.arrow_back_ios,
+                      color: Colors.white,
                     ),
-                    Text('$likeCount'),
+                  ),
+                  data.owner
+                      ? PopupMenuButton<String>(
+                          color: Colors.white,
+                          onSelected: (String? val) async {
+                            if (val == "수정") {
+                              context.pushNamed(ProductReviseScreen.routeName,
+                                  extra: data);
+                            }
+                            if (val == "삭제") {
+                              CustomDialog(
+                                  context: context,
+                                  title: "정말 게시글을 삭제하시겠어요?",
+                                  CancelText: "삭제 취소",
+                                  OkText: "삭제",
+                                  func: () async {
+                                    final resp = await ref.read(productDetailProvider.notifier).deleteData(productId);
+                                    // 삭제에 성공하면 경매 물품 목록 화면으로 이동
+                                    if (resp) {
+                                      context.goNamed(
+                                        ProductCategoryScreen.routeName,
+                                        pathParameters: {
+                                          'cid': '0',
+                                        },
+                                      );
+                                      return;
+                                    }
+                                    // 실패하면 에러 화면으로
+                                    if (!resp) {
+                                      context.goNamed(ErrorScreen.routeName);
+                                      return;
+                                    }
+                                  });
+                            }
+                          },
+                          itemBuilder: (BuildContext context) => [
+                            popupItem(
+                              text: "수정하기",
+                              value: "수정",
+                            ),
+                            PopupMenuDivider(),
+                            popupItem(
+                              text: "삭제하기",
+                              value: "삭제",
+                            ),
+                          ],
+                          icon: Icon(
+                            Icons.more_vert,
+                            color: Colors.white,
+                          ),
+                        )
+                      : SizedBox(),
+                ],
+              ),
+              Positioned(
+                bottom: 8,
+                right: 16,
+                left: 16,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8.5),
+                      decoration: BoxDecoration(
+                        // 로딩 화면일시 다른 UI
+                        color: widget.isSkeleton ? null : auctionColor.subBlackColor49.withOpacity(0.5),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '${swiperIndex.value + 1}/${data.imageUrls.length == 0 ? 1 : data.imageUrls.length}',
+                        style: tsInter(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      // 좋아요하기
+                      onTap: () async {
+                        final productId = int.parse(widget.id);
+                        final isPlus = !data.liked;
+                        ref
+                            .read(productProvider.notifier)
+                            .liked(productId: productId, isPlus: isPlus);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8.5, horizontal: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            // 좋아요 했는지에 따라 UI 변경
+                            data.liked
+                                ? Icon(
+                                    Icons.favorite,
+                                    color: auctionColor.mainColor,
+                                  )
+                                : Icon(Icons.favorite_outline),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text('${data.likeCount}'),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
-            ),
-          )
-        ],
+            ],
+          );
+        },
       ),
     );
   }
@@ -341,34 +443,44 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ...List.generate(
-                    categories.length, (index) {
-                      return Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 4),
-                        margin: const EdgeInsets.only(right: 6),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: auctionColor.mainColor),
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        child: Text(
-                          categories[index],
-                          style: tsInter(
-                            fontSize: 12,
-                            fontWeight: FontWeight.normal,
-                            color: auctionColor.mainColor,
-                          ),
-                        ),
-                      );
-                    }
+                  Row(
+                    children: [
+                      ...List.generate(
+                        categories.length,
+                        (index) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 11, vertical: 4),
+                            margin: const EdgeInsets.only(right: 4),
+                            decoration: BoxDecoration(
+                              border: widget.isSkeleton ? null : Border.all(color: auctionColor.mainColor),
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                            child: Text(
+                              categories[index],
+                              style: tsInter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.normal,
+                                color: auctionColor.mainColor,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 4),
+                    margin: const EdgeInsets.only(top: 4, bottom: 15),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 11, vertical: 4),
                     decoration: BoxDecoration(
-                      border: Border.all(color: auctionColor.subBlackColor49, width: 3),
+                      border: widget.isSkeleton ? null : Border.all(color: auctionColor.subBlackColor49, width: 3),
                       borderRadius: BorderRadius.circular(100),
-                      color: auctionColor.subBlackColor49,
+                      color: widget.isSkeleton ? null : auctionColor.subBlackColor49,
                     ),
                     child: Text(
                       conditions,
@@ -405,7 +517,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: auctionColor.mainColor,
+                            color: widget.isSkeleton ? null : auctionColor.mainColor,
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: Text(
@@ -436,9 +548,6 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
               )
             ],
           ),
-          SizedBox(
-            height: 15,
-          ),
           Text(
             title,
             style: tsNotoSansKR(
@@ -459,7 +568,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
             ),
           ),
           Text(
-            "시작가격 ${current_price}원",
+            "시작가격 ${initial_price}원",
             style: tsNotoSansKR(
               fontSize: 14,
               fontWeight: FontWeight.w400,
@@ -470,27 +579,36 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
             padding: const EdgeInsets.only(top: 16, bottom: 8),
             child: Row(
               children: [
-                ...List.generate(tradeTypes.length, (index) {
-                  return Text(
-                    "거래방식 ${tradeTypes[index]}",
-                    style: tsNotoSansKR(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                      color: auctionColor.subBlackColor49,
-                    ),
-                  );
-                })
+                Text(
+                  "거래방식",
+                  style: tsNotoSansKR(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                    color: auctionColor.subBlackColor49,
+                  ),
+                ),
+                SizedBox(width: 28),
+                Text(
+                  "${tradeTypes.join(', ')}",
+                  style: tsNotoSansKR(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                    color: auctionColor.subBlackColor49,
+                  ),
+                ),
               ],
             ),
           ),
-          tradeLocation == null ? SizedBox() : Text(
-            "거래장소 ${tradeLocation}",
-            style: tsNotoSansKR(
-              fontSize: 12,
-              fontWeight: FontWeight.w400,
-              color: auctionColor.subBlackColor49,
-            ),
-          ),
+          tradeLocation == null
+              ? SizedBox()
+              : Text(
+                  "거래장소 ${tradeLocation}",
+                  style: tsNotoSansKR(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                    color: auctionColor.subBlackColor49,
+                  ),
+                ),
           SizedBox(
             height: 20,
           ),
@@ -501,7 +619,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
 
   // TabBar
   SliverToBoxAdapter TabBarWidget({
-    required String limitTime,
+    String? limitTime,
   }) {
     return SliverToBoxAdapter(
       child: TabBar(
@@ -526,37 +644,52 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
           Stack(
             clipBehavior: Clip.none,
             children: [
+              // 로딩 화면일시 다른 데이터
+              widget.isSkeleton ? SizedBox() :
               StreamBuilder<DateTime>(
-                stream: Stream.periodic(Duration(seconds: 1), (_) => DateTime.now()),
-                builder: (context, snapshot) {
-                  currentTime = snapshot.data!;
-                  final limitedTime = DateTime.parse(limitTime);
-                  Duration timeDifference = limitedTime.difference(currentTime);
-                  return Positioned(
-                    top: -10,
-                    right: 25,
-                    left: 25,
-                    child: Container(
-                      decoration: BoxDecoration(
+                  stream: Stream.periodic(
+                      Duration(seconds: 1), (_) => DateTime.now()),
+                  builder: (context, snapshot) {
+                    // snapshot 데이터가 로딩중이거나, 에러가 있거나, 데이터가 없거나 제한 시간 데이터가 아직 들어오지 않았을 때,
+                    // 로딩 화면 출력
+                    if ((limitTime == null) ||
+                        (snapshot.connectionState == ConnectionState.waiting) ||
+                        (snapshot.hasError) ||
+                        (!snapshot.hasData)) {
+                      return Center(
+                        child: Text('-'),
+                      );
+                    }
+                    currentTime = snapshot.data!;
+                    final limitedTime = DateTime.parse(limitTime);
+                    Duration timeDifference =
+                        limitedTime.difference(currentTime);
+
+                    return Positioned(
+                      top: -10,
+                      right: 25,
+                      left: 25,
+                      child: Container(
+                        decoration: BoxDecoration(
                           color: auctionColor.mainColorE2,
-                          borderRadius: BorderRadius.circular(8)),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 5,
-                        vertical: 3,
-                      ),
-                      child: Text(
-                        '남은 시간 ${timeDifference.inHours}:${timeDifference.inMinutes % 60}:${timeDifference.inSeconds % 60}',
-                        style: tsInter(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: auctionColor.mainColor,
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        textAlign: TextAlign.center,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 5,
+                          vertical: 3,
+                        ),
+                        child: Text(
+                          '남은 시간 ${timeDifference.inHours}:${timeDifference.inMinutes % 60}:${timeDifference.inSeconds % 60}',
+                          style: tsInter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: auctionColor.mainColor,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
-                    ),
-                  );
-                }
-              ),
+                    );
+                  },),
               Align(
                 alignment: Alignment.center,
                 child: Tab(
