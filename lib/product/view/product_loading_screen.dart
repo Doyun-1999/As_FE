@@ -49,6 +49,7 @@ class ProductInfoLoadingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Skeletonizer(
+      textBoneBorderRadius: TextBoneBorderRadius.fromHeightFactor(.3),
       child: ProductInfoScreen(
         isSkeleton: true,
         id: '0',

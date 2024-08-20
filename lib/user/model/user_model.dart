@@ -28,6 +28,7 @@ class UserModel extends UserModelBase{
   final int id;
   final String username;
   final String name;
+  final String nickname;
   final AddressModel address;
   final String phone;
   final int point;
@@ -39,6 +40,7 @@ class UserModel extends UserModelBase{
     required this.id,
     required this.username,
     required this.name,
+    required this.nickname,
     required this.address,
     required this.phone,
     required this.point,
@@ -53,12 +55,18 @@ class UserModel extends UserModelBase{
 @JsonSerializable()
 class SignupUser{
   final String name;
+  final String nickname;
+  final String zipcode;
+  final String email;
   final String phone;
   final String address;
   final String detailAddress;
 
   SignupUser({
     required this.name,
+    required this.nickname,
+    required this.zipcode,
+    required this.email,
     required this.phone,
     required this.address,
     required this.detailAddress,
@@ -73,10 +81,12 @@ class SignupUser{
 class AddressModel{
   final String address;
   final String detailAddress;
+  final String zipcode;
 
   AddressModel({
     required this.address,
     required this.detailAddress,
+    required this.zipcode,
   });
 
   factory AddressModel.fromJson(Map<String, dynamic> json) => _$AddressModelFromJson(json);

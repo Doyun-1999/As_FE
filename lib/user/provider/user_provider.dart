@@ -149,10 +149,7 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
   Future<void> signup({
     File? fileData,
     String? fileName,
-    required String name,
-    required String phone,
-    required String address,
-    required String detailAddress,
+    required SignupUser userData,
   }) async {
     // 회원가입 요청중
     // 만약 현재 state가 UserModelSignup이 아닐 경우에 null 반환
@@ -171,14 +168,7 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
     state = UserModelLoading();
     
     final memberId = signupModel.id;
-    final userData = SignupUser(
-        name: name,
-        phone: phone,
-        address: address,
-        detailAddress: detailAddress,
-      );
-      print(userData.toJson());
-
+ 
     // FormData 생성
     FormData formData = FormData();
     

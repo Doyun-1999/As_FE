@@ -9,7 +9,7 @@ Future<void> CustomDialog({
   bool barrierDismissible = true,
   required BuildContext context,
   required String title,
-  required String CancelText,
+  String? CancelText,
   required String OkText,
   required VoidCallback func,
 }) {
@@ -39,7 +39,31 @@ Future<void> CustomDialog({
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 33), // 제목과 버튼 사이의 간격
-              Row(
+              CancelText == null ? 
+              Container(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: auctionColor.mainColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: func,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 11),
+                    child: Text(
+                      OkText,
+                      style: tsNotoSansKR(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              )
+              : Row(
                 children: [
                   Expanded(
                     child: ElevatedButton(
@@ -56,7 +80,7 @@ Future<void> CustomDialog({
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 11),
                         child: Text(
-                          CancelText,
+                          CancelText!,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,

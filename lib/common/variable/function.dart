@@ -81,36 +81,6 @@ Future<FormData> makeFormData({
   return formData;
 }
 
-Future<FormData> makeQandAFormData({
-  required List<String>? images,
-  required  data,
-}) async {
-  FormData formData = FormData();
-
-  // 경매 물품 데이터 추가
-  final jsonString = jsonEncode(data.toJson());
-  final Uint8List jsonBytes = utf8.encode(jsonString) as Uint8List;
-  formData.files.add(MapEntry(
-      'product',
-      MultipartFile.fromBytes(jsonBytes,
-          contentType: MediaType.parse('application/json'))));
-
-  // 이미지 추가
-  if (images != null && images.isNotEmpty) {
-    for (String imagePath in images) {
-      formData.files.add(
-        MapEntry(
-          'images',
-          await MultipartFile.fromFile(
-            imagePath,
-          ),
-        ),
-      );
-    }
-  }
-  return formData;
-}
-
 // 거래 방식 반환
 List<String>? tradeTypes(List<bool> tradeValue) {
   if (tradeValue[0] && !tradeValue[1]) {

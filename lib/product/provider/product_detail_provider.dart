@@ -10,7 +10,8 @@ import 'package:collection/collection.dart';
 
 // 실제 상세 조회할 때 Provider.family를 이용하여
 // productId를 비교하여 필요한 데이터만 가져온다.
-final getProductDetailProvider = Provider.family<ProductDetailModel?, int>((ref, id) {
+final getProductDetailProvider =
+    Provider.family<ProductDetailModel?, int>((ref, id) {
   print("getprovider 호출");
   final data = ref.watch(productDetailProvider);
   print("detail length : ${data.length}");
@@ -100,24 +101,28 @@ class ProductDetailNotifier extends StateNotifier<List<ProductDetailModel>> {
     return resp;
   }
 
+  // 스켈레톤 화면을 구성하는
+  // 가짜 데이터들
   ProductDetailModel fakeData() {
     return ProductDetailModel(
-        product_id: 0,
-        title: "Fake Data",
-        conditions: "Fake Data",
-        categories: ["Fake Data", "Fake Data"],
-        tradeTypes: ["Fake Data"],
-        likeCount: 0,
-        initial_price: 30000,
-        minimum_price: 5000,
-        current_price: 15000,
-        createdBy: "createdBy",
-        startTime: "startTime",
-        endTime: "endTime",
-        details: "detailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetails",
-        imageUrls: [],
-        owner: false,
-        sold: false,
-        liked: false);
+      product_id: 0,
+      title: "Fake Data",
+      conditions: "Fake Data",
+      categories: ["Fake Data", "Fake Data"],
+      tradeTypes: ["Fake Data"],
+      likeCount: 0,
+      initial_price: 30000,
+      minimum_price: 5000,
+      current_price: 15000,
+      createdBy: "createdBy",
+      startTime: "startTime",
+      endTime: "endTime",
+      details:
+          "detailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetails",
+      imageUrls: [],
+      owner: false,
+      sold: false,
+      liked: false,
+    );
   }
 }

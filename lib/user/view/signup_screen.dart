@@ -1,11 +1,13 @@
 import 'dart:io';
 import 'package:auction_shop/common/component/button.dart';
+import 'package:auction_shop/common/component/dialog.dart';
 import 'package:auction_shop/common/component/textformfield.dart';
 import 'package:auction_shop/common/dio/dio.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/variable/validator.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
+import 'package:auction_shop/main.dart';
 import 'package:auction_shop/user/model/user_model.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:auction_shop/user/view/login_screen.dart';
@@ -32,9 +34,12 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   String? fileName;
   final ImagePicker picker = ImagePicker();
   final gkey = GlobalKey<FormState>();
+
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _nicknameController = TextEditingController();
+  final TextEditingController _zipcodeController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _postcodeController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _detailAddressController =
       TextEditingController();
@@ -81,7 +86,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
-                  height: MediaQuery.of(context).size.height / 20,
+                  height: ratio.height * 40,
                 ),
                 Text(
                   "환영합니다!",
@@ -136,26 +141,25 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   ),
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height / 20,
+                  height: ratio.height * 30,
                 ),
-                Text(
-                  "이름",
-                  style: tsNotoSansKR(
-                    color: auctionColor.subBlackColor49,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(
-                  height: 12,
-                ),
+                TextLable(text: "이름"),
                 CustomTextFormField(
-                  readOnly: nameCheck == null ? false : nameCheck!,
                   validator: (String? val) {
                     return supportOValidator(val, name: '이름');
                   },
                   controller: _nameController,
                   hintText: "이름을 입력해주세요.",
+                ),
+                TextLable(text: "닉네임"),
+                CustomTextFormField(
+                  maxLength: 10,
+                  readOnly: nameCheck == null ? false : nameCheck!,
+                  validator: (String? val) {
+                    return supportOValidator(val, name: '닉네임');
+                  },
+                  controller: _nicknameController,
+                  hintText: "닉네임을 입력해주세요.",
                   suffixIcon: GestureDetector(
                     onTap: () async {
                       final resp = await checkNickName(_nameController.text);
@@ -172,24 +176,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                         return;
                       }
                     },
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 12),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 5),
-                      decoration: BoxDecoration(
-                        color: auctionColor.mainColor,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        "중복 확인",
-                        style: tsNotoSansKR(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
+                    child: nicknameCheckbox(),
                   ),
                 ),
                 nameCheck == null
@@ -211,20 +198,15 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                               color: Color(0xFF008CFF),
                             ),
                           ),
-                const SizedBox(
-                  height: 40,
+                TextLable(text: "이메일"),
+                CustomTextFormField(
+                  validator: (String? val) {
+                    return supportOValidator(val, name: '이메일');
+                  },
+                  controller: _emailController,
+                  hintText: "이메일을 입력해주세요.",
                 ),
-                Text(
-                  "전화번호",
-                  style: tsNotoSansKR(
-                    color: auctionColor.subBlackColor49,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(
-                  height: 12,
-                ),
+                TextLable(text: "전화번호"),
                 CustomTextFormField(
                   maxLength: 13,
                   inputFormatters: [
@@ -235,20 +217,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   controller: _phoneController,
                   hintText: "전화번호를 입력해주세요.",
                 ),
-                const SizedBox(
-                  height: 40,
+                SizedBox(
+                  height: ratio.height * 40,
                 ),
-                Text(
-                  "주소",
-                  style: tsNotoSansKR(
-                    color: auctionColor.subBlackColor49,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(
-                  height: 12,
-                ),
+                TextLable(text: "주소"),
                 GestureDetector(
                   onTap: () async {
                     await Navigator.push(
@@ -258,7 +230,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                           callback: (Kpostal result) {
                             setState(
                               () {
-                                _postcodeController.text = result.postCode;
+                                _zipcodeController.text = result.postCode;
                                 _addressController.text = result.address;
                               },
                             );
@@ -288,7 +260,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   validator: (String? val) {
                     return supportXValidator(val, name: '주소');
                   },
-                  controller: _postcodeController,
+                  controller: _zipcodeController,
                   hintText: "자동 입력",
                 ),
                 const SizedBox(
@@ -306,22 +278,30 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 ),
                 CustomButton(
                   text: "다음",
-                  bgColor: (state is UserModelLoading ||
-                          (nameCheck == null || !nameCheck!))
+                  bgColor: (state is UserModelLoading)
                       ? Colors.grey
                       : auctionColor.mainColor,
-                  func: (state is UserModelLoading ||
-                          (nameCheck == null || !nameCheck!))
+                  func: (state is UserModelLoading)
                       ? null
                       : () async {
                           if (gkey.currentState!.validate()) {
+                            if((nameCheck == null || !nameCheck!)){
+                              CustomDialog(context: context, title: "닉네임 중복검사를 진행해주세요.", OkText: "확인", func: (){context.pop();});
+                              return;
+                            }
+                            final userData = SignupUser(
+                              name: _nameController.text,
+                              nickname: _nicknameController.text,
+                              zipcode: _zipcodeController.text,
+                              email: _emailController.text,
+                              phone: _phoneController.text,
+                              address: _addressController.text,
+                              detailAddress: _detailAddressController.text,
+                            );
                             ref.read(userProvider.notifier).signup(
                                   fileName: fileName,
                                   fileData: _image,
-                                  name: _nameController.text,
-                                  phone: _phoneController.text,
-                                  address: _addressController.text,
-                                  detailAddress: _detailAddressController.text,
+                                  userData: userData,
                                 );
                           }
                         },
@@ -340,9 +320,31 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   // 이름 중복 검사
   Future<bool> checkNickName(String name) async {
     final Dio dio = Dio();
-
-    final resp = await dio
-        .get(BASE_URL + '/member/name', queryParameters: {"name": name});
+    print("name : $name");
+    final resp = await dio.get(BASE_URL + '/member/name', queryParameters: {"name": name});
+    
+    print(resp.statusCode);
+    print(resp.data);
     return resp.data;
+  }
+
+  // 닉네임 체크 박스
+  Widget nicknameCheckbox() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
+      decoration: BoxDecoration(
+        color: auctionColor.mainColor,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        "중복 확인",
+        style: tsNotoSansKR(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+          color: Colors.white,
+        ),
+      ),
+    );
   }
 }

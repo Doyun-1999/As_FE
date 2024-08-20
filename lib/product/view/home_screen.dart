@@ -43,7 +43,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       IconButton(
                         onPressed: () {
                           Navigator.push(context, MaterialPageRoute(builder: (context){
-                            return Payment();
+                            return Certification();
                           }));
                         },
                         icon: Icon(
@@ -83,8 +83,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             itemCount: images.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 4,
-              // crossAxisSpacing: 10,
-              mainAxisSpacing: ratio.height * 20,
+              crossAxisSpacing: 0,
+              mainAxisSpacing: 4,
             ),
             itemBuilder: (context, index) {
               return Column(
@@ -103,9 +103,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         borderRadius: BorderRadius.circular(8),
                         color: auctionColor.mainColor2,
                       ),
-                      width: ratio.width * 80,
-                      height: ratio.height * 80,
-                      child: Image.asset(images[index]),
+                      width: ratio.width * 85,
+                      height: ratio.height * 85,
+                      child: Image.asset(
+                        images[index],
+                        width: ratio.width * 65,
+                        height: ratio.height * 65,
+                      ),
                     ),
                   ),
                   Text(

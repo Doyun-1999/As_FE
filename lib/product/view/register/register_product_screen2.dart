@@ -1,5 +1,6 @@
 import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/component/button.dart';
+import 'package:auction_shop/common/component/dialog.dart';
 import 'package:auction_shop/common/component/textformfield.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/model/cursor_pagination_model.dart';
@@ -122,15 +123,42 @@ class _RegisterProductScreen2State
                 TextLable(
                   text: '최소 가격',
                 ),
-                CustomTextFormField(
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Positioned(
+                      left: 90,
+                      bottom: 65,
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          Positioned(
+                            top: 13,
+                            left: 40,
+                            child: TriangleWidget(),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: auctionColor.mainColorE2,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text("최소 가격이 시작가격 보다 낮아야 해요!", style: tsInter(fontSize: 12, fontWeight: FontWeight.bold, color: auctionColor.mainColor,),),
+                          ),
+                        ],
+                      ),
+                    ),
+                    CustomTextFormField(
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
+                      controller: _minPriceController,
+                      hintText: '₩ 가격을 입력해 주세요',
+                      validator: (String? val) {
+                        return supportOValidator(val, name: '최소 가격');
+                      },
+                    ),
                   ],
-                  controller: _minPriceController,
-                  hintText: '₩ 가격을 입력해 주세요',
-                  validator: (String? val) {
-                    return supportOValidator(val, name: '최소 가격');
-                  },
                 ),
                 TextLable(
                   text: '제한 시간',
@@ -183,6 +211,10 @@ class _RegisterProductScreen2State
                       // 가격 데이터
                       final minPrice = int.parse(_minPriceController.text);
                       final startPrice = int.parse(_priceController.text);
+                      if(minPrice > startPrice){
+                        CustomDialog(context: context, title: "최소 가격을 시작 가격보다\n낮게 설정해주세요.", OkText: "확인", func: (){context.pop();});
+                        return;
+                      }
 
                       // 시간 데이터
                       final now = DateTime.now();
@@ -353,5 +385,41 @@ class _RegisterProductScreen2State
               ),
             ),
           );
+  }
+}
+
+
+class TriangleWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 15,
+      height: 15,
+      child: CustomPaint(
+        painter: TrianglePainter(),
+      ),
+    );
+  }
+}
+
+class TrianglePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = auctionColor.mainColorE2
+      ..style = PaintingStyle.fill;
+
+    final path = Path()
+      ..moveTo(size.width / 2, size.height) // 삼각형의 하단 중앙
+      ..lineTo(0, 0) // 삼각형의 상단 왼쪽
+      ..lineTo(size.width, 0) // 삼각형의 상단 오른쪽
+      ..close(); // 시작점으로 돌아가기
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return false;
   }
 }

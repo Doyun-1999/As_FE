@@ -57,7 +57,7 @@ class MyPageScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // 유저 이름, 포인트, 주소
-              userInfo(name: state.name, point: state.point, address: "${state.address.address} ${state.address.detailAddress}", context: context, imgPath: state.profileImageUrl,),
+              userInfo(name: state.nickname, point: state.point, address: "${state.address.address} ${state.address.detailAddress}", context: context, imgPath: state.profileImageUrl,),
               IconText(
                 imgName: 'like',
                 text: "좋아요 목록",

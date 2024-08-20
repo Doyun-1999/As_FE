@@ -119,7 +119,7 @@ class ProductCard extends ConsumerWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(100),
-                        color: auctionColor.mainColor,
+                        color: isSkeletion ? null : auctionColor.mainColor,
                       ),
                       child: Column(
                         children: [
