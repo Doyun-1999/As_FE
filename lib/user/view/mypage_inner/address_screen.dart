@@ -5,7 +5,7 @@ import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/user/component/textcolumn.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
-import 'package:auction_shop/user/view/mypage_inner/adress_revise_screen.dart';
+import 'package:auction_shop/user/view/mypage_inner/manage_address_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,7 +17,8 @@ class AddressScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final address = ref.read(userProvider.notifier).getDefaultAddress();
+    final defaultAddress = ref.read(userProvider.notifier).getDefaultAddress();
+    final addresses = ref.read(userProvider.notifier).getAddresses();
     return DefaultLayout(
       bgColor: auctionColor.subGreyColorF6,
       appBar: CustomAppBar().allAppBar(
@@ -26,7 +27,7 @@ class AddressScreen extends ConsumerWidget {
           print('object');
         },
         popupList: [
-          PopupMenuItem(child: Text('수정하기',),),
+          //PopupMenuItem(child: Text('수정하기',),),
         ],
         title: '주소 관리',
       ),
@@ -35,7 +36,7 @@ class AddressScreen extends ConsumerWidget {
           children: [
             InfoBox(
               sideFunc: (){
-                context.pushNamed(ReviseAdressScreen.routeName);
+                context.pushNamed(ManageAddressScreen.routeName, extra: defaultAddress);
               },
               firstBoxText: '기본 배송지',
               widget: ListView(
@@ -44,85 +45,69 @@ class AddressScreen extends ConsumerWidget {
                 children: [
                   TextColumn(
                     title: '주소',
-                    content: address.address,
+                    content: defaultAddress.address,
                   ),
                   SizedBox(
                     height: 8,
                   ),
                   TextColumn(
                     title: '우편번호',
-                    content: address.zipcode,
+                    content: defaultAddress.zipcode,
                   ),
                   SizedBox(
                     height: 8,
                   ),
                   TextColumn(
                     title: '상세주소',
-                    content: address.detailAddress,
+                    content: defaultAddress.detailAddress,
                   ),
                 ],
               ),
             ),
-                    
-            InfoBox(
-              sideFunc: (){},
+            
+            ...List.generate(
+              addresses.length, (index) {
+              return InfoBox(
+              sideFunc: (){
+                final extra = addresses[index];
+                context.pushNamed(ManageAddressScreen.routeName, extra: extra);
+              },
               widget: ListView(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 children: [
                   TextColumn(
                     title: '이름',
-                    content: '임명우',
+                    content: addresses[index].name,
                   ),
                   SizedBox(
                     height: 8,
                   ),
                   TextColumn(
                     title: '연락처',
-                    content: '010-0000-0000',
+                    content: addresses[index].phoneNumber,
                   ),
                   SizedBox(
                     height: 8,
                   ),
                   TextColumn(
                     title: '배송지',
-                    content: '서울시 아아아아 아아아아 아아아아아 아아아아아',
+                    content: '${addresses[index].address} ${addresses[index].detailAddress}',
                   ),
                 ],
               ),
-            ),
-
-            InfoBox(
-              sideFunc: (){},
-              widget: ListView(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                children: [
-                  TextColumn(
-                    title: '이름',
-                    content: '임명우',
-                  ),
-                  SizedBox(
-                    height: 26,
-                  ),
-                  TextColumn(
-                    title: '연락처',
-                    content: '010-0000-0000',
-                  ),
-                  SizedBox(
-                    height: 26,
-                  ),
-                  TextColumn(
-                    title: '배송지',
-                    content: '서울시 아아아아 아아아아 아아아아아 아아아아아',
-                  ),
-                ],
-              ),
-            ),
+            );
+            }),
 
             AddButton(
               text: '배송지 추가하기',
-              func: () {},
+              textColor: auctionColor.subBlackColor3E2423,
+              borderColor: auctionColor.mainColor,
+              bgColor: Colors.white,
+              imgPath: 'assets/icon/colorship.png',
+              func: () {
+                context.pushNamed(ManageAddressScreen.routeName);
+              },
             ),
 
             SizedBox(height: 30,),

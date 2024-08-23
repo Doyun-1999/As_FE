@@ -221,21 +221,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                   text: '입찰하기',
                   // 바텀 시트 올라오는 함수
                   func: () async {
-                    // try{
-                    //   final Dio dio = Dio();
-                    //   final storage = ref.watch(secureStorageProvider);
-                    //   final accessToken = storage.read(key: ACCESS_TOKEN);
-                    //   final resp = await dio.post('https://heybid.shop/payments/1/imp06856072',
-                    //   options: Options(headers: {"Authorization": "Bearer $accessToken"}));
-                    //   print('---------------------');
-                    //   print("결제 요청 보냈음, 결과 : ${resp.data}, StatusCode : ${resp.statusCode}");
-                    // }on DioException catch(e){
-                    //   print(e);
-                    //   print(e.error);
-                    //   print(e.message);
-                    //   print(e.requestOptions);
-                    //   print(e.response);
-                    // }
+
                     Navigator.push(context, MaterialPageRoute(builder: (context) {
                       final user = ref.read(userProvider.notifier).getUser();
                       final model = PurchaseData(productId: int.parse(widget.id), price: data.current_price, user: user);
@@ -581,7 +567,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                     width: 8,
                   ),
                   Container(
-                    width: 80,
+                    width: 60,
                     child: Text(
                       createdBy,
                       style: tsNotoSansKR(

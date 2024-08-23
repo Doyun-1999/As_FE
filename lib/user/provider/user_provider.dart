@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:auction_shop/user/model/address_model.dart';
 import 'package:auction_shop/user/model/user_model.dart';
 import 'package:auction_shop/user/repository/auth_repository.dart';
 import 'package:auction_shop/user/repository/user_repository.dart';
@@ -11,8 +12,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http_parser/http_parser.dart';
 
 
-final userProvider =
-    StateNotifierProvider<UserStateNotifier, UserModelBase?>((ref) {
+final userProvider = StateNotifierProvider<UserStateNotifier, UserModelBase?>((ref) {
   final authRepository = ref.watch(authRepositoryProvider);
   final userRepository = ref.watch(userRepositoryProvider);
   final storage = ref.watch(secureStorageProvider);
@@ -37,6 +37,36 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
     this.loginPlatform = LoginPlatform.none,
   }) : super(null);
 
+  // 사용자 주소 추가하기
+  // 주소 추가후 다시 사용자 정보 요청
+  void addAddress(ManageAddressModel data) async {
+    state = UserModelLoading();
+    await userRepository.addAddress(data);
+    state = await userRepository.getMe();
+  }
+
+  // 사용자 주소 변경하기
+  // 변경 후 해당 주소 데이터 변경(서버요청 X)
+  void reviseAddress({
+    required ManageAddressModel data,
+    required int addressId,
+  }) async {
+    
+    await userRepository.reviseAddress(data: data, addressId: addressId);
+
+    final pState = getUser();
+    final pAddress = pState.address;
+    final newAddress = pAddress.map((e) {
+      if(e.id == addressId){
+        return e.copyWith(name: data.name, phoneNumber: data.phoneNumber, address: data.address, detailAddress: data.detailAddress, zipcode: data.zipcode,);
+      }
+      return e;
+    }).toList();
+    final newState = pState.copyWith(address: newAddress);
+    state = newState;
+  }
+
+  // 닉네임 중복 체크하기
   Future<bool> checkNickName(String nickname) async {
     final resp = await userRepository.checkNickName(nickname);
     return resp;
@@ -153,11 +183,41 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
   // 개인키가 없으면 다시 로그인 시킨다.
   Future<void> signup({
     File? fileData,
-    String? fileName,
+    int? getMemberId,
     required SignupUser userData,
   }) async {
-    // 회원가입 요청중
-    // 만약 현재 state가 UserModelSignup이 아닐 경우에 null 반환
+    // FormData 생성
+    FormData formData = FormData();
+    
+    final jsonString = jsonEncode(userData.toJson());
+    final Uint8List jsonBytes = utf8.encode(jsonString) as Uint8List;
+    formData.files.add(
+      MapEntry(
+        'member',
+        MultipartFile.fromBytes(jsonBytes, contentType: MediaType.parse('application/json')),
+      ),
+    );
+    
+    // 이미지 파일 추가
+    if(fileData != null){
+      formData.files.add(
+        MapEntry(
+          'image',
+          await MultipartFile.fromFile(fileData.path,),
+        ),
+      );
+    }
+
+    // 만약 변수로 memberId가 들어왔다면,
+    // 수정의 의미이므로, 바로 정보 수정 후 다시 저장
+    if(getMemberId != null){
+      final resp = await userRepository.signup(getMemberId.toString(), formData);
+      state = resp;
+      return;
+    }
+
+    // 회원가입 요청중인데
+    // 만약 현재 state가 UserModelSignup이 아니고, 수정하려는 목적이 아니라면 null 반환
     if (!(state is UserModelSignup)) {
       print("회원가입 실패 state가 null로 반환됨");
       print(state);
@@ -174,28 +234,6 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
     
     final memberId = signupModel.id;
  
-    // FormData 생성
-    FormData formData = FormData();
-    
-    final jsonString = jsonEncode(userData.toJson());
-    final Uint8List jsonBytes = utf8.encode(jsonString) as Uint8List;
-    formData.files.add(
-      MapEntry(
-        'member',
-        MultipartFile.fromBytes(jsonBytes, contentType: MediaType.parse('application/json')),
-      ),
-    );
-    
-    // 이미지 파일 추가
-    if(fileData != null && fileName != null){
-      print(fileName);
-      formData.files.add(
-        MapEntry(
-          'image',
-          await MultipartFile.fromFile(fileData.path, filename: fileName,),
-        ),
-      );
-    }
     final resp = await userRepository.signup(memberId.toString(), formData);
     state = resp;
   }
@@ -226,7 +264,6 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
   AddressModel getDefaultAddress(){
     final nowState = state as UserModel;
     final address = nowState.address.where((e) => e.defaultAddress).toList();
-    print("현재 주소지 : ${address}");
     return address[0];
   }
 
@@ -234,7 +271,6 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
   List<AddressModel> getAddresses(){
     final nowState = state as UserModel;
     final address = nowState.address.where((e) => !e.defaultAddress).toList();
-    print("설정된 주소지들 : ${address}");
     return address;
   }
 
@@ -244,10 +280,8 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
   void autoLogin() async {
     // 소셜 로그인 고유 ID
     final pk = await storage.read(key: PERSONAL_KEY);
-    print(pk);
     // 해당 ID가 null이 아닐 경우 로그인 함수 실행
     if(pk != null){
-      print("로그인 시도");
       // 로딩을 위한 상태 변경
       state = UserModelLoading();
       serverLogin(pk);
@@ -259,7 +293,6 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
     final resp = await authRepository.login(pk);
       // 로그인 실패시 다시 return
       if (resp == null) {
-        print("로그인 실패");
         state = null;
         return;
       }
@@ -271,8 +304,6 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
       // 회원가입이 필요한 객체 상태로 변환 후 return
       if (!baseTokenModel.available) {
         state = UserModelSignup(id: baseTokenModel.id);
-        print("회원가입 해야해요");
-        print("현재 상태 : ${state}");
         return;
       }
 
@@ -281,8 +312,6 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
       if (baseTokenModel.available) {
         final userData = await userRepository.getMe();
         state = userData;
-        print("회원가입이 진행된 회원입니다.");
-        print("현재 상태 : ${state}");
         if(!(state is UserModel)){
           state = null;
           return;

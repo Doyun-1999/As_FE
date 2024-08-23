@@ -6,9 +6,17 @@ import 'package:flutter/material.dart';
 class AddButton extends StatelessWidget {
   final String text;
   final VoidCallback func;
+  final Color? borderColor;
+  final Color? bgColor;
+  final String? imgPath;
+  final Color? textColor;
   const AddButton({
     required this.text,
     required this.func,
+    this.borderColor,
+    this.bgColor,
+    this.imgPath,
+    this.textColor,
     super.key,
   });
 
@@ -19,8 +27,9 @@ class AddButton extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           border: Border.all(
-            color: auctionColor.subGreyColorB6,
+            color: borderColor ?? auctionColor.subGreyColorB6,
           ),
+          color: bgColor,
           borderRadius: BorderRadius.circular(5),
         ),
         padding: EdgeInsets.symmetric(
@@ -32,11 +41,11 @@ class AddButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            imgPath == null ? Icon(
               Icons.add_circle,
               color: auctionColor.mainColor,
               size: 40,
-            ),
+            ) : Image.asset(imgPath!, width: 40, height: 40,),
             SizedBox(
               width: ratio.width * 16,
             ),
@@ -45,6 +54,7 @@ class AddButton extends StatelessWidget {
               style: tsNotoSansKR(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
+                color: textColor ?? auctionColor.subBlackColor49
               ),
             ),
           ],

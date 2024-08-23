@@ -1,4 +1,5 @@
 
+import 'package:auction_shop/user/model/address_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'user_model.g.dart';
@@ -51,53 +52,59 @@ class UserModel extends UserModelBase{
     this.profileImageUrl,
   });
 
+  UserModel copyWith({
+    int? id,
+    String? username,
+    String? name,
+    String? nickname,
+    String? email,
+    List<AddressModel>? address,
+    String? phone,
+    int? point,
+    bool? available,
+    String? role,
+    String? profileImageUrl,
+  }) {
+    return UserModel(
+      id: id ?? this.id,
+      username: username ?? this.username,
+      name: name ?? this.name,
+      nickname: nickname ?? this.nickname,
+      email: email ?? this.email,
+      address: address ?? this.address,
+      phone: phone ?? this.phone,
+      point: point ?? this.point,
+      available: available ?? this.available,
+      role: role ?? this.role,
+      profileImageUrl: profileImageUrl ?? this.profileImageUrl,
+    );
+  }
+
   factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
+
 }
 
 @JsonSerializable()
 class SignupUser{
   final String name;
   final String nickname;
-  final String zipcode;
   final String email;
   final String phone;
-  final String address;
-  final String detailAddress;
+  final String? address;
+  final String? zipcode;
+  final String? detailAddress;
 
   SignupUser({
     required this.name,
     required this.nickname,
-    required this.zipcode,
     required this.email,
     required this.phone,
-    required this.address,
-    required this.detailAddress,
+    this.address,
+    this.zipcode,
+    this.detailAddress,
   });
 
   Map<String, dynamic> toJson() => _$SignupUserToJson(this);
 
   factory SignupUser.fromJson(Map<String, dynamic> json) => _$SignupUserFromJson(json);
-}
-
-@JsonSerializable()
-class AddressModel{
-  final int id;
-  final String name;
-  final String phoneNumber;
-  final bool defaultAddress;
-  final String address;
-  final String detailAddress;
-  final String zipcode;
-
-  AddressModel({
-    required this.id,
-    required this.name,
-    required this.phoneNumber,
-    required this.defaultAddress,
-    required this.address,
-    required this.detailAddress,
-    required this.zipcode,
-  });
-
-  factory AddressModel.fromJson(Map<String, dynamic> json) => _$AddressModelFromJson(json);
 }

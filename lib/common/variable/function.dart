@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:auction_shop/common/model/formdata_model.dart';
 import 'package:http_parser/http_parser.dart';
@@ -51,6 +52,7 @@ List<bool> getTradeTypes(List<String> data) {
 
 // 이미지와 product/QandA 데이터를 넣으면
 // formData를 만들어주는 함수
+// 이미지 데이터가 리스트일 때
 Future<FormData> makeFormData({
   required List<String>? images,
   required FormDataBase data,
@@ -78,6 +80,37 @@ Future<FormData> makeFormData({
       );
     }
   }
+  return formData;
+}
+
+// 이미지와 product/QandA 데이터를 넣으면
+// formData를 만들어주는 함수
+// 이미지 데이터가 하나일 때
+Future<FormData> makeFormData2({
+  required String? image,
+  required FormDataBase data,
+  required String key,
+}) async {
+  FormData formData = FormData();
+    
+    final jsonString = jsonEncode(data.toJson());
+    final Uint8List jsonBytes = utf8.encode(jsonString) as Uint8List;
+    formData.files.add(
+      MapEntry(
+        key,
+        MultipartFile.fromBytes(jsonBytes, contentType: MediaType.parse('application/json')),
+      ),
+    );
+    
+    // 이미지 파일 추가
+    if(image != null){
+      formData.files.add(
+        MapEntry(
+          'image',
+          await MultipartFile.fromFile(image,),
+        ),
+      );
+    }
   return formData;
 }
 

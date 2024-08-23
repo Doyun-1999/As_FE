@@ -51,6 +51,38 @@ class CustomInterceptor extends Interceptor {
       options.headers.addAll({'Authorization': 'Bearer $token'});
     }
 
+    // 헤더에 refreshToken이 true로 들어오면
+    // accessToken와 refreshToken의 값을 변경 후 요청을 보낸다.
+    // 일반적으로는 formdata를 보내는 요청일 때 사용하기
+    // => formdata는 한 번 사용되면 재사용이 불가능해서 에러로 넘어가서
+    //    재요청을 보내면 반드시 에러가 난다.
+    if (options.headers['refreshToken'] == 'true') {
+      options.headers.remove('refreshToken');
+
+      final refreshToken = await storage.read(key: REFRESH_TOKEN);
+
+      final Dio dio = Dio();
+      final resp = await dio.post(
+        BASE_URL + '/auth/refresh',
+        data: {'refreshToken': refreshToken},
+      );
+
+      // 결과는 BaseTokenModel로 가져온다(id, accessToken, available)
+      // 결과에서 accessToken만 가져오고
+      // 헤더에서 refreshToken을 가져온다.
+      final tokenModel = BaseTokenModel.fromJson(resp.data);
+      final accessToken = tokenModel.accessToken;
+      final cookies = resp.headers['set-cookie'];
+      final rToken = parseRefreshToken(cookies![0]);
+      // 토큰 저장
+      await storage.write(key: REFRESH_TOKEN, value: rToken);
+      await storage.write(key: ACCESS_TOKEN, value: accessToken);
+      final token = await storage.read(key: ACCESS_TOKEN);
+       print("토큰 새로 저장 완료");
+      // 실제 토큰 대체
+      options.headers.addAll({'Authorization': 'Bearer $token'});
+    }
+
     return super.onRequest(options, handler);
   }
 
@@ -81,8 +113,6 @@ class CustomInterceptor extends Interceptor {
             BASE_URL + '/auth/refresh',
             data: {'refreshToken': refreshToken},
           );
-          print("요청 결과의 statusCode : ${resp.statusCode}");
-          print("요청 결과 : ${resp.data}");
 
           // 결과는 BaseTokenModel로 가져온다(id, accessToken, available)
           // 결과에서 accessToken만 가져오고
@@ -96,22 +126,6 @@ class CustomInterceptor extends Interceptor {
           await storage.write(key: REFRESH_TOKEN, value: rToken);
           await storage.write(key: ACCESS_TOKEN, value: accessToken);
 
-          // 원래 요청 복제
-          RequestOptions requestOptions = err.requestOptions;
-
-          // 만약 FormData를 사용한 요청이라면, status 600으로 반환
-          // FormData를 재생성해서 보낼 수가 없음
-          if (requestOptions.data is FormData) {
-            final response = Response(
-              requestOptions: requestOptions,
-              statusCode: 600,
-              data: requestOptions,
-            );
-            return handler.resolve(response);
-          }
-
-          print("토큰 새로 저장 완료");
-
           // 요청한 옵션 가져온 후 토큰값 변경
           final options = err.requestOptions;
           options.headers.addAll({'Authorization': 'Bearer $accessToken'});
@@ -124,17 +138,20 @@ class CustomInterceptor extends Interceptor {
       } catch (e) {
         print("리프레쉬를 이용한 accesstoken 요청 실패");
         print("에러 메시지----------------------");
-        print(e);
         // circular dependency error
         // 중첩된 provider 부르면 발생하는 오류
         // 내부의 provider가 또 내부의 provider를 부르고......
         // ex) A,B
         // A => B => A => B 무한 반복
         // 이므로 provider 자체를 부르는게 아니라 read를 이용하여 함수만 호출
-
         print("에러 화면으로 이동하겠습니다.");
-        ref.read(routerProvider).pushNamed(ErrorScreen.routeName,
-            queryParameters: {'route': RootTab.routeName});
+
+        if (err.response?.statusCode == 600) {
+          print('600에러입니다.');
+          ref.read(routerProvider).pushNamed(ErrorScreen.routeName,
+              queryParameters: {'route': RootTab.routeName});
+        }
+
         //ref.read(userProvider.notifier).logout();
         print(e);
       }

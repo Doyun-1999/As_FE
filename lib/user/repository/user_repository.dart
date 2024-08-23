@@ -3,6 +3,7 @@ import 'package:auction_shop/common/dio/dio.dart';
 import 'package:auction_shop/common/model/cursor_pagination_model.dart';
 import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/user/model/Q&A_model.dart';
+import 'package:auction_shop/user/model/address_model.dart';
 import 'package:auction_shop/user/model/pk_id_model.dart';
 import 'package:auction_shop/user/model/user_model.dart';
 import 'package:dio/dio.dart';
@@ -91,7 +92,7 @@ class UserRepository extends BasePaginationRepository {
   }
 
   // 문의 등록
-  Future<void> question({
+  Future<bool> question({
     required FormData formData,
   }) async {
     try {
@@ -99,7 +100,7 @@ class UserRepository extends BasePaginationRepository {
         baseUrl + '/inquiry',
         data: formData,
         options: Options(
-          headers: {'accessToken': 'true'},
+          headers: {'refreshToken': 'true'},
         ),
       );
 
@@ -107,15 +108,17 @@ class UserRepository extends BasePaginationRepository {
         print("성공");
         print(resp);
         print(resp.data);
-        return;
+        return true;
       } else {
         print("실패요");
         print(resp.statusCode);
         print(resp);
+        return false;
       }
     } on DioException catch (e) {
       print("실패");
       print(e);
+      return false;
     }
   }
 
@@ -190,5 +193,22 @@ class UserRepository extends BasePaginationRepository {
     return PkIdModel(
       pkId: result.account.id,
     );
+  }
+
+  // 주소 데이터 추가하기
+  Future<void> addAddress(ManageAddressModel data) async {
+    final resp = await dio.post(baseUrl + '/address', data: data.toJson(), options: Options(headers: {'accessToken' : 'true'}));
+    print("resp.statusCode : ${resp.statusCode}");
+    print("resp.data : ${resp.data}");
+  }
+
+  // 주소 수정하기
+  Future<void> reviseAddress({
+    required ManageAddressModel data,
+    required int addressId,
+  }) async {
+    final resp = await dio.put(baseUrl + '/address/${addressId}', data: data.toJson(), options: Options(headers: {'accessToken' : 'true'}));
+    print("resp.statusCode : ${resp.statusCode}");
+    print("resp.data : ${resp.data}");
   }
 }
