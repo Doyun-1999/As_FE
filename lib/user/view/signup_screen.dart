@@ -8,6 +8,7 @@ import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/variable/validator.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/main.dart';
+import 'package:auction_shop/user/component/nickname_checkbox.dart';
 import 'package:auction_shop/user/model/user_model.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:auction_shop/user/view/login_screen.dart';
@@ -41,8 +42,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _detailAddressController =
-      TextEditingController();
+  final TextEditingController _detailAddressController = TextEditingController();
   Map<String, String> formData = {};
 
   // 이름 중복 검사 변수
@@ -112,7 +112,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   height: 80,
                   decoration: BoxDecoration(
                     image: _image == null
-                        ? null
+                        ? DecorationImage(image: AssetImage('assets/img/no_profile.png'))
                         : DecorationImage(image: FileImage(File(_image!.path))),
                     shape: BoxShape.circle,
                     color: auctionColor.subGreyColorD9,
@@ -130,12 +130,12 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                           color: Color(0xFFE2E2E2),
                           width: 1,
                         ),
-                        color: Colors.white,
+                        color: auctionColor.mainColor
                       ),
                       child: Icon(
                         Icons.photo_camera,
                         size: 16,
-                        color: auctionColor.subGreyColorD9,
+                        color: Colors.white,
                       ),
                     ),
                   ),
@@ -162,7 +162,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   hintText: "닉네임을 입력해주세요.",
                   suffixIcon: GestureDetector(
                     onTap: () async {
-                      final resp = await checkNickName(_nameController.text);
+                      final resp = await ref.read(userProvider.notifier).checkNickName(_nicknameController.text);
                       if (resp) {
                         setState(() {
                           nameCheck = true;
@@ -176,7 +176,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                         return;
                       }
                     },
-                    child: nicknameCheckbox(),
+                    child: NicknameCheckbox(),
                   ),
                 ),
                 nameCheck == null
@@ -312,37 +312,6 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  // 이름 중복 검사
-  Future<bool> checkNickName(String name) async {
-    final Dio dio = Dio();
-    print("name : $name");
-    final resp = await dio.get(BASE_URL + '/member/name', queryParameters: {"name": name});
-    
-    print(resp.statusCode);
-    print(resp.data);
-    return resp.data;
-  }
-
-  // 닉네임 체크 박스
-  Widget nicknameCheckbox() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
-      decoration: BoxDecoration(
-        color: auctionColor.mainColor,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        "중복 확인",
-        style: tsNotoSansKR(
-          fontSize: 14,
-          fontWeight: FontWeight.w400,
-          color: Colors.white,
         ),
       ),
     );

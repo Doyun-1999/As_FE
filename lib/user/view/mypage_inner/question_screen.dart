@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:auction_shop/common/component/button.dart';
 import 'package:auction_shop/common/component/textformfield.dart';
-import 'package:auction_shop/common/component/user_image.dart';
+import 'package:auction_shop/common/component/image_widget.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/variable/color.dart';
@@ -109,38 +109,42 @@ class _QuestionScreenState extends ConsumerState<QuestionScreen> {
             SingleChildScrollView(
               controller: _scrollController,
               scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  ...List.generate(_setImages.length, (index) {
-                    return GestureDetector(
-                      onTap: (){
-                        setState(() {
-                          _setImages.removeAt(index);
-                          print("$_setImages");
-                        });
-                      },
-                      child: setImage(imgPath: _setImages[index]));
-                  }),
-                  ...List.generate(_images.length, (index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 12),
-                      child: UploadImageBox(
-                        image: _images[index],
-                        index: index,
-                        func: () {
-                          _pickImage(index: index);
+              child: Padding(
+                padding: const EdgeInsets.only(top: 20),
+                child: Row(
+                  children: [
+                    ...List.generate(_setImages.length, (index) {
+                      return GestureDetector(
+                        onTap: (){
+                          
                         },
-                      ),
-                    );
-                  }),
-                  _images.length == 10
-                      ? SizedBox()
-                      : UploadImageBox(
+                        child: setImage(func:(){
+                          setState(() {
+                            _setImages.removeAt(index);
+                          });
+                        }, imgPath: _setImages[index]));
+                    }),
+                    ...List.generate(_images.length, (index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: UploadImageBox(
+                          image: _images[index],
+                          index: index,
                           func: () {
-                            _pickImage();
+                            _pickImage(index: index);
                           },
                         ),
-                ],
+                      );
+                    }),
+                    _images.length == 10
+                        ? SizedBox()
+                        : UploadImageBox(
+                            func: () {
+                              _pickImage();
+                            },
+                          ),
+                  ],
+                ),
               ),
             ),
             TextLable(text: '제목'),

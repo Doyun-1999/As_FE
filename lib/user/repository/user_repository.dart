@@ -27,6 +27,17 @@ class UserRepository extends BasePaginationRepository {
     required this.baseUrl,
   });
 
+  
+  // 이름 중복 검사
+  Future<bool> checkNickName(String nickname) async {
+    print("nickname : $nickname");
+    final resp = await dio.get(BASE_URL + '/member/name', queryParameters: {"nickname": nickname});
+    
+    print(resp.statusCode);
+    print(resp.data);
+    return resp.data;
+  }
+
   // 유저 판매 목록
   Future<CursorPagination<ProductModel>> paginate() async {
     final resp = await dio.get(

@@ -2,12 +2,14 @@ import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/component/button.dart';
 import 'package:auction_shop/common/component/dialog.dart';
 import 'package:auction_shop/common/component/textformfield.dart';
-import 'package:auction_shop/common/component/user_image.dart';
+import 'package:auction_shop/common/component/image_widget.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/view/error_screen.dart';
 import 'package:auction_shop/main.dart';
+import 'package:auction_shop/payment/model/payment_model.dart';
+import 'package:auction_shop/payment/view/payment.dart';
 import 'package:auction_shop/product/component/toggle_button.dart';
 import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/product/provider/product_detail_provider.dart';
@@ -15,7 +17,10 @@ import 'package:auction_shop/product/provider/product_provider.dart';
 import 'package:auction_shop/product/view/product_category_screen.dart';
 import 'package:auction_shop/product/view/product_loading_screen.dart';
 import 'package:auction_shop/product/view/product_revise_screen.dart';
+import 'package:auction_shop/user/provider/user_provider.dart';
+import 'package:auction_shop/user/secure_storage/secure_storage.dart';
 import 'package:card_swiper/card_swiper.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -64,8 +69,10 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
     );
     controller.addListener(tabListener);
     // 데이터 얻기
-    if(!widget.isSkeleton){
-      ref.read(productDetailProvider.notifier).getProductDetail(productId: int.parse(widget.id));
+    if (!widget.isSkeleton) {
+      ref
+          .read(productDetailProvider.notifier)
+          .getProductDetail(productId: int.parse(widget.id));
     }
     super.initState();
   }
@@ -97,7 +104,9 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
 
   @override
   Widget build(BuildContext context) {
-    final data = widget.isSkeleton ? ref.read(productDetailProvider.notifier).fakeData() : ref.watch(getProductDetailProvider(int.parse(widget.id)));
+    final data = widget.isSkeleton
+        ? ref.read(productDetailProvider.notifier).fakeData()
+        : ref.watch(getProductDetailProvider(int.parse(widget.id)));
     if (data == null) {
       return DefaultLayout(
         appBar: CustomAppBar().noActionAppBar(title: "", context: context),
@@ -211,14 +220,34 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                 CustomButton(
                   text: '입찰하기',
                   // 바텀 시트 올라오는 함수
-                  func: () {
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      builder: (BuildContext context) {
-                        return customBottomSheet();
-                      },
-                    );
+                  func: () async {
+                    // try{
+                    //   final Dio dio = Dio();
+                    //   final storage = ref.watch(secureStorageProvider);
+                    //   final accessToken = storage.read(key: ACCESS_TOKEN);
+                    //   final resp = await dio.post('https://heybid.shop/payments/1/imp06856072',
+                    //   options: Options(headers: {"Authorization": "Bearer $accessToken"}));
+                    //   print('---------------------');
+                    //   print("결제 요청 보냈음, 결과 : ${resp.data}, StatusCode : ${resp.statusCode}");
+                    // }on DioException catch(e){
+                    //   print(e);
+                    //   print(e.error);
+                    //   print(e.message);
+                    //   print(e.requestOptions);
+                    //   print(e.response);
+                    // }
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      final user = ref.read(userProvider.notifier).getUser();
+                      final model = PurchaseData(productId: int.parse(widget.id), price: data.current_price, user: user);
+                      return Payment(model: model,);
+                    }));
+                    // showModalBottomSheet(
+                    //   context: context,
+                    //   isScrollControlled: true,
+                    //   builder: (BuildContext context) {
+                    //     return customBottomSheet();
+                    //   },
+                    // );
                   },
                 ),
                 SizedBox(
@@ -279,14 +308,16 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                     width: double.infinity,
                     height: ratio.height * 150,
                     decoration: BoxDecoration(
-                      gradient: widget.isSkeleton ? null : LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.center, // 그라데이션 끝나는 지점
-                        colors: [
-                          Colors.black.withOpacity(0.8),
-                          Colors.transparent
-                        ],
-                      ),
+                      gradient: widget.isSkeleton
+                          ? null
+                          : LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.center, // 그라데이션 끝나는 지점
+                              colors: [
+                                Colors.black.withOpacity(0.8),
+                                Colors.transparent
+                              ],
+                            ),
                     ),
                   ),
                 ],
@@ -319,7 +350,9 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                                   CancelText: "삭제 취소",
                                   OkText: "삭제",
                                   func: () async {
-                                    final resp = await ref.read(productDetailProvider.notifier).deleteData(productId);
+                                    final resp = await ref
+                                        .read(productDetailProvider.notifier)
+                                        .deleteData(productId);
                                     // 삭제에 성공하면 경매 물품 목록 화면으로 이동
                                     if (resp) {
                                       context.goNamed(
@@ -369,7 +402,9 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                           horizontal: 12, vertical: 8.5),
                       decoration: BoxDecoration(
                         // 로딩 화면일시 다른 UI
-                        color: widget.isSkeleton ? null : auctionColor.subBlackColor49.withOpacity(0.5),
+                        color: widget.isSkeleton
+                            ? null
+                            : auctionColor.subBlackColor49.withOpacity(0.5),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -457,7 +492,9 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                                 horizontal: 11, vertical: 4),
                             margin: const EdgeInsets.only(right: 4),
                             decoration: BoxDecoration(
-                              border: widget.isSkeleton ? null : Border.all(color: auctionColor.mainColor),
+                              border: widget.isSkeleton
+                                  ? null
+                                  : Border.all(color: auctionColor.mainColor),
                               borderRadius: BorderRadius.circular(100),
                             ),
                             child: Text(
@@ -478,9 +515,14 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                     padding:
                         const EdgeInsets.symmetric(horizontal: 11, vertical: 4),
                     decoration: BoxDecoration(
-                      border: widget.isSkeleton ? null : Border.all(color: auctionColor.subBlackColor49, width: 3),
+                      border: widget.isSkeleton
+                          ? null
+                          : Border.all(
+                              color: auctionColor.subBlackColor49, width: 3),
                       borderRadius: BorderRadius.circular(100),
-                      color: widget.isSkeleton ? null : auctionColor.subBlackColor49,
+                      color: widget.isSkeleton
+                          ? null
+                          : auctionColor.subBlackColor49,
                     ),
                     child: Text(
                       conditions,
@@ -517,7 +559,9 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: widget.isSkeleton ? null : auctionColor.mainColor,
+                            color: widget.isSkeleton
+                                ? null
+                                : auctionColor.mainColor,
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: Text(
@@ -536,12 +580,16 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                   SizedBox(
                     width: 8,
                   ),
-                  Text(
-                    createdBy,
-                    style: tsNotoSansKR(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: auctionColor.subBlackColor49,
+                  Container(
+                    width: 80,
+                    child: Text(
+                      createdBy,
+                      style: tsNotoSansKR(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: auctionColor.subBlackColor49,
+                      ),
+                      overflow: TextOverflow.fade,
                     ),
                   ),
                 ],
@@ -645,51 +693,54 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
             clipBehavior: Clip.none,
             children: [
               // 로딩 화면일시 다른 데이터
-              widget.isSkeleton ? SizedBox() :
-              StreamBuilder<DateTime>(
-                  stream: Stream.periodic(
-                      Duration(seconds: 1), (_) => DateTime.now()),
-                  builder: (context, snapshot) {
-                    // snapshot 데이터가 로딩중이거나, 에러가 있거나, 데이터가 없거나 제한 시간 데이터가 아직 들어오지 않았을 때,
-                    // 로딩 화면 출력
-                    if ((limitTime == null) ||
-                        (snapshot.connectionState == ConnectionState.waiting) ||
-                        (snapshot.hasError) ||
-                        (!snapshot.hasData)) {
-                      return Center(
-                        child: Text('-'),
-                      );
-                    }
-                    currentTime = snapshot.data!;
-                    final limitedTime = DateTime.parse(limitTime);
-                    Duration timeDifference =
-                        limitedTime.difference(currentTime);
+              widget.isSkeleton
+                  ? SizedBox()
+                  : StreamBuilder<DateTime>(
+                      stream: Stream.periodic(
+                          Duration(seconds: 1), (_) => DateTime.now()),
+                      builder: (context, snapshot) {
+                        // snapshot 데이터가 로딩중이거나, 에러가 있거나, 데이터가 없거나 제한 시간 데이터가 아직 들어오지 않았을 때,
+                        // 로딩 화면 출력
+                        if ((limitTime == null) ||
+                            (snapshot.connectionState ==
+                                ConnectionState.waiting) ||
+                            (snapshot.hasError) ||
+                            (!snapshot.hasData)) {
+                          return Center(
+                            child: Text('-'),
+                          );
+                        }
+                        currentTime = snapshot.data!;
+                        final limitedTime = DateTime.parse(limitTime);
+                        Duration timeDifference =
+                            limitedTime.difference(currentTime);
 
-                    return Positioned(
-                      top: -10,
-                      right: 25,
-                      left: 25,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: auctionColor.mainColorE2,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 5,
-                          vertical: 3,
-                        ),
-                        child: Text(
-                          '남은 시간 ${timeDifference.inHours}:${timeDifference.inMinutes % 60}:${timeDifference.inSeconds % 60}',
-                          style: tsInter(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: auctionColor.mainColor,
+                        return Positioned(
+                          top: -10,
+                          right: 25,
+                          left: 25,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: auctionColor.mainColorE2,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 5,
+                              vertical: 3,
+                            ),
+                            child: Text(
+                              '남은 시간 ${timeDifference.inHours}:${timeDifference.inMinutes % 60}:${timeDifference.inSeconds % 60}',
+                              style: tsInter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: auctionColor.mainColor,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    );
-                  },),
+                        );
+                      },
+                    ),
               Align(
                 alignment: Alignment.center,
                 child: Tab(
@@ -867,7 +918,9 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
           ),
           CustomButton(
             text: '입찰 완료',
-            func: () {},
+            func: () {
+              
+            },
           ),
         ],
       ),

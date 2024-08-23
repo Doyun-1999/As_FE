@@ -4,15 +4,20 @@ import 'package:auction_shop/user/component/info_box.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/user/component/textcolumn.dart';
+import 'package:auction_shop/user/provider/user_provider.dart';
+import 'package:auction_shop/user/view/mypage_inner/adress_revise_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-class AddressScreen extends StatelessWidget {
+class AddressScreen extends ConsumerWidget {
   static String get routeName => 'address';
   const AddressScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final address = ref.read(userProvider.notifier).getDefaultAddress();
     return DefaultLayout(
       bgColor: auctionColor.subGreyColorF6,
       appBar: CustomAppBar().allAppBar(
@@ -29,29 +34,31 @@ class AddressScreen extends StatelessWidget {
         child: Column(
           children: [
             InfoBox(
-              sideFunc: (){},
+              sideFunc: (){
+                context.pushNamed(ReviseAdressScreen.routeName);
+              },
               firstBoxText: '기본 배송지',
               widget: ListView(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 children: [
                   TextColumn(
-                    title: '이름',
-                    content: '임명우',
+                    title: '주소',
+                    content: address.address,
                   ),
                   SizedBox(
-                    height: 26,
+                    height: 8,
                   ),
                   TextColumn(
-                    title: '연락처',
-                    content: '010-0000-0000',
+                    title: '우편번호',
+                    content: address.zipcode,
                   ),
                   SizedBox(
-                    height: 26,
+                    height: 8,
                   ),
                   TextColumn(
-                    title: '배송지',
-                    content: '서울시 아아아아 아아아아 아아아아아 아아아아아',
+                    title: '상세주소',
+                    content: address.detailAddress,
                   ),
                 ],
               ),
@@ -68,14 +75,14 @@ class AddressScreen extends StatelessWidget {
                     content: '임명우',
                   ),
                   SizedBox(
-                    height: 26,
+                    height: 8,
                   ),
                   TextColumn(
                     title: '연락처',
                     content: '010-0000-0000',
                   ),
                   SizedBox(
-                    height: 26,
+                    height: 8,
                   ),
                   TextColumn(
                     title: '배송지',

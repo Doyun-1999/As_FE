@@ -1,5 +1,6 @@
 import 'dart:ui';
-import 'package:auction_shop/common/component/user_image.dart';
+import 'package:auction_shop/common/component/appbar.dart';
+import 'package:auction_shop/common/component/image_widget.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/user/provider/Q&A_provider.dart';
@@ -9,6 +10,7 @@ import 'package:auction_shop/user/view/mypage_inner/block_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/answer_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/my_like_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/mybid_screen.dart';
+import 'package:auction_shop/user/view/mypage_inner/revise_user_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +26,7 @@ class MyPageScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.read(userProvider.notifier).getUser();
+    final address = ref.read(userProvider.notifier).getDefaultAddress();
     return DefaultLayout(
       appBar: AppBar(
         centerTitle: true,
@@ -36,10 +39,23 @@ class MyPageScreen extends ConsumerWidget {
           ),
         ),
         actions: [
-          IconButton(
-            onPressed: () {
-              ref.read(userProvider.notifier).logout();
+          PopupMenuButton<String>(
+            color: Colors.white,
+            onSelected: (String? val) {
+              if (val == "logout") {
+                ref.read(userProvider.notifier).logout();
+                return;
+              }
+              if (val == "revise") {
+                context.pushNamed(ReviseUserScreen.routeName);
+                return;
+              }
             },
+            itemBuilder: (BuildContext context) => [
+              popupItem(text: '로그아웃', value: 'logout'),
+              PopupMenuDivider(),
+              popupItem(text: '정보 수정', value: 'revise'),
+            ],
             icon: Icon(
               Icons.settings_outlined,
               size: 30,
@@ -57,7 +73,14 @@ class MyPageScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // 유저 이름, 포인트, 주소
-              userInfo(name: state.nickname, point: state.point, address: "${state.address.address} ${state.address.detailAddress}", context: context, imgPath: state.profileImageUrl,),
+              userInfo(
+                name: state.nickname,
+                point: state.point,
+                address:
+                    "${address.address} ${address.detailAddress}",
+                context: context,
+                imgPath: state.profileImageUrl,
+              ),
               IconText(
                 imgName: 'like',
                 text: "좋아요 목록",
@@ -68,23 +91,17 @@ class MyPageScreen extends ConsumerWidget {
               IconText(
                 imgName: 'bid_mypage',
                 text: "입찰 내역",
-                func: () {
-                  
-                },
+                func: () {},
               ),
               IconText(
                 imgName: 'sell',
                 text: "판매 내역",
-                func: () {
-                  
-                },
+                func: () {},
               ),
               IconText(
                 imgName: 'buy',
                 text: "구매 내역",
-                func: () {
-                  
-                },
+                func: () {},
               ),
               Divider(
                 color: auctionColor.subGreyColorE2,
@@ -99,9 +116,7 @@ class MyPageScreen extends ConsumerWidget {
               IconText(
                 imgName: 'card',
                 text: "결제 관리",
-                func: () {
-                  
-                },
+                func: () {},
               ),
               IconText(
                 imgName: 'block',
@@ -122,9 +137,7 @@ class MyPageScreen extends ConsumerWidget {
               IconText(
                 imgName: 'notice',
                 text: "공지사항",
-                func: () {
-                  
-                },
+                func: () {},
               ),
               Divider(
                 color: auctionColor.subGreyColorE2,

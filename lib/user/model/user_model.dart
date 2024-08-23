@@ -29,7 +29,8 @@ class UserModel extends UserModelBase{
   final String username;
   final String name;
   final String nickname;
-  final AddressModel address;
+  final String email;
+  final List<AddressModel> address;
   final String phone;
   final int point;
   final bool available;
@@ -41,6 +42,7 @@ class UserModel extends UserModelBase{
     required this.username,
     required this.name,
     required this.nickname,
+    required this.email,
     required this.address,
     required this.phone,
     required this.point,
@@ -79,11 +81,19 @@ class SignupUser{
 
 @JsonSerializable()
 class AddressModel{
+  final int id;
+  final String name;
+  final String phoneNumber;
+  final bool defaultAddress;
   final String address;
   final String detailAddress;
   final String zipcode;
 
   AddressModel({
+    required this.id,
+    required this.name,
+    required this.phoneNumber,
+    required this.defaultAddress,
     required this.address,
     required this.detailAddress,
     required this.zipcode,

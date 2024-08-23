@@ -11,7 +11,10 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
       username: json['username'] as String,
       name: json['name'] as String,
       nickname: json['nickname'] as String,
-      address: AddressModel.fromJson(json['address'] as Map<String, dynamic>),
+      email: json['email'] as String,
+      address: (json['address'] as List<dynamic>)
+          .map((e) => AddressModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
       phone: json['phone'] as String,
       point: (json['point'] as num).toInt(),
       available: json['available'] as bool,
@@ -24,6 +27,7 @@ Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
       'username': instance.username,
       'name': instance.name,
       'nickname': instance.nickname,
+      'email': instance.email,
       'address': instance.address,
       'phone': instance.phone,
       'point': instance.point,
@@ -54,6 +58,10 @@ Map<String, dynamic> _$SignupUserToJson(SignupUser instance) =>
     };
 
 AddressModel _$AddressModelFromJson(Map<String, dynamic> json) => AddressModel(
+      id: (json['id'] as num).toInt(),
+      name: json['name'] as String,
+      phoneNumber: json['phoneNumber'] as String,
+      defaultAddress: json['defaultAddress'] as bool,
       address: json['address'] as String,
       detailAddress: json['detailAddress'] as String,
       zipcode: json['zipcode'] as String,
@@ -61,6 +69,10 @@ AddressModel _$AddressModelFromJson(Map<String, dynamic> json) => AddressModel(
 
 Map<String, dynamic> _$AddressModelToJson(AddressModel instance) =>
     <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'phoneNumber': instance.phoneNumber,
+      'defaultAddress': instance.defaultAddress,
       'address': instance.address,
       'detailAddress': instance.detailAddress,
       'zipcode': instance.zipcode,
