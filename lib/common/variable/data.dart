@@ -79,9 +79,6 @@ List<String> get selectedImages => [
       "assets/selected_icon/selected_collection.png",
     ];
 
-String get baseImage =>
-    'https://i.namu.wiki/i/Bge3xnYd4kRe_IKbm2uqxlhQJij2SngwNssjpjaOyOqoRhQlNwLrR2ZiK-JWJ2b99RGcSxDaZ2UCI7fiv4IDDQ.webp';
-
 const IconData chattingIcon = IconData(
   0xe804,
   fontFamily: 'Chatting',

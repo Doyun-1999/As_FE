@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:auction_shop/common/component/button.dart';
 import 'package:auction_shop/common/component/textformfield.dart';
-import 'package:auction_shop/common/component/user_image.dart';
+import 'package:auction_shop/common/component/image_widget.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/component/appbar.dart';
@@ -173,9 +173,7 @@ class _ProductReviseScreenState extends ConsumerState<ProductReviseScreen> {
           PopupMenuButton<String>(
             color: Colors.white,
             onSelected: (String? val) async {
-              final resp = await ref
-                  .read(productDetailProvider.notifier)
-                  .deleteData(data.product_id);
+              final resp = await ref.read(productDetailProvider.notifier).deleteData(data.product_id);
               // 삭제에 성공하면 경매 물품 목록 화면으로 이동
               if (resp) {
                 context.pushNamed(
@@ -219,7 +217,7 @@ class _ProductReviseScreenState extends ConsumerState<ProductReviseScreen> {
                 child: Row(
                   children: [
                     ...List.generate(_setImages.length, (index) {
-                      return setImage(imgPath: _setImages[index]);
+                      return setImage(func:(){}, imgPath: _setImages[index]);
                     }),
                     ...List.generate(_images.length, (index) {
                       return Padding(

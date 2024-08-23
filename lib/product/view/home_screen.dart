@@ -2,7 +2,6 @@ import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/data.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
-import 'package:auction_shop/common/view/payment.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/product/view/product_category_screen.dart';
 import 'package:flutter/cupertino.dart';
@@ -42,9 +41,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                       IconButton(
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context){
-                            return Certification();
-                          }));
+                          
                         },
                         icon: Icon(
                           Icons.search,

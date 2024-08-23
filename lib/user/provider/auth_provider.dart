@@ -15,11 +15,13 @@ import 'package:auction_shop/user/model/Q&A_model.dart';
 import 'package:auction_shop/user/model/user_model.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:auction_shop/user/view/mypage_inner/address_screen.dart';
+import 'package:auction_shop/user/view/mypage_inner/adress_revise_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/block_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/answer_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/my_like_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/mybid_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/question_screen.dart';
+import 'package:auction_shop/user/view/mypage_inner/revise_user_screen.dart';
 import 'package:auction_shop/user/view/mypage_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
@@ -134,11 +136,23 @@ class AuthNotifier extends ChangeNotifier {
                   path: 'address',
                   name: AddressScreen.routeName,
                   builder: (_, __) => AddressScreen(),
+                  routes: [
+                    GoRoute(
+                      path: 'revise_address',
+                      name: ReviseAdressScreen.routeName,
+                      builder: (_, __) => ReviseAdressScreen(),
+                    ),
+                  ],
                 ),
                 GoRoute(
                   path: 'mylike',
                   name: MyLikeScreen.routeName,
                   builder: (_, __) => MyLikeScreen(),
+                ),
+                GoRoute(
+                  path: 'revise_user',
+                  name: ReviseUserScreen.routeName,
+                  builder: (_, __) => ReviseUserScreen(),
                 ),
                 GoRoute(
                   path: 'answer',

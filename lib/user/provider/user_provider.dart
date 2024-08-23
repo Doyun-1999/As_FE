@@ -37,6 +37,11 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
     this.loginPlatform = LoginPlatform.none,
   }) : super(null);
 
+  Future<bool> checkNickName(String nickname) async {
+    final resp = await userRepository.checkNickName(nickname);
+    return resp;
+  }
+
   // 통합 로그인 함수
   // 서버와 연동 후 userProvider로 옮긴 후에
   // 토큰 저장 및 user update 진행해야함 -> gorouter redirect 때문에
@@ -215,6 +220,22 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
   UserModel getUser(){
     final nowState = state as UserModel;
     return nowState;
+  }
+
+  // 현재 사용자의 등록된 주소지 가져오기
+  AddressModel getDefaultAddress(){
+    final nowState = state as UserModel;
+    final address = nowState.address.where((e) => e.defaultAddress).toList();
+    print("현재 주소지 : ${address}");
+    return address[0];
+  }
+
+  // 사용자가 설정해놓은 주소지들 가져오기
+  List<AddressModel> getAddresses(){
+    final nowState = state as UserModel;
+    final address = nowState.address.where((e) => !e.defaultAddress).toList();
+    print("설정된 주소지들 : ${address}");
+    return address;
   }
 
   // 첫 로그인 화면 진입시

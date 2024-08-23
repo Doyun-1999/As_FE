@@ -74,9 +74,6 @@ class InfoBox extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(
-            height: 16,
-          ),
           widget,
         ],
       ),

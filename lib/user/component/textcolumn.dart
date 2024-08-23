@@ -5,7 +5,7 @@ class TextColumn extends StatelessWidget {
   final String title;
   final String content;
   final Color? color;
-  const TextColumn({
+  const  TextColumn({
     required this.title,
     required this.content,
     this.color,
