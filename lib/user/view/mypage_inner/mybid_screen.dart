@@ -122,16 +122,16 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
     return DefaultLayout(
       appBar: CustomAppBar().allAppBar(
         popupList: [
-          popupItem(text: "채팅 문의하기", value: "채팅"),
+          popupItem(text: "채팅 문의하기"),
           PopupMenuDivider(),
-          popupItem(text: "계정 차단하기", value: "차단"),
+          popupItem(text: "계정 차단하기"),
         ],
         vertFunc: (String? val) {
-          if (val == '채팅') {
+          if (val == '채팅 문의하기') {
             //context.goNamed(ChatListScreen.routeName);
             return;
           }
-          if (val == '차단') {
+          if (val == '계정 차단하기') {
             context.goNamed(BlockScreen.routeName);
             return;
           }

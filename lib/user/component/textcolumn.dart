@@ -5,10 +5,12 @@ class TextColumn extends StatelessWidget {
   final String title;
   final String content;
   final Color? color;
+  final double bottomPadding;
   const  TextColumn({
     required this.title,
     required this.content,
     this.color,
+    this.bottomPadding = 10,
     super.key,
   });
 
@@ -16,7 +18,7 @@ class TextColumn extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: color,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.only(top: 16, right: 16, left: 16, bottom: bottomPadding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

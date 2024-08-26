@@ -1,4 +1,5 @@
 import 'package:auction_shop/common/component/button.dart';
+import 'package:auction_shop/common/component/dialog.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/main.dart';
@@ -27,6 +28,7 @@ class _AnswerScreenState extends ConsumerState<AnswerScreen> {
   @override
   Widget build(BuildContext context) {
     final data = ref.watch(QandAProvider);
+    // final data = AnswerListModel(list: [AnswerModel(id: 0, title: "안녕하세요", content: "문의드려요 드려요", imageUrl: null, status: true, answer: "문의 답변입니다. 읽어주세요 제발 문의 답변입니다. 읽어주세요 제발 문의 답변입니다. 읽어주세요 제발 문의 답변입니다. 읽어주세요 제발")]);
     // 로딩중일 때
     if (data is QandABaseLoading) {
       return DefaultLayout(
@@ -109,31 +111,33 @@ class _AnswerScreenState extends ConsumerState<AnswerScreen> {
         if (answerData.status && answerData.answer != null) {
           return InfoBox(
             sideFunc: () {
-              ref.read(QandAProvider.notifier).delete(answerData.id);
+              CustomDialog(context: context, title: "문의를 삭제하시겠습니까?", OkText: "확인", CancelText: "취소", func: (){ref.read(QandAProvider.notifier).delete(answerData.id);});
             },
             sideText: "삭제",
             firstBoxText: '답변 완료',
-            widget: ListView(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              children: [
-                TextColumn(
-                  title: answerData.title,
-                  content: answerData.title,
-                ),
-                SizedBox(
-                  height: 26,
-                ),
-                TextColumn(
-                  title: answerData.content,
-                  content: answerData.content,
-                ),
-                TextColumn(
-                  color: auctionColor.mainColor2,
-                  title: answerData.answer!,
-                  content: answerData.answer!,
-                ),
-              ],
+            widget: Padding(
+              padding: const EdgeInsets.only(top: 41),
+              child: ListView(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                children: [
+                  TextColumn(
+                    title: "제목",
+                    content: answerData.title,
+                  ),
+                  TextColumn(
+                    title: "내용",
+                    content: answerData.content,
+                    bottomPadding: 16,
+                  ),
+                  TextColumn(
+                    bottomPadding: 16,
+                    color: auctionColor.mainColorEF,
+                    title: "답변",
+                    content: answerData.answer!,
+                  ),
+                ],
+              ),
             ),
           );
         }
@@ -144,22 +148,23 @@ class _AnswerScreenState extends ConsumerState<AnswerScreen> {
               context.pushNamed(QuestionScreen.routeName, extra: answerData);
             },
             firstBoxText: '문의 중',
-            widget: ListView(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              children: [
-                TextColumn(
-                  title: '제목',
-                  content: answerData.title,
-                ),
-                SizedBox(
-                  height: 26,
-                ),
-                TextColumn(
-                  title: '내용',
-                  content: answerData.content,
-                ),
-              ],
+            widget: Padding(
+              padding: const EdgeInsets.only(top: 41),
+              child: ListView(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                children: [
+                  TextColumn(
+                    title: '제목',
+                    content: answerData.title,
+                  ),
+                  TextColumn(
+                    bottomPadding: 16,
+                    title: '내용',
+                    content: answerData.content,
+                  ),
+                ],
+              ),
             ),
           );
         }

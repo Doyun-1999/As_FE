@@ -38,11 +38,29 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
   }) : super(null);
 
   // 사용자 주소 추가하기
-  // 주소 추가후 다시 사용자 정보 요청
+  // 주소 추가 후 서버에서 받은 데이터를
+  // state에 그대로 추가 (서버 요청 X)
+  void deleteAddress(List<int> deleteList) async {
+    UserModel pState = getUser();
+    final resp = await userRepository.deleteAddress(deleteList: deleteList,);
+    if(resp){
+      for(int i = 0; i<deleteList.length; i++){
+        final newAddress = pState.address.where((e) => e.id != deleteList).toList();
+        pState = pState.copyWith(address: newAddress);
+        print("pState.address : ${pState.address}");
+      }
+      state = pState;
+    }
+  }
+
+  // 사용자 주소 추가하기
+  // 주소 추가 후 서버에서 받은 데이터를
+  // state에 그대로 추가 (서버 요청 X)
   void addAddress(ManageAddressModel data) async {
-    state = UserModelLoading();
-    await userRepository.addAddress(data);
-    state = await userRepository.getMe();
+    final pState = getUser();
+    final resp = await userRepository.addAddress(data);
+    final newState = await pState.copyWith(address: [...pState.address, resp]);
+    state = newState;
   }
 
   // 사용자 주소 변경하기

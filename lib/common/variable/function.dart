@@ -135,3 +135,22 @@ String conditions(List<bool> stateValue) {
   }
   return '중고';
 }
+
+// 이미지 캐싱
+Future<void> preCacheImg(String imgPath, BuildContext context) async {
+  await precacheImage(AssetImage(imgPath), context);
+}
+
+// BuildContext 생성 후 이미지 캐싱 시작
+// 로딩 gif 미리 캐싱해놓기 => 로딩걸림
+void startImgCache() {
+  final binding = WidgetsFlutterBinding.ensureInitialized();
+  binding.addPostFrameCallback(
+    (timeStamp) async {
+      BuildContext? context = binding.rootElement;
+      if (context != null) {
+        await preCacheImg('assets/img/loading.gif', context);
+      }
+    },
+  );
+}

@@ -5,6 +5,7 @@ import 'package:auction_shop/common/view/error_screen.dart';
 import 'package:auction_shop/common/view/splash_screen.dart';
 import 'package:auction_shop/notification/view/notification_screen.dart';
 import 'package:auction_shop/product/model/product_model.dart';
+import 'package:auction_shop/product/view/search_screen.dart';
 import 'package:auction_shop/product/view/select_category_screen.dart';
 import 'package:auction_shop/product/view/product_category_screen.dart';
 import 'package:auction_shop/product/view/product_info_screen.dart';
@@ -245,6 +246,11 @@ class AuthNotifier extends ChangeNotifier {
           path: '/splash',
           name: SplashScreen.routeName,
           builder: (_, __) => SplashScreen(),
+        ),
+        GoRoute(
+          path: '/search',
+          name: SearchScreen.routeName,
+          builder: (_, __) => SearchScreen(),
         ),
         GoRoute(
           path: '/error',

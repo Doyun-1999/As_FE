@@ -23,9 +23,17 @@ class ChatListScreen extends StatelessWidget {
             topBar(),
             SliverList.builder(
               itemCount: 10,
-              itemBuilder: (context, index){
-                return ChatListBox(func: (){context.goNamed(ChatInfoScreen.routeName, pathParameters: {'cid' : '$index'});}, username: '홍길동$index', date: "어제", content: '안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요');
-            })
+              itemBuilder: (context, index) {
+                return ChatListBox(
+                  func: () {
+                    context.goNamed(ChatInfoScreen.routeName, pathParameters: {'cid': '$index'});
+                  },
+                  username: '홍길동$index',
+                  date: "어제",
+                  content: '안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요',
+                );
+              },
+            ),
           ],
         ),
       ),

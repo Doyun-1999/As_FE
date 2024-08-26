@@ -131,6 +131,7 @@ class RegisterProductModel extends FormDataBase{
 // 물품 상세 데이터 모델
 @JsonSerializable()
 class ProductDetailModel{
+  final int memberId;
   final int product_id;
   final String title;
   //final String trade;
@@ -152,6 +153,7 @@ class ProductDetailModel{
   final bool liked;
   
   ProductDetailModel({
+    required this.memberId,
     required this.product_id,
     required this.title,
     //required this.trade,
@@ -174,6 +176,7 @@ class ProductDetailModel{
   });
 
   ProductDetailModel copyWith({
+    int? memberId,
     int? product_id,
     String? title,
     String? conditions,
@@ -194,6 +197,7 @@ class ProductDetailModel{
     bool? liked,
   }) {
     return ProductDetailModel(
+      memberId: memberId ?? this.memberId,
       product_id: product_id ?? this.product_id,
       title: title ?? this.title,
       conditions: conditions ?? this.conditions,

@@ -41,7 +41,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(
-              height: MediaQuery.of(context).size.height / 8 * 1,
+              height: MediaQuery.of(context).size.height / 6 * 1,
             ),
             Image.asset(
               'assets/logo/main_logo_white.png',
@@ -50,11 +50,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             Text('경매로 중고거래를 더 새롭게!',
                 style: tsNotoSansKR(
                   fontWeight: FontWeight.bold,
-                  fontSize: 24,
+                  fontSize: 16,
                   color: Colors.white,
                 )),
             SizedBox(
-              height: ratio.height * 100,
+              height: ratio.height * 82,
             ),
             loginContainer(
               imgPath: 'assets/logo/kakao_logo.png',
@@ -124,7 +124,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 color: Colors.white,
               ),
             ),
-            Spacer(),
+            SizedBox(height: ratio.height * 60),
           ],
         ),
       ),

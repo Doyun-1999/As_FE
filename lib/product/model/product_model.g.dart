@@ -91,6 +91,7 @@ Map<String, dynamic> _$RegisterProductModelToJson(
 
 ProductDetailModel _$ProductDetailModelFromJson(Map<String, dynamic> json) =>
     ProductDetailModel(
+      memberId: (json['memberId'] as num).toInt(),
       product_id: (json['product_id'] as num).toInt(),
       title: json['title'] as String,
       conditions: json['conditions'] as String,
@@ -118,6 +119,7 @@ ProductDetailModel _$ProductDetailModelFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$ProductDetailModelToJson(ProductDetailModel instance) =>
     <String, dynamic>{
+      'memberId': instance.memberId,
       'product_id': instance.product_id,
       'title': instance.title,
       'conditions': instance.conditions,

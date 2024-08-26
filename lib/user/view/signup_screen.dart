@@ -65,7 +65,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         backgroundColor: Colors.white,
         leading: IconButton(
           onPressed: () {
-            ref.read(userProvider.notifier).resetState();
+            ref.read(userProvider.notifier).logout();
             context.goNamed(LoginScreen.routeName);
           },
           icon: Icon(

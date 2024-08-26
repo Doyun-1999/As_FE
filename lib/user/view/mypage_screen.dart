@@ -4,6 +4,7 @@ import 'package:auction_shop/common/component/image_widget.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/user/provider/Q&A_provider.dart';
+import 'package:auction_shop/user/provider/block_provider.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:auction_shop/user/view/mypage_inner/address_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/block_screen.dart';
@@ -42,19 +43,19 @@ class MyPageScreen extends ConsumerWidget {
           PopupMenuButton<String>(
             color: Colors.white,
             onSelected: (String? val) {
-              if (val == "logout") {
+              if (val == "로그아웃") {
                 ref.read(userProvider.notifier).logout();
                 return;
               }
-              if (val == "revise") {
+              if (val == "정보 수정") {
                 context.pushNamed(ReviseUserScreen.routeName);
                 return;
               }
             },
             itemBuilder: (BuildContext context) => [
-              popupItem(text: '로그아웃', value: 'logout'),
+              popupItem(text: '로그아웃'),
               PopupMenuDivider(),
-              popupItem(text: '정보 수정', value: 'revise'),
+              popupItem(text: '정보 수정'),
             ],
             icon: Icon(
               Icons.settings_outlined,
@@ -122,6 +123,7 @@ class MyPageScreen extends ConsumerWidget {
                 imgName: 'block',
                 text: "차단 내역",
                 func: () {
+                  ref.read(blockProvider.notifier).getBlockUsers();
                   context.pushNamed(BlockScreen.routeName);
                 },
               ),

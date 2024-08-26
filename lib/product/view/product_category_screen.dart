@@ -216,7 +216,7 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
   // 드롭다운 위젯
   SliverPadding dropDownWidget() {
     return SliverPadding(
-      padding: const EdgeInsets.only(top: 24),
+      padding: const EdgeInsets.only(top: 20),
       sliver: SliverToBoxAdapter(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,

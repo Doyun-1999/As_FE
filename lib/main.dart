@@ -1,4 +1,5 @@
 import 'package:auction_shop/common/provider/router_provider.dart';
+import 'package:auction_shop/common/variable/function.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
@@ -8,6 +9,10 @@ import 'firebase_options.dart';
 late Size ratio;
 
 void main() async {
+  // 로딩 gif 미리 캐싱
+  // => 바로 화면상에 출력 되도록
+  startImgCache();
+
   // 웹 환경에서 카카오 로그인을 정상적으로 완료하려면 runApp() 호출 전 아래 메서드 호출 필요
   WidgetsFlutterBinding.ensureInitialized();
 

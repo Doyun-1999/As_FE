@@ -20,6 +20,10 @@ class CustomTextFormField extends StatelessWidget {
   final int? maxLines;
   final double borderRadius;
   final TextStyle? style;
+  final Color? fillColor;
+  final Color? borderColor;
+  final EdgeInsets? contentPadding;
+  final bool filled;
   const CustomTextFormField({
     required this.controller,
     required this.hintText,
@@ -36,6 +40,10 @@ class CustomTextFormField extends StatelessWidget {
     this.maxLength,
     this.inputFormatters,
     this.style,
+    this.fillColor,
+    this.borderColor,
+    this.contentPadding,
+    this.filled = false,
     super.key,
   });
 
@@ -55,6 +63,8 @@ class CustomTextFormField extends StatelessWidget {
       onChanged: onChanged,
       controller: controller,
       decoration: InputDecoration(
+        fillColor: fillColor,
+        filled: filled,
         errorStyle: tsNotoSansKR(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.red,),
         counterText: '',
         suffixIcon: suffixIcon,
@@ -62,7 +72,7 @@ class CustomTextFormField extends StatelessWidget {
         disabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(borderRadius),
           borderSide: BorderSide(
-            color: Color(0xFFBFBFBF),
+            color: borderColor ?? Color(0xFFBFBFBF),
           ),
         ),
         focusedErrorBorder: OutlineInputBorder(
@@ -72,22 +82,22 @@ class CustomTextFormField extends StatelessWidget {
           ),
         ),
         errorBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.red)),
-        contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+        contentPadding: contentPadding ?? const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
         hintText: hintText,
         hintStyle: TextStyle(
           fontSize: 16,
-          color: Color(0xFFBFBFBF),
+          color: auctionColor.subGreyColorB6,
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(borderRadius),
           borderSide: BorderSide(
-            color: Color(0xFFBFBFBF),
+            color: borderColor ?? Color(0xFFBFBFBF),
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(borderRadius),
           borderSide: BorderSide(
-            color: Color(0xFFBFBFBF),
+            color: borderColor ?? Color(0xFFBFBFBF),
           ),
         ),
       ),

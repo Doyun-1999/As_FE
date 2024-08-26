@@ -128,6 +128,11 @@ class _QuestionScreenState extends ConsumerState<QuestionScreen> {
                       return Padding(
                         padding: const EdgeInsets.only(right: 12),
                         child: UploadImageBox(
+                          deleteFunc: (){
+                              setState(() {
+                                _images.removeAt(index);
+                              });
+                            },
                           image: _images[index],
                           index: index,
                           func: () {
@@ -136,7 +141,7 @@ class _QuestionScreenState extends ConsumerState<QuestionScreen> {
                         ),
                       );
                     }),
-                    _images.length == 10
+                    (_images.length + _setImages.length) == 10
                         ? SizedBox()
                         : UploadImageBox(
                             func: () {

@@ -173,7 +173,7 @@ class _ManageAddressScreenState extends ConsumerState<ManageAddressScreen> {
                     }
                   },
                 ),
-                SizedBox(height: ratio.height * 40),
+                SizedBox(height: ratio.height * 59),
               ],
             ),
           ),
