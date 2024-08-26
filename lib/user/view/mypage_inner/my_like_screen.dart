@@ -82,7 +82,6 @@ class _MyLikeScreenState extends ConsumerState<MyLikeScreen> {
         popupList: [
           popupItem(
             text: "수정하기",
-            value: "수정",
           ),
         ],
         vertFunc: (String? val) {},
@@ -98,6 +97,8 @@ class _MyLikeScreenState extends ConsumerState<MyLikeScreen> {
           child: SingleChildScrollView(
             child: Column(
               children: [
+                SizedBox(height: 20),
+
                 // DropDown Widget
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,

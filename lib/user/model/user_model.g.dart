@@ -39,41 +39,20 @@ Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
 SignupUser _$SignupUserFromJson(Map<String, dynamic> json) => SignupUser(
       name: json['name'] as String,
       nickname: json['nickname'] as String,
-      zipcode: json['zipcode'] as String,
       email: json['email'] as String,
       phone: json['phone'] as String,
-      address: json['address'] as String,
-      detailAddress: json['detailAddress'] as String,
+      address: json['address'] as String?,
+      zipcode: json['zipcode'] as String?,
+      detailAddress: json['detailAddress'] as String?,
     );
 
 Map<String, dynamic> _$SignupUserToJson(SignupUser instance) =>
     <String, dynamic>{
       'name': instance.name,
       'nickname': instance.nickname,
-      'zipcode': instance.zipcode,
       'email': instance.email,
       'phone': instance.phone,
       'address': instance.address,
-      'detailAddress': instance.detailAddress,
-    };
-
-AddressModel _$AddressModelFromJson(Map<String, dynamic> json) => AddressModel(
-      id: (json['id'] as num).toInt(),
-      name: json['name'] as String,
-      phoneNumber: json['phoneNumber'] as String,
-      defaultAddress: json['defaultAddress'] as bool,
-      address: json['address'] as String,
-      detailAddress: json['detailAddress'] as String,
-      zipcode: json['zipcode'] as String,
-    );
-
-Map<String, dynamic> _$AddressModelToJson(AddressModel instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-      'phoneNumber': instance.phoneNumber,
-      'defaultAddress': instance.defaultAddress,
-      'address': instance.address,
-      'detailAddress': instance.detailAddress,
       'zipcode': instance.zipcode,
+      'detailAddress': instance.detailAddress,
     };

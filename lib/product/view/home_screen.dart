@@ -4,6 +4,7 @@ import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/product/view/product_category_screen.dart';
+import 'package:auction_shop/product/view/search_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -39,13 +40,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         'assets/logo/main_logo.png',
                         height: ratio.height * 50,
                       ),
-                      IconButton(
-                        onPressed: () {
-                          
+                      GestureDetector(
+                        onTap: (){
+                          context.pushNamed(SearchScreen.routeName);
                         },
-                        icon: Icon(
+                        child: Icon(
                           Icons.search,
-                          size: 34,
+                          size: 40,
                           color: auctionColor.mainColor,
                         ),
                       ),
@@ -54,69 +55,68 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 Container(
                   margin: const EdgeInsets.only(
-                    bottom: 60,
+                    bottom: 40,
                     top: 20,
                   ),
-                  height: ratio.height * 265,
+                  height: 220,
                   color: auctionColor.subGreyColorD9,
                 ),
                 Padding(
                   padding: const EdgeInsets.only(
                     left: 16,
-                    bottom: 8,
+                    bottom: 12.74,
                   ),
                   child: Text(
-                    "메뉴",
+                    "카테고리 메뉴",
                     style: tsNotoSansKR(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: auctionColor.subBlackColor49),
+                        color: auctionColor.subBlackColor49,),
                   ),
-                )
+                ),
               ],
             ),
           ),
           SliverGrid.builder(
-            itemCount: images.length,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 4,
-              crossAxisSpacing: 0,
-              mainAxisSpacing: 4,
-            ),
-            itemBuilder: (context, index) {
-              return Column(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      context.pushNamed(
-                        ProductCategoryScreen.routeName,
-                        pathParameters: {
-                          'cid': index.toString(),
-                        },
-                      );
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: auctionColor.mainColor2,
-                      ),
-                      width: ratio.width * 85,
-                      height: ratio.height * 85,
-                      child: Image.asset(
-                        images[index],
-                        width: ratio.width * 65,
-                        height: ratio.height * 65,
+              itemCount: images.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4,
+                mainAxisSpacing: 8.49,
+              ),
+              itemBuilder: (context, index) {
+                return Column(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        context.pushNamed(
+                          ProductCategoryScreen.routeName,
+                          pathParameters: {
+                            'cid': index.toString(),
+                          },
+                        );
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: auctionColor.mainColorEF,
+                        ),
+                        width: ratio.width * 85,
+                        height: ratio.height * 85,
+                        child: Image.asset(
+                          images[index],
+                          width: ratio.width * 65,
+                          height: ratio.height * 65,
+                        ),
                       ),
                     ),
-                  ),
-                  Text(
-                    category[index + 1],
-                    style: tsNotoSansKR(fontSize: 12, fontWeight: FontWeight.w500,),
-                  ),
-                ],
-              );
-            },
-          ),
+                    Text(
+                      category[index + 1],
+                      style: tsNotoSansKR(fontSize: 12, fontWeight: FontWeight.w500,),
+                    ),
+                  ],
+                );
+              },
+            ),
           auctionRowBox(
             typeText: '추천경매',
             title: "10만원 시작",

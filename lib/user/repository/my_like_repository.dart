@@ -23,6 +23,7 @@ class MyLikeRepository extends BasePaginationRepository<ProductModel> {
   });
 
   Future<CursorPagination<ProductModel>> paginate() async {
+    final Dio dio = Dio();
     final resp = await dio.get(baseUrl + '/like');
     // 데이터가 아무것도 없을 때
     if(resp.statusCode == 204){

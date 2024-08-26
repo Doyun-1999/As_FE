@@ -48,7 +48,7 @@ class ProductRepository extends BasePaginationRepository {
   Future<ProductModel?> registerProduct(FormData data) async {
     try {
       final resp = await dio.post(baseUrl + '/product/registration',
-          data: data, options: Options(headers: {'accessToken': 'true'}));
+          data: data, options: Options(headers: {'refreshToken': 'true'}));
 
       if (resp.statusCode == 200) {
         print('성공---------------');
@@ -124,7 +124,7 @@ class ProductRepository extends BasePaginationRepository {
         baseUrl + '/product/update/${productId}',
         data: data,
         options: Options(
-          headers: {'accessToken': 'true'},
+          headers: {'refreshToken': 'true'},
         ),
       );
 

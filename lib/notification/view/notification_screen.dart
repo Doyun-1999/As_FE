@@ -32,7 +32,7 @@ class NotificationScreen extends StatelessWidget {
           print('object');
         },
         popupList: [
-          popupItem(text: '수정하기', value: "1"),
+          popupItem(text: '수정하기'),
           PopupMenuDivider(),
           PopupMenuItem(
             height: 30,

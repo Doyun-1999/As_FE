@@ -191,7 +191,7 @@ class _ProductReviseScreenState extends ConsumerState<ProductReviseScreen> {
               }
             },
             itemBuilder: (BuildContext context) =>
-                [popupItem(text: "삭제하기", value: "삭제")],
+                [popupItem(text: "삭제하기")],
             icon: Icon(
               Icons.more_vert,
               color: auctionColor.subGreyColorB6,
@@ -214,31 +214,39 @@ class _ProductReviseScreenState extends ConsumerState<ProductReviseScreen> {
               SingleChildScrollView(
                 controller: _scrollController,
                 scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    ...List.generate(_setImages.length, (index) {
-                      return setImage(func:(){}, imgPath: _setImages[index]);
-                    }),
-                    ...List.generate(_images.length, (index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 12),
-                        child: UploadImageBox(
-                          image: _images[index],
-                          index: index,
-                          func: () {
-                            _pickImage(index: index);
-                          },
-                        ),
-                      );
-                    }),
-                    _images.length == 10
-                        ? SizedBox()
-                        : UploadImageBox(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: Row(
+                    children: [
+                      ...List.generate(_setImages.length, (index) {
+                        return setImage(func:(){}, imgPath: _setImages[index]);
+                      }),
+                      ...List.generate(_images.length, (index) {
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 12),
+                          child: UploadImageBox(
+                            deleteFunc: (){
+                                setState(() {
+                                  _images.removeAt(index);
+                                });
+                              },
+                            image: _images[index],
+                            index: index,
                             func: () {
-                              _pickImage();
+                              _pickImage(index: index);
                             },
                           ),
-                  ],
+                        );
+                      }),
+                      (_images.length + _setImages.length) == 10
+                          ? SizedBox()
+                          : UploadImageBox(
+                              func: () {
+                                _pickImage();
+                              },
+                            ),
+                    ],
+                  ),
                 ),
               ),
 
@@ -454,7 +462,7 @@ class _ProductReviseScreenState extends ConsumerState<ProductReviseScreen> {
   Container phrase() {
     return Container(
       decoration: BoxDecoration(
-        color: auctionColor.mainColor2,
+        color: auctionColor.mainColorEF,
         borderRadius: BorderRadius.circular(8),
       ),
       margin: const EdgeInsets.only(top: 13, bottom: 25),

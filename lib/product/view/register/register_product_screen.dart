@@ -10,6 +10,7 @@ import 'package:auction_shop/common/variable/function.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/variable/validator.dart';
 import 'package:auction_shop/common/view/root_tab.dart';
+import 'package:auction_shop/main.dart';
 import 'package:auction_shop/product/component/toggle_button.dart';
 import 'package:auction_shop/product/component/upload_image_box.dart';
 import 'package:auction_shop/product/model/product_model.dart';
@@ -128,33 +129,42 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
             SliverPadding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 16,
+                vertical: 20,
               ),
               sliver: SliverToBoxAdapter(
                 child: SingleChildScrollView(
                   controller: _scrollController,
                   scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      ...List.generate(_images.length, (index) {
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 12),
-                          child: UploadImageBox(
-                            image: _images[index],
-                            index: index,
-                            func: () {
-                              _pickImage(index: index);
-                            },
-                          ),
-                        );
-                      }),
-                      _images.length == 10
-                          ? SizedBox()
-                          : UploadImageBox(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: Row(
+                      children: [
+                        ...List.generate(_images.length, (index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 12),
+                            child: UploadImageBox(
+                              image: _images[index],
+                              index: index,
+                              deleteFunc: (){
+                                setState(() {
+                                  _images.removeAt(index);
+                                });
+                              },
                               func: () {
-                                _pickImage();
+                                _pickImage(index: index);
                               },
                             ),
-                    ],
+                          );
+                        }),
+                        _images.length == 10
+                            ? SizedBox()
+                            : UploadImageBox(
+                                func: () {
+                                  _pickImage();
+                                },
+                              ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -286,7 +296,6 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
               padding: const EdgeInsets.only(
                 left: 16,
                 right: 16,
-                bottom: 40,
               ),
               sliver: SliverFillRemaining(
                 hasScrollBody: false,
@@ -338,6 +347,9 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
                           );
                         }
                       },
+                    ),
+                    SizedBox(
+                      height: ratio.height * 59,
                     ),
                   ],
                 ),

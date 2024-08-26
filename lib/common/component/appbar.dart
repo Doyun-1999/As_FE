@@ -107,10 +107,9 @@ class CustomAppBar {
 
 PopupMenuItem<String> popupItem({
   required String text,
-  required String value,
 }) {
   return PopupMenuItem(
-    value: value,
+    value: text,
     height: 30,
     padding: EdgeInsets.only(right: ratio.width * 117, left: ratio.width * 30),
     child: Text(

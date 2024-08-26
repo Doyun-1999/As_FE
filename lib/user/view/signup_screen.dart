@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:auction_shop/common/component/button.dart';
 import 'package:auction_shop/common/component/dialog.dart';
 import 'package:auction_shop/common/component/textformfield.dart';
-import 'package:auction_shop/common/dio/dio.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/variable/validator.dart';
@@ -12,7 +11,6 @@ import 'package:auction_shop/user/component/nickname_checkbox.dart';
 import 'package:auction_shop/user/model/user_model.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:auction_shop/user/view/login_screen.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -32,7 +30,6 @@ class SignupScreen extends ConsumerStatefulWidget {
 
 class _SignupScreenState extends ConsumerState<SignupScreen> {
   File? _image;
-  String? fileName;
   final ImagePicker picker = ImagePicker();
   final gkey = GlobalKey<FormState>();
 
@@ -54,7 +51,6 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     if (pickedFile != null) {
       setState(() {
         _image = File(pickedFile.path);
-        fileName = pickedFile.name;
       });
     }
   }
@@ -69,7 +65,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         backgroundColor: Colors.white,
         leading: IconButton(
           onPressed: () {
-            ref.read(userProvider.notifier).resetState();
+            ref.read(userProvider.notifier).logout();
             context.goNamed(LoginScreen.routeName);
           },
           icon: Icon(
@@ -261,7 +257,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     return supportXValidator(val, name: '주소');
                   },
                   controller: _zipcodeController,
-                  hintText: "자동 입력",
+                  hintText: "주소지를 입력하시면 우편번호가 자동입력됩니다.",
                 ),
                 const SizedBox(
                   height: 6,
@@ -299,7 +295,6 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                               detailAddress: _detailAddressController.text,
                             );
                             ref.read(userProvider.notifier).signup(
-                                  fileName: fileName,
                                   fileData: _image,
                                   userData: userData,
                                 );

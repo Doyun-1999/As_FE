@@ -101,10 +101,12 @@ class UploadImageBox extends StatelessWidget {
   final int? index;
   final File? image;
   final VoidCallback? func;
+  final VoidCallback? deleteFunc;
   const UploadImageBox({
     this.image,
     this.index,
     required this.func,
+    this.deleteFunc,
     super.key,
   });
 
@@ -112,7 +114,10 @@ class UploadImageBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: func,
-      child: Container(
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
         width: 85,
         height: 85,
         padding: image != null
@@ -133,9 +138,9 @@ class UploadImageBox extends StatelessWidget {
         ),
         child: image != null
             ? Image.file(
-                File(image!.path),
-                fit: BoxFit.fill,
-              )
+              File(image!.path),
+              fit: BoxFit.fill,
+            )
             : Column(
                 children: [
                   Icon(
@@ -153,6 +158,27 @@ class UploadImageBox extends StatelessWidget {
                   ),
                 ],
               ),
+      ),
+      image != null ? Positioned(
+            right: -10,
+            top: -10,
+            child: GestureDetector(
+              onTap: deleteFunc,
+              child: Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  color: auctionColor.mainColor,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.close,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ) : SizedBox()
+        ],
       ),
     );
   }

@@ -116,32 +116,25 @@ class ProductCard extends ConsumerWidget {
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.fromLTRB(6, 2, 6, 4),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(100),
+                        border: isSkeletion ? null : Border.all(color: auctionColor.mainColor),
                         color: isSkeletion ? null : auctionColor.mainColor,
                       ),
-                      child: Column(
-                        children: [
-                          Text(conditions, style: tsNotoSansKR(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white), textAlign: TextAlign.center,),
-                        ],
-                      ),
+                      child: Text(conditions, style: tsNotoSansKR(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white), textAlign: TextAlign.center,),
                     ),
                     SizedBox(width: 4),
                     ...List.generate(tradeTypes.length, (index) {
                       return Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.fromLTRB(6, 2, 6, 4),
                       margin: const EdgeInsets.only(right: 4),
                       decoration: BoxDecoration(
                         border: Border.all(color: auctionColor.subBlackColor49),
                         borderRadius: BorderRadius.circular(100),
                         color: Colors.white,
                       ),
-                      child: Column(
-                        children: [
-                          Text(tradeTypes[index], style: tsNotoSansKR(fontSize: 10, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
-                        ],
-                      ),
+                      child: Text(tradeTypes[index], style: tsNotoSansKR(fontSize: 10, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
                     );
                     })
                   ],

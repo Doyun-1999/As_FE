@@ -17,10 +17,9 @@ import 'package:auction_shop/product/provider/product_provider.dart';
 import 'package:auction_shop/product/view/product_category_screen.dart';
 import 'package:auction_shop/product/view/product_loading_screen.dart';
 import 'package:auction_shop/product/view/product_revise_screen.dart';
+import 'package:auction_shop/user/provider/block_provider.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
-import 'package:auction_shop/user/secure_storage/secure_storage.dart';
 import 'package:card_swiper/card_swiper.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -70,9 +69,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
     controller.addListener(tabListener);
     // 데이터 얻기
     if (!widget.isSkeleton) {
-      ref
-          .read(productDetailProvider.notifier)
-          .getProductDetail(productId: int.parse(widget.id));
+      ref.read(productDetailProvider.notifier).getProductDetail(productId: int.parse(widget.id));
     }
     super.initState();
   }
@@ -165,6 +162,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                       vertical: 20,
                     ),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         index == 0
                             ? Text(
@@ -201,7 +199,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                                 ],
                               ),
                         SizedBox(
-                          height: 90,
+                          height: 109,
                         ),
                       ],
                     ),
@@ -221,21 +219,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                   text: '입찰하기',
                   // 바텀 시트 올라오는 함수
                   func: () async {
-                    // try{
-                    //   final Dio dio = Dio();
-                    //   final storage = ref.watch(secureStorageProvider);
-                    //   final accessToken = storage.read(key: ACCESS_TOKEN);
-                    //   final resp = await dio.post('https://heybid.shop/payments/1/imp06856072',
-                    //   options: Options(headers: {"Authorization": "Bearer $accessToken"}));
-                    //   print('---------------------');
-                    //   print("결제 요청 보냈음, 결과 : ${resp.data}, StatusCode : ${resp.statusCode}");
-                    // }on DioException catch(e){
-                    //   print(e);
-                    //   print(e.error);
-                    //   print(e.message);
-                    //   print(e.requestOptions);
-                    //   print(e.response);
-                    // }
+
                     Navigator.push(context, MaterialPageRoute(builder: (context) {
                       final user = ref.read(userProvider.notifier).getUser();
                       final model = PurchaseData(productId: int.parse(widget.id), price: data.current_price, user: user);
@@ -251,7 +235,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                   },
                 ),
                 SizedBox(
-                  height: 40,
+                  height: ratio.height * 59,
                 ),
               ],
             ),
@@ -326,68 +310,84 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  IconButton(
-                    onPressed: () {
-                      context.pop();
-                    },
-                    icon: Icon(
-                      Icons.arrow_back_ios,
-                      color: Colors.white,
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4,left: 4),
+                    child: IconButton(
+                      onPressed: () {
+                        context.pop();
+                      },
+                      icon: Icon(
+                        Icons.arrow_back_ios,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                  data.owner
-                      ? PopupMenuButton<String>(
-                          color: Colors.white,
-                          onSelected: (String? val) async {
-                            if (val == "수정") {
-                              context.pushNamed(ProductReviseScreen.routeName,
-                                  extra: data);
-                            }
-                            if (val == "삭제") {
-                              CustomDialog(
-                                  context: context,
-                                  title: "정말 게시글을 삭제하시겠어요?",
-                                  CancelText: "삭제 취소",
-                                  OkText: "삭제",
-                                  func: () async {
-                                    final resp = await ref
-                                        .read(productDetailProvider.notifier)
-                                        .deleteData(productId);
-                                    // 삭제에 성공하면 경매 물품 목록 화면으로 이동
-                                    if (resp) {
-                                      context.goNamed(
-                                        ProductCategoryScreen.routeName,
-                                        pathParameters: {
-                                          'cid': '0',
-                                        },
-                                      );
-                                      return;
-                                    }
-                                    // 실패하면 에러 화면으로
-                                    if (!resp) {
-                                      context.goNamed(ErrorScreen.routeName);
-                                      return;
-                                    }
-                                  });
-                            }
-                          },
-                          itemBuilder: (BuildContext context) => [
-                            popupItem(
-                              text: "수정하기",
-                              value: "수정",
-                            ),
-                            PopupMenuDivider(),
-                            popupItem(
-                              text: "삭제하기",
-                              value: "삭제",
-                            ),
-                          ],
-                          icon: Icon(
-                            Icons.more_vert,
+                  // 팝업 위젯
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4, left: 4),
+                    child: PopupMenuButton<String>(
                             color: Colors.white,
+                            onSelected: (String? val) async {
+                              if (val == "수정하기") {
+                                context.pushNamed(ProductReviseScreen.routeName, extra: data);
+                              }
+                              if (val == "삭제하기") {
+                                CustomDialog(
+                                    context: context,
+                                    title: "정말 게시글을 삭제하시겠어요?",
+                                    CancelText: "삭제 취소",
+                                    OkText: "삭제",
+                                    func: () async {
+                                      final resp = await ref.read(productDetailProvider.notifier).deleteData(productId);
+                                      // 삭제에 성공하면 경매 물품 목록 화면으로 이동
+                                      if (resp) {
+                                        context.goNamed(
+                                          ProductCategoryScreen.routeName,
+                                          pathParameters: {
+                                            'cid': '0',
+                                          },
+                                        );
+                                        return;
+                                      }
+                                      // 실패하면 에러 화면으로
+                                      if (!resp) {
+                                        context.goNamed(ErrorScreen.routeName);
+                                        return;
+                                      }
+                                    },);
+                              }
+                              if(val == "차단하기"){
+                                CustomDialog(
+                                    context: context,
+                                    title: "해당 게시글 생성자를 차단하시겠습니까?",
+                                    CancelText: "취소",
+                                    OkText: "확인",
+                                    func: () async {
+                                      await ref.read(blockProvider.notifier).blockUser(data.memberId);
+                                      context.pop();
+                                    },);
+                              }
+                            },
+                            itemBuilder: (BuildContext context) => 
+                            data.owner ? [
+                              popupItem(
+                                text: "수정하기",
+                              ),
+                              PopupMenuDivider(),
+                              popupItem(
+                                text: "삭제하기",
+                              ),
+                            ] : [
+                              popupItem(
+                                text: "차단하기",
+                              ),
+                            ],
+                            icon: Icon(
+                              Icons.more_vert,
+                              color: Colors.white,
+                            ),
                           ),
-                        )
-                      : SizedBox(),
+                  ),
                 ],
               ),
               Positioned(
@@ -544,6 +544,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                       Container(
                         width: 35,
                         height: 35,
+                        margin: const EdgeInsets.only(bottom: 15),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: auctionColor.subGreyColorD9,
@@ -581,7 +582,8 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                     width: 8,
                   ),
                   Container(
-                    width: 80,
+                    width: 60,
+                    margin: const EdgeInsets.only(bottom: 15),
                     child: Text(
                       createdBy,
                       style: tsNotoSansKR(

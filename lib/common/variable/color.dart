@@ -4,13 +4,14 @@ class auctionColor{
   
   // MainColor
   static const Color mainColor = Color(0xFF9747FF);
-  static const Color mainColor2 = Color(0xFFEFE4FF);
+  static const Color mainColorEF = Color(0xFFEFE4FF);
   static const Color mainColorE2 = Color(0xFFE2CBFF);
 
   // BlackColor
   static const Color subBlackColor3E24 = Color(0xFF3E2423);
   static const Color subBlackColor49 = Color(0xFF494949);
   static const Color subBlackColor54 = Color(0xFF545454);
+  static const Color subBlackColor3E2423 = Color(0xFF3E2423);
 
   // GreyColor
   static const Color subGreyColorD9 = Color(0xFFD9D9D9);

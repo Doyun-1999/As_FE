@@ -5,6 +5,7 @@ import 'package:auction_shop/common/view/error_screen.dart';
 import 'package:auction_shop/common/view/splash_screen.dart';
 import 'package:auction_shop/notification/view/notification_screen.dart';
 import 'package:auction_shop/product/model/product_model.dart';
+import 'package:auction_shop/product/view/search_screen.dart';
 import 'package:auction_shop/product/view/select_category_screen.dart';
 import 'package:auction_shop/product/view/product_category_screen.dart';
 import 'package:auction_shop/product/view/product_info_screen.dart';
@@ -12,10 +13,11 @@ import 'package:auction_shop/product/view/product_revise_screen.dart';
 import 'package:auction_shop/product/view/register/register_product_screen.dart';
 import 'package:auction_shop/product/view/register/register_product_screen2.dart';
 import 'package:auction_shop/user/model/Q&A_model.dart';
+import 'package:auction_shop/user/model/address_model.dart';
 import 'package:auction_shop/user/model/user_model.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
+import 'package:auction_shop/user/view/mypage_inner/manage_address_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/address_screen.dart';
-import 'package:auction_shop/user/view/mypage_inner/adress_revise_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/block_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/answer_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/my_like_screen.dart';
@@ -138,9 +140,18 @@ class AuthNotifier extends ChangeNotifier {
                   builder: (_, __) => AddressScreen(),
                   routes: [
                     GoRoute(
-                      path: 'revise_address',
-                      name: ReviseAdressScreen.routeName,
-                      builder: (_, __) => ReviseAdressScreen(),
+                      path: 'manage_address',
+                      name: ManageAddressScreen.routeName,
+                      builder: (_, __) {
+                        // __.extra를 이용하여 goRouter를 이용할 때 객체를 전달받을 수 있다.
+                        // 데이터가 없으면 일반 배송지 추가 화면으로
+                        if (__.extra == null) {
+                          return ManageAddressScreen();
+                        }
+                        // 데이터가 있으면 내 배송지 수정 화면으로
+                        final address = __.extra as AddressModel;
+                        return ManageAddressScreen(address: address,);
+                      },
                     ),
                   ],
                 ),
@@ -235,6 +246,11 @@ class AuthNotifier extends ChangeNotifier {
           path: '/splash',
           name: SplashScreen.routeName,
           builder: (_, __) => SplashScreen(),
+        ),
+        GoRoute(
+          path: '/search',
+          name: SearchScreen.routeName,
+          builder: (_, __) => SearchScreen(),
         ),
         GoRoute(
           path: '/error',

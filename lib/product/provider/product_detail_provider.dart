@@ -105,6 +105,7 @@ class ProductDetailNotifier extends StateNotifier<List<ProductDetailModel>> {
   // 가짜 데이터들
   ProductDetailModel fakeData() {
     return ProductDetailModel(
+      memberId: 0,
       product_id: 0,
       title: "Fake Data",
       conditions: "Fake Data",

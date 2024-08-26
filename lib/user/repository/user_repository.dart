@@ -3,6 +3,8 @@ import 'package:auction_shop/common/dio/dio.dart';
 import 'package:auction_shop/common/model/cursor_pagination_model.dart';
 import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/user/model/Q&A_model.dart';
+import 'package:auction_shop/user/model/address_model.dart';
+import 'package:auction_shop/user/model/block_model.dart';
 import 'package:auction_shop/user/model/pk_id_model.dart';
 import 'package:auction_shop/user/model/user_model.dart';
 import 'package:dio/dio.dart';
@@ -27,12 +29,52 @@ class UserRepository extends BasePaginationRepository {
     required this.baseUrl,
   });
 
-  
+  // 대상 차단하기
+  Future<BlockUser> blockUser(int memberId) async {
+    final resp = await dio.post(
+      baseUrl + '/block',
+      data: {"blockedMemberId": '$memberId'},
+      options: Options(
+        headers: {'accessToken': 'true'},
+      ),
+    );
+    print("resp.statusCode : ${resp.statusCode}");
+    print("resp.data : ${resp.data}");
+    final blockData = BlockUser.fromJson(resp.data);
+    return blockData;
+  }
+
+  // 차단 목록 조회하기
+  Future<BlockUserList> blockUserList() async {
+    final resp = await dio.get(
+      baseUrl + '/block',
+      options: Options(
+        headers: {'accessToken': 'true'},
+      ),
+    );
+    final blockData = BlockUserList.fromJson(resp.data);
+    return blockData;
+  }
+
+  // 차단 취소하기
+  Future<void> blockUserRemove(int id) async {
+    final resp = await dio.delete(
+      baseUrl + '/block',
+      data: {"id": '$id'},
+      options: Options(
+        headers: {'accessToken': 'true'},
+      ),
+    );
+    print("resp.statusCode : ${resp.statusCode}");
+    print("resp.data : ${resp.data}");
+  }
+
   // 이름 중복 검사
   Future<bool> checkNickName(String nickname) async {
     print("nickname : $nickname");
-    final resp = await dio.get(BASE_URL + '/member/name', queryParameters: {"nickname": nickname});
-    
+    final resp = await dio.get(BASE_URL + '/member/name',
+        queryParameters: {"nickname": nickname});
+
     print(resp.statusCode);
     print(resp.data);
     return resp.data;
@@ -47,26 +89,29 @@ class UserRepository extends BasePaginationRepository {
     print(resp.statusCode);
     print(resp.data);
     final data = {"data": resp.data};
-    final dataList = CursorPagination.fromJson(data, (json) => ProductModel.fromJson(json as Map<String, dynamic>));
+    final dataList = CursorPagination.fromJson(
+        data, (json) => ProductModel.fromJson(json as Map<String, dynamic>));
     return dataList;
   }
 
+  // 문의 삭제
   Future<bool> deleteQandA(int inquiryId) async {
     final resp = await dio.delete(baseUrl + '/inquiry/${inquiryId}');
-    if(resp.statusCode != 200){
+    if (resp.statusCode != 200) {
       return false;
     }
     return true;
   }
 
-  // 문의 전체 조회
+  // 해당 유저의 문의 전체 조회
   Future<AnswerListModel> allAnswerData() async {
     final resp = await dio.get(
-      baseUrl + '/inquiry',
-      options: Options(headers: {'accessToken': 'true'}),
+        baseUrl + '/inquiry/member',
+        options: Options(headers: {'accessToken': 'true'},
+      ),
     );
-    print(resp.statusCode);
-    print(resp.data);
+    print("문의 요청에 대한 StatusCode : ${resp.statusCode}");
+    print("문의 요청에 대한 결과 데이터 : ${resp.data}");
     // 데이터가 없으면 빈 리스트 데이터 반환
     if (resp.statusCode == 204) {
       return AnswerListModel(list: []);
@@ -91,7 +136,7 @@ class UserRepository extends BasePaginationRepository {
   }
 
   // 문의 등록
-  Future<void> question({
+  Future<bool> question({
     required FormData formData,
   }) async {
     try {
@@ -99,7 +144,7 @@ class UserRepository extends BasePaginationRepository {
         baseUrl + '/inquiry',
         data: formData,
         options: Options(
-          headers: {'accessToken': 'true'},
+          headers: {'refreshToken': 'true'},
         ),
       );
 
@@ -107,15 +152,17 @@ class UserRepository extends BasePaginationRepository {
         print("성공");
         print(resp);
         print(resp.data);
-        return;
+        return true;
       } else {
         print("실패요");
         print(resp.statusCode);
         print(resp);
+        return false;
       }
     } on DioException catch (e) {
       print("실패");
       print(e);
+      return false;
     }
   }
 
@@ -190,5 +237,42 @@ class UserRepository extends BasePaginationRepository {
     return PkIdModel(
       pkId: result.account.id,
     );
+  }
+
+  // 주소 데이터 추가하기
+  Future<AddressModel> addAddress(ManageAddressModel data) async {
+    final resp = await dio.post(baseUrl + '/address',
+        data: data.toJson(),
+        options: Options(headers: {'accessToken': 'true'}));
+    print("resp.statusCode : ${resp.statusCode}");
+    print("resp.data : ${resp.data}");
+    return AddressModel.fromJson(resp.data);
+  }
+
+  // 주소 수정하기
+  Future<void> reviseAddress({
+    required ManageAddressModel data,
+    required int addressId,
+  }) async {
+    final resp = await dio.put(baseUrl + '/address/${addressId}',
+        data: data.toJson(),
+        options: Options(headers: {'accessToken': 'true'}));
+    print("resp.statusCode : ${resp.statusCode}");
+    print("resp.data : ${resp.data}");
+  }
+
+  Future<bool> deleteAddress({
+    required List<int> deleteList,
+  }) async {
+    final resp = await dio.delete(baseUrl + '/address',
+        data: {"deleteList" : deleteList},
+        options: Options(headers: {'accessToken': 'true'}));
+    print("resp.statusCode : ${resp.statusCode}");
+    print("resp.data : ${resp.data}");
+    if(resp.statusCode != 204){
+      return false;
+    }
+    return true;
+    
   }
 }

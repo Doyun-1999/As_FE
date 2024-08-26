@@ -44,10 +44,13 @@ class QandANotifier extends StateNotifier<QandABaseModel?>{
     final formData = await makeFormData(images: images, data: data, key: "inquiry");
     
     // 서버 요청
-    await repo.question(formData: formData);
+    final resp = await repo.question(formData: formData);
     
     // 요청 후 완료되면 다시 로딩
-    allAnswerData();
+    if(resp){
+      allAnswerData();
+      return;
+    }
   }
 
   // 문의 수정하기

@@ -6,37 +6,33 @@ import 'package:flutter/widgets.dart';
 
 class InfoBox extends StatelessWidget {
   final String? firstBoxText;
-  final String? secondeBoxText;
   final Widget widget;
   final String sideText;
   final VoidCallback sideFunc;
+  final bool? isChecked;
+  
   const InfoBox({
     this.firstBoxText,
     required this.widget,
     required this.sideFunc,
-    this.secondeBoxText,
     this.sideText = "수정",
+    this.isChecked,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(
-        left: 16,
-        right: 16,
-        top: 20,
-        bottom: 12,
-      ),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
+        border: Border.all(color: (isChecked != null && isChecked!) ? auctionColor.mainColor : Colors.white),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Column(
+      child: Stack(
         children: [
-          SizedBox(height: 16,),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -60,21 +56,48 @@ class InfoBox extends StatelessWidget {
                         ),
                       )
                     : SizedBox(),
-                GestureDetector(
-                  onTap: sideFunc,
-                  child: Text(
-                    sideText,
-                    style: tsInter(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: auctionColor.subGreyColorB6,
-                    ),
-                  ),
-                ),
+          
+                // 수정 / 삭제 중이라면 해당 위젯
+                isChecked == null
+                    ? GestureDetector(
+                        onTap: sideFunc,
+                        child: Text(
+                          sideText,
+                          style: tsInter(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            color: auctionColor.subGreyColorB6,
+                          ),
+                        ),
+                      )
+                    : SizedBox()
               ],
             ),
           ),
           widget,
+          Positioned(
+            right: 8,
+            top: 8,
+            child: isChecked == null
+                ? SizedBox()
+                : isChecked!
+                    ? GestureDetector(
+                      onTap: sideFunc,
+                      child: Icon(
+                          Icons.check_circle,
+                          color: auctionColor.mainColor,
+                          size: 30,
+                        ),
+                    )
+                    : GestureDetector(
+                      onTap: sideFunc,
+                      child: Icon(
+                          Icons.circle_outlined,
+                          color: auctionColor.mainColor,
+                          size: 30,
+                        ),
+                    ),
+          ),
         ],
       ),
     );
