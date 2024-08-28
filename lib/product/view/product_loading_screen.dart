@@ -1,9 +1,10 @@
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/product/component/product_card.dart';
-import 'package:auction_shop/product/provider/product_provider.dart';
+import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/product/view/product_info_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -12,7 +13,64 @@ class ProductLoadingScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final data = ref.read(productProvider.notifier).getFakeData();
+    // skeleton을 위한 가짜 데이터
+    final data = [
+      ProductModel(
+          product_id: 0,
+          title: '가짜 데이터 데이터',
+          conditions: 'conditions',
+          categories: [],
+          tradeTypes: [],
+          initial_price: 5000,
+          current_price: 1000,
+          likeCount: 0,
+          liked: false,
+          sold: false),
+      ProductModel(
+          product_id: 0,
+          title: '가짜 데이터 데이터',
+          conditions: 'conditions',
+          categories: [],
+          tradeTypes: [],
+          initial_price: 5000,
+          current_price: 1000,
+          likeCount: 0,
+          liked: false,
+          sold: false),
+      ProductModel(
+          product_id: 0,
+          title: '가짜 데이터 데이터',
+          conditions: 'conditions',
+          categories: [],
+          tradeTypes: [],
+          initial_price: 5000,
+          current_price: 1000,
+          likeCount: 0,
+          liked: false,
+          sold: false),
+      ProductModel(
+          product_id: 0,
+          title: '가짜 데이터 데이터',
+          conditions: 'conditions',
+          categories: [],
+          tradeTypes: [],
+          initial_price: 5000,
+          current_price: 1000,
+          likeCount: 0,
+          liked: false,
+          sold: false),
+      ProductModel(
+          product_id: 0,
+          title: '가짜 데이터 데이터',
+          conditions: 'conditions',
+          categories: [],
+          tradeTypes: [],
+          initial_price: 5000,
+          current_price: 1000,
+          likeCount: 0,
+          liked: false,
+          sold: false),
+    ];
     return Skeletonizer(
       textBoneBorderRadius: TextBoneBorderRadius.fromHeightFactor(.3),
       child: Padding(

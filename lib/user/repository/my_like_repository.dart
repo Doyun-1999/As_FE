@@ -20,11 +20,14 @@ class MyLikeRepository extends BasePaginationRepository<ProductModel> {
   MyLikeRepository({
     required this.dio,
     required this.baseUrl,
-  });
+  }){
+    print("MyLikeRepository가 호출되었음.");
+  }
 
   Future<CursorPagination<ProductModel>> paginate() async {
-    final Dio dio = Dio();
-    final resp = await dio.get(baseUrl + '/like');
+    print("MyLikeRepository의 paginate가 실행되었움.");
+    final resp = await dio.get(baseUrl + '/like',
+    options: Options(headers: {'accessToken': 'true'}),);
     // 데이터가 아무것도 없을 때
     if(resp.statusCode == 204){
       return CursorPagination(data: []);
@@ -32,7 +35,6 @@ class MyLikeRepository extends BasePaginationRepository<ProductModel> {
     print("MyLikeData : ${resp.data}");
     final data = {"data": resp.data};
     final dataList = CursorPagination.fromJson(data, (json) => ProductModel.fromJson(json as Map<String, dynamic>));
-
     return dataList;
   }
 }

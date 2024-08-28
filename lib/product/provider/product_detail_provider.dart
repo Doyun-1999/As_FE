@@ -19,9 +19,7 @@ final getProductDetailProvider =
 });
 
 // 상세 조회했던 데이트들의 리스트
-final productDetailProvider =
-    StateNotifierProvider<ProductDetailNotifier, List<ProductDetailModel>>(
-        (ref) {
+final productDetailProvider = StateNotifierProvider<ProductDetailNotifier, List<ProductDetailModel>>((ref) {
   final repo = ref.watch(productRepositoryProvider);
 
   return ProductDetailNotifier(repo: repo, ref: ref);

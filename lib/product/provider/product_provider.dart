@@ -21,7 +21,9 @@ class ProductNotifier extends PaginationProvider<ProductModel, ProductRepository
   ProductNotifier({
     required super.repo,
     required this.ref,
-  });
+  }){
+    print("기본 productProvider 호출됨");
+  }
 
   // 경매 물품 등록
   Future<ProductModel?> registerProduct({
@@ -85,7 +87,7 @@ class ProductNotifier extends PaginationProvider<ProductModel, ProductRepository
       if(isPlus) {
         // Liked 다시 재요청
         print("like 다시 paginate");
-        ref.read(MyLikeProvider.notifier).paginate();
+        //ref.read(MyLikeProvider.notifier).paginate();
       }
       if(!isPlus){
         // 삭제
@@ -110,18 +112,6 @@ class ProductNotifier extends PaginationProvider<ProductModel, ProductRepository
     final newState = pState.copyWith(data: sortedData);
     state = newState;
   }
-
-  // Skeleton을 위한 임의의 가짜 데이터 return
-  // 해당 데이터의 길이에 따라서 UI에 보여지는 크기/길이가 달라진다.
-  List<ProductModel> getFakeData() {
-    return [
-        ProductModel(product_id: 0, title: '가짜 데이터 데이터', conditions: 'conditions', categories: [], tradeTypes: [], initial_price: 5000, current_price: 1000, likeCount: 0, liked: false, sold: false),
-        ProductModel(product_id: 0, title: '가짜 데이터 데이터', conditions: 'conditions', categories: [], tradeTypes: [], initial_price: 5000, current_price: 1000, likeCount: 0, liked: false, sold: false),
-        ProductModel(product_id: 0, title: '가짜 데이터 데이터', conditions: 'conditions', categories: [], tradeTypes: [], initial_price: 5000, current_price: 1000, likeCount: 0, liked: false, sold: false),
-        ProductModel(product_id: 0, title: '가짜 데이터 데이터', conditions: 'conditions', categories: [], tradeTypes: [], initial_price: 5000, current_price: 1000, likeCount: 0, liked: false, sold: false),
-        ProductModel(product_id: 0, title: '가짜 데이터 데이터', conditions: 'conditions', categories: [], tradeTypes: [], initial_price: 5000, current_price: 1000, likeCount: 0, liked: false, sold: false),
-      ];
-  }  
 }
 
 

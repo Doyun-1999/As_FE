@@ -1,17 +1,42 @@
 import 'package:auction_shop/chat/view/chat_info_screen.dart';
+import 'package:auction_shop/common/dio/dio.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/main.dart';
+import 'package:auction_shop/user/provider/user_provider.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class ChatListScreen extends StatelessWidget {
+class ChatListScreen extends ConsumerStatefulWidget {
   static String get routeName => "chat";
   const ChatListScreen({super.key});
+
+  @override
+  ConsumerState<ChatListScreen> createState() => _ChatListScreenState();
+}
+
+class _ChatListScreenState extends ConsumerState<ChatListScreen> {
+
+  @override
+  void initState() {
+    
+    super.initState();
+  }
+
+  void getChatList(WidgetRef ref) async {
+    final userData = ref.read(userProvider.notifier).getUser();
+    final Dio dio = Dio();
+    final resp = await dio.get(BASE_URL + '/chatroom/list/${userData.id}');
+    print("resp.statusCode : ${resp.statusCode}");
+    print("resp.data : ${resp.data}");
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -25,8 +50,9 @@ class ChatListScreen extends StatelessWidget {
               itemCount: 10,
               itemBuilder: (context, index) {
                 return ChatListBox(
-                  func: () {
-                    context.goNamed(ChatInfoScreen.routeName, pathParameters: {'cid': '$index'});
+                  func: () async {
+                    getChatList(ref);
+                    //context.goNamed(ChatInfoScreen.routeName, pathParameters: {'cid': '$index'});
                   },
                   username: '홍길동$index',
                   date: "어제",

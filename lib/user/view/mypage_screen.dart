@@ -2,9 +2,12 @@ import 'dart:ui';
 import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/component/image_widget.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
+import 'package:auction_shop/common/model/cursor_pagination_model.dart';
 import 'package:auction_shop/common/variable/color.dart';
+import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/user/provider/Q&A_provider.dart';
 import 'package:auction_shop/user/provider/block_provider.dart';
+import 'package:auction_shop/user/provider/my_like_provider.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:auction_shop/user/view/mypage_inner/address_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/block_screen.dart';
@@ -139,7 +142,10 @@ class MyPageScreen extends ConsumerWidget {
               IconText(
                 imgName: 'notice',
                 text: "공지사항",
-                func: () {},
+                func: () {
+                  final resp = ref.watch(MyLikeProvider);
+                  print(resp);
+                },
               ),
               Divider(
                 color: auctionColor.subGreyColorE2,

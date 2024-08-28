@@ -60,8 +60,7 @@ class NotificationScreen extends StatelessWidget {
               return notificationBox(
                 type: '채팅',
                 title: '알림 제목입니다.',
-                content:
-                    '알림 내용입니다. 알림 내용입니다. 알림 내용입니다. 알림 내용입니다. 알림 내용입니다. 알림 내용입니다. 알림 내용입니다. ',
+                content: '알림 내용입니다. 알림 내용입니다. 알림 내용입니다. 알림 내용입니다. 알림 내용입니다. 알림 내용입니다. 알림 내용입니다.',
               );
             },
           ),

@@ -554,25 +554,28 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                         top: -15,
                         left: -10,
                         right: -10,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 4,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: widget.isSkeleton
-                                ? null
-                                : auctionColor.mainColor,
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: Text(
-                            "채팅걸기",
-                            style: tsInter(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                        child: GestureDetector(
+                          onTap: (){},
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 4,
+                              vertical: 2,
                             ),
-                            textAlign: TextAlign.center,
+                            decoration: BoxDecoration(
+                              color: widget.isSkeleton
+                                  ? null
+                                  : auctionColor.mainColor,
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: Text(
+                              "채팅걸기",
+                              style: tsInter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                         ),
                       ),
