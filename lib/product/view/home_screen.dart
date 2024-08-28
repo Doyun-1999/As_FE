@@ -4,6 +4,7 @@ import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/product/view/product_category_screen.dart';
+import 'package:auction_shop/product/view/product_loading_screen.dart';
 import 'package:auction_shop/product/view/search_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

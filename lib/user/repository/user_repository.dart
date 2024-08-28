@@ -16,11 +16,12 @@ import 'package:auction_shop/common/repository/base_cursorpagination_repository.
 
 final userRepositoryProvider = Provider<UserRepository>((ref) {
   final dio = ref.watch(dioProvider);
+  final baseUrl = BASE_URL;
 
-  return UserRepository(dio: dio, baseUrl: BASE_URL);
+  return UserRepository(dio: dio, baseUrl: baseUrl);
 });
 
-class UserRepository extends BasePaginationRepository {
+class UserRepository extends BasePaginationRepository<ProductModel> {
   final Dio dio;
   final String baseUrl;
 
@@ -72,7 +73,7 @@ class UserRepository extends BasePaginationRepository {
   // 이름 중복 검사
   Future<bool> checkNickName(String nickname) async {
     print("nickname : $nickname");
-    final resp = await dio.get(BASE_URL + '/member/name',
+    final resp = await dio.get(baseUrl + '/member/name',
         queryParameters: {"nickname": nickname});
 
     print(resp.statusCode);
@@ -89,8 +90,7 @@ class UserRepository extends BasePaginationRepository {
     print(resp.statusCode);
     print(resp.data);
     final data = {"data": resp.data};
-    final dataList = CursorPagination.fromJson(
-        data, (json) => ProductModel.fromJson(json as Map<String, dynamic>));
+    final dataList = CursorPagination.fromJson(data, (json) => ProductModel.fromJson(json as Map<String, dynamic>));
     return dataList;
   }
 
@@ -265,8 +265,10 @@ class UserRepository extends BasePaginationRepository {
     required List<int> deleteList,
   }) async {
     final resp = await dio.delete(baseUrl + '/address',
-        data: {"deleteList" : deleteList},
-        options: Options(headers: {'accessToken': 'true'}));
+        data: deleteList,
+        options: Options(
+          contentType: 'application/json',
+          headers: {'accessToken': 'true'}));
     print("resp.statusCode : ${resp.statusCode}");
     print("resp.data : ${resp.data}");
     if(resp.statusCode != 204){

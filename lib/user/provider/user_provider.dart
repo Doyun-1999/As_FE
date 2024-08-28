@@ -12,6 +12,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http_parser/http_parser.dart';
 
 
+
 final userProvider = StateNotifierProvider<UserStateNotifier, UserModelBase?>((ref) {
   final authRepository = ref.watch(authRepositoryProvider);
   final userRepository = ref.watch(userRepositoryProvider);
@@ -42,12 +43,12 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
   // state에 그대로 추가 (서버 요청 X)
   void deleteAddress(List<int> deleteList) async {
     UserModel pState = getUser();
-    final resp = await userRepository.deleteAddress(deleteList: deleteList,);
+    final resp = await userRepository.deleteAddress(deleteList: deleteList);
+    print("resp : ${resp}");
     if(resp){
       for(int i = 0; i<deleteList.length; i++){
-        final newAddress = pState.address.where((e) => e.id != deleteList).toList();
+        final newAddress = pState.address.where((e) => e.id != deleteList[i]).toList();
         pState = pState.copyWith(address: newAddress);
-        print("pState.address : ${pState.address}");
       }
       state = pState;
     }

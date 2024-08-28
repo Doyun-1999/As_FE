@@ -7,18 +7,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final productRepositoryProvider = Provider<ProductRepository>((ref) {
   final dio = ref.watch(dioProvider);
-  final String baseUrl = BASE_URL;
+  final baseUrl = BASE_URL;
 
   return ProductRepository(dio, baseUrl: baseUrl);
 });
 
-class ProductRepository extends BasePaginationRepository {
+class ProductRepository extends BasePaginationRepository<ProductModel> {
   final Dio dio;
   final String baseUrl;
   ProductRepository(
     this.dio, {
     required this.baseUrl,
-  });
+  }){print("ProductRepository가 불렸움");}
 
   // 경매 물품 상세 조회
   Future<ProductDetailModel> getDetail(int productId) async {
@@ -31,10 +31,10 @@ class ProductRepository extends BasePaginationRepository {
   }
 
   // 전체 product 불러오기
-  @override
   Future<CursorPagination<ProductModel>> paginate() async {
-    final resp = await dio.get(baseUrl + '/product',
-        options: Options(headers: {'accessToken': 'true'},),);
+    final resp = await dio.get(
+      baseUrl + '/product',
+      options: Options(headers: {'accessToken': 'true'},),);
     print("일반 product provider 데이터");
     print(resp.statusCode);
     print(resp.data);

@@ -13,7 +13,9 @@ final MyLikeProvider = StateNotifierProvider<MyLikeNotifier, CursorPaginationBas
 class MyLikeNotifier extends PaginationProvider<ProductModel, MyLikeRepository>{
   MyLikeNotifier({
     required super.repo,
-  });
+  }){
+    print("myLikeProvider 호출됨");
+  }
 
   void sortState(bool isDate){
     final pState = state as CursorPagination<ProductModel>;
