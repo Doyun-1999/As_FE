@@ -2,12 +2,57 @@ import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../model/notification_model.dart';
+import 'package:auction_shop/notification/repository/notification_repository.dart';
+import 'package:auction_shop/common/provider/notification_provider.dart';
 
-class NotificationScreen extends StatelessWidget {
+final notificationProvider = FutureProvider<List<NotificationModel>>((ref) {
+  final repository = ref.watch(notificationRepositoryProvider);
+  return repository.fetchNotifications();
+});
+
+class NotificationScreen extends ConsumerStatefulWidget {
   static String get routeName => 'notification';
   const NotificationScreen({super.key});
+
+  @override
+  _NotificationScreenState createState() => _NotificationScreenState();
+}
+
+class _NotificationScreenState extends ConsumerState<NotificationScreen> {
+  // 전체 알림 삭제 기능
+  Future<void> _deleteAllNotifications() async {
+    final confirmDelete = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('전체 삭제 확인'),
+        content: Text('모든 알림을 삭제하시겠습니까?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text('취소'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text('삭제'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmDelete == true) {
+      final repository = ref.read(notificationRepositoryProvider);
+      final notifications = await ref.read(notificationProvider.future);
+
+      for (var notification in notifications) {
+        await repository.deleteNotification(notification.id);
+      }
+
+      ref.refresh(notificationProvider);
+    }
+  }
 
   String changeText({
     required String text,
@@ -25,6 +70,8 @@ class NotificationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final notificationAsyncValue = ref.watch(notificationProvider);
+
     return DefaultLayout(
       bgColor: auctionColor.subGreyColorF6,
       appBar: CustomAppBar().noLeadingAppBar(
@@ -32,37 +79,68 @@ class NotificationScreen extends StatelessWidget {
           print('object');
         },
         popupList: [
-          popupItem(text: '수정하기'),
-          PopupMenuDivider(),
           PopupMenuItem(
-            height: 30,
-            padding: const EdgeInsets.only(right: 100, left: 30),
-            child: Text(
-              '수정하기2',
-              style: tsSFPro(),
+            value: 'delete_all',
+            child: ListTile(
+              leading: Icon(Icons.delete),
+              title: Text('전체 삭제'),
             ),
           ),
         ],
+        onPopupItemSelected: (value) {
+          if (value == 'delete_all') {
+            _deleteAllNotifications();
+          }
+        },
         title: '알림',
       ),
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: ListView.separated(
-            separatorBuilder: (context, index) {
-              return SizedBox(
-                height: 11,
+          child: notificationAsyncValue.when(
+            data: (notifications) {
+              if (notifications.isEmpty) {
+                return Center(child: Text('알림이 없습니다.'));
+              }
+              return ListView.separated(
+                separatorBuilder: (context, index) {
+                  return SizedBox(
+                    height: 11,
+                  );
+                },
+                shrinkWrap: true,
+                itemCount: notifications.length,
+                itemBuilder: (context, index) {
+                  final notification = notifications[index];
+
+                  return Dismissible(
+                    key: Key(notification.id), // Dismissible 위젯에 고유 키 제공
+                    direction: DismissDirection.endToStart,
+                    background: Container(
+                      alignment: Alignment.centerRight,
+                      padding: EdgeInsets.only(right: 20),
+                      color: Colors.red,
+                      child: Icon(Icons.delete, color: Colors.white),
+                    ),
+                    onDismissed: (direction) async {
+                      // 개별 알림 삭제 요청
+                      final repository = ref.read(notificationRepositoryProvider);
+                      await repository.deleteNotification(notification.id);
+
+                      // 알림 목록을 다시 불러옵니다.
+                      ref.refresh(notificationProvider);
+                    },
+                    child: notificationBox(
+                      type: notification.type,
+                      title: notification.title,
+                      content: notification.content,
+                    ),
+                  );
+                },
               );
             },
-            shrinkWrap: true,
-            itemCount: 8,
-            itemBuilder: (context, index) {
-              return notificationBox(
-                type: '채팅',
-                title: '알림 제목입니다.',
-                content: '알림 내용입니다. 알림 내용입니다. 알림 내용입니다. 알림 내용입니다. 알림 내용입니다. 알림 내용입니다. 알림 내용입니다.',
-              );
-            },
+            loading: () => Center(child: CircularProgressIndicator()),
+            error: (error, stackTrace) => Center(child: Text('알림을 불러오는데 실패했습니다.')),
           ),
         ),
       ),
@@ -128,3 +206,4 @@ class NotificationScreen extends StatelessWidget {
     );
   }
 }
+
