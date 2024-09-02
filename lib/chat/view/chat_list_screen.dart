@@ -1,11 +1,12 @@
+import 'package:auction_shop/chat/model/chat_model.dart';
+import 'package:auction_shop/chat/provider/chatroom_provider.dart';
 import 'package:auction_shop/chat/view/chat_info_screen.dart';
-import 'package:auction_shop/common/dio/dio.dart';
+import 'package:auction_shop/common/component/appbar.dart';
+import 'package:auction_shop/common/model/cursor_pagination_model.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/main.dart';
-import 'package:auction_shop/user/provider/user_provider.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -22,44 +23,67 @@ class ChatListScreen extends ConsumerStatefulWidget {
 }
 
 class _ChatListScreenState extends ConsumerState<ChatListScreen> {
-
-  @override
-  void initState() {
-    
-    super.initState();
-  }
-
-  void getChatList(WidgetRef ref) async {
-    final userData = ref.read(userProvider.notifier).getUser();
-    final Dio dio = Dio();
-    final resp = await dio.get(BASE_URL + '/chatroom/list/${userData.id}');
-    print("resp.statusCode : ${resp.statusCode}");
-    print("resp.data : ${resp.data}");
-  }
-
-
   @override
   Widget build(BuildContext context) {
+    final state = ref.watch(chatRoomProvider);
+
+    if (state is CursorPaginationLoading) {
+      DefaultLayout(
+          child: Center(
+        child: CircularProgressIndicator(),
+      ));
+    }
+
+    if (state is CursorPaginationError) {
+      DefaultLayout(
+        child: Center(
+          child: Text("error"),
+        ),
+      );
+    }
+
+    final data = (state as CursorPagination<ChattingRoom>).data;
+
     return DefaultLayout(
+      appBar: CustomAppBar().noLeadingAppBar(
+        popupList: [
+          popupItem(text: "Example"),
+        ],
+        vertFunc: (String? val) {
+          print(val);
+        },
+        title: "채팅 모음",
+      ),
       child: Padding(
         padding: const EdgeInsets.only(left: 16, right: 34),
         child: CustomScrollView(
           slivers: [
-            topBar(),
-            SliverList.builder(
-              itemCount: 10,
-              itemBuilder: (context, index) {
-                return ChatListBox(
-                  func: () async {
-                    getChatList(ref);
-                    //context.goNamed(ChatInfoScreen.routeName, pathParameters: {'cid': '$index'});
-                  },
-                  username: '홍길동$index',
-                  date: "어제",
-                  content: '안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요',
-                );
-              },
-            ),
+            //topBar(),
+            if (data.length == 0)
+              SliverToBoxAdapter(
+                child: Center(
+                  child: Text("채팅방이 없습니다.", textAlign: TextAlign.center,),
+                ),
+              ),
+            if (data.length != 0)
+              SliverList.builder(
+                itemCount: data.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 25),
+                    child: ChatListBox(
+                      func: () async {
+                        //getChatList(ref);
+                        final extra = data[index];
+                        context.goNamed(ChatInfoScreen.routeName, extra: extra);
+                      },
+                      username: 'userId : ${data[index].userId}',
+                      date: "postId : ${data[index].postId}",
+                      content: "yourId : ${data[index].yourId}",
+                    ),
+                  );
+                },
+              ),
           ],
         ),
       ),
@@ -103,7 +127,6 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
           children: [
             Container(
               margin: const EdgeInsets.only(
-                bottom: 25,
                 right: 15,
               ),
               decoration: BoxDecoration(

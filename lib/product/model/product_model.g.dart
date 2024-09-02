@@ -163,3 +163,13 @@ Map<String, dynamic> _$RegisterPagingDataToJson(RegisterPagingData instance) =>
       'conditions': instance.conditions,
       'tradeLocation': instance.tradeLocation,
     };
+
+Like _$LikeFromJson(Map<String, dynamic> json) => Like(
+      productId: (json['productId'] as num).toInt(),
+      memberId: (json['memberId'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$LikeToJson(Like instance) => <String, dynamic>{
+      'productId': instance.productId,
+      'memberId': instance.memberId,
+    };

@@ -58,14 +58,15 @@ class ProductNotifier extends PaginationProvider<ProductModel, ProductRepository
  
   // 좋아요는 서버통신을 하고 후에 해당 데이터 변경(굳이 서버와 다시 통신X)
   void liked({
-    required int productId,
+    required Like likeData,
     required bool isPlus,
   }) async {
     late Future<bool> resp;
+    final productId = likeData.productId;
     // 좋아요를 누르는건지, 취소하는건지에 따라서 다른 함수를 실행
     if(isPlus){
       print("좋아요하기");
-      resp = repo.liked(productId);
+      resp = repo.liked(likeData);
     }
     else{
       print("좋아요 삭제하기");

@@ -38,13 +38,31 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
     this.loginPlatform = LoginPlatform.none,
   }) : super(null);
 
+  // 기본 배송지 수정
+  // 요청 후 state 변경
+  // addressId가 같은 주소지는 defaultAddress를 true로,
+  // 그 이외의 모든 배송지의 defaultAddress를 모두 false로 바꾼다.
+  void changeDefaultAddress(int addressId) async {
+    UserModel pState = getUser();
+    final resp = await userRepository.changeDefaultAddress(addressId: addressId);
+    if(resp){
+      final newAddress = pState.address.map((e) {
+        if(e.id == addressId){
+          return e.copyWith(defaultAddress: true);
+        }
+        return e.copyWith(defaultAddress: false);
+      }).toList();
+      print("newAddress : ${newAddress}");
+      state = pState.copyWith(address: newAddress);
+    }
+  }
+
   // 사용자 주소 추가하기
   // 주소 추가 후 서버에서 받은 데이터를
   // state에 그대로 추가 (서버 요청 X)
   void deleteAddress(List<int> deleteList) async {
     UserModel pState = getUser();
     final resp = await userRepository.deleteAddress(deleteList: deleteList);
-    print("resp : ${resp}");
     if(resp){
       for(int i = 0; i<deleteList.length; i++){
         final newAddress = pState.address.where((e) => e.id != deleteList[i]).toList();

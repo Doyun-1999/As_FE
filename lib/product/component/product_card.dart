@@ -1,10 +1,12 @@
 import 'package:auction_shop/common/model/debouncer_model.dart';
 import 'package:auction_shop/common/variable/color.dart';
+import 'package:auction_shop/common/variable/function.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/product/provider/product_provider.dart';
 import 'package:auction_shop/product/view/product_info_screen.dart';
+import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -60,6 +62,8 @@ class ProductCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.read(userProvider.notifier).getUser();
+
     // debounce 기간을 2초로 설정
     final Debouncer debounce = Debouncer(seconds: 2);
     return InkWell(
@@ -96,7 +100,7 @@ class ProductCard extends ConsumerWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Text(
-                    "${initial_price}원 시작",
+                    "${formatToManwon(initial_price)} 시작",
                     style: tsNotoSansKR(
                       fontSize: 12,
                       fontWeight: FontWeight.normal,
@@ -105,7 +109,7 @@ class ProductCard extends ConsumerWidget {
                   ),
                 ),
                 Text(
-                  "${nowPrice}원 입찰 중",
+                  "${formatToManwon(nowPrice)} 입찰 중",
                   style: tsNotoSansKR(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -164,18 +168,19 @@ class ProductCard extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   mainAxisSize: MainAxisSize.max,
                   children: [
-                    Image.asset(
-                      'assets/icon/bid.png',
-                      width: 20,
-                    ),
-                    Text(
-                      '${bidNum}',
-                      style: tsNotoSansKR(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: auctionColor.subBlackColor49,
-                      ),
-                    ),
+                    // bid icon 추후 추가 예정
+                    // Image.asset(
+                    //   'assets/icon/bid.png',
+                    //   width: 20,
+                    // ),
+                    // Text(
+                    //   '${bidNum}',
+                    //   style: tsNotoSansKR(
+                    //     fontSize: 12,
+                    //     fontWeight: FontWeight.bold,
+                    //     color: auctionColor.subBlackColor49,
+                    //   ),
+                    // ),
                     SizedBox(
                       width: 8,
                     ),
@@ -184,7 +189,8 @@ class ProductCard extends ConsumerWidget {
                       onTap: (){
                         debounce.run(() {
                           final isPlus = !liked;
-                          ref.read(productProvider.notifier).liked(productId: product_id, isPlus: isPlus);
+                          final likeData = Like(productId: product_id, memberId: user.id);
+                          ref.read(productProvider.notifier).liked(likeData: likeData, isPlus: isPlus);
                         });
                       },
                       child: liked ? Icon(Icons.favorite, color: auctionColor.mainColor,) : Icon(Icons.favorite_outline, color: auctionColor.subBlackColor54,),

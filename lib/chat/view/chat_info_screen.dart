@@ -1,5 +1,6 @@
+import 'dart:convert';
+import 'package:auction_shop/chat/model/chat_model.dart';
 import 'package:auction_shop/common/component/textformfield.dart';
-import 'package:auction_shop/common/dio/dio.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
@@ -8,43 +9,99 @@ import 'package:auction_shop/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-//import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:stomp_dart_client/stomp_dart_client.dart';
 
-class ChatInfoScreen extends StatefulWidget {
+class ChatInfoScreen extends ConsumerStatefulWidget {
   static String get routeName => 'chatInfo';
-  final String id;
-  //final IO.Socket socket = IO.io(BASE_URL + '/sub/room/', IO.OptionBuilder().setTransports(['websocket']).build());
+  final ChattingRoom data;
   const ChatInfoScreen({
-    required this.id,
+    required this.data,
     super.key,
   });
 
   @override
-  State<ChatInfoScreen> createState() => _ChatInfoScreenState();
+  ConsumerState<ChatInfoScreen> createState() => _ChatInfoScreenState();
 }
 
-class _ChatInfoScreenState extends State<ChatInfoScreen> {
+class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
   TextEditingController _textController = TextEditingController();
+
+  late StompClient client = StompClient(
+    config: StompConfig(
+      url: 'ws://heybid.shop/ws',
+      onConnect: onConnect,
+      onDisconnect: onDisconnect,
+      onWebSocketError: (error) => print('WebSocket error: $error'),
+    ),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    client.activate();
+  }
+
+  // 연결 성공 시 호출되는 콜백 함수
+  void onConnect(StompFrame frame) {
+    print('Connected to STOMP server');
+
+    // 서버에서 구독을 시작합니다.
+    subscribeToTopic();
+
+    // 메시지를 발행합니다.
+    publishMessage();
+  }
+
+  // 연결 해제 시 호출되는 콜백 함수
+  void onDisconnect(StompFrame frame) {
+    print('Disconnected from STOMP server');
+  }
+
+  void subscribeToTopic() {
+    // STOMP 클라이언트의 subscribe 메서드를 사용하여 토픽을 구독합니다.
+    client.subscribe(
+      destination: '/sub/chatroom/${widget.data.roomId}', // 구독할 토픽의 경로
+      callback: (frame) {
+        print('Received message: ${frame.body}');
+      },
+    );
+  }
+
+  void publishMessage() {
+    if (_textController.text.isNotEmpty) {
+      final msg = Message(
+        roomId: widget.data.roomId,
+        userId: widget.data.userId,
+        message: _textController.text,
+      );
+      // STOMP 클라이언트의 send 메서드를 사용하여 메시지를 발행합니다.
+      client.send(
+        destination: '/pub/chatroom/${widget.data.roomId}', // 발행할 경로
+        body: jsonEncode(msg),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final List<String> messages = [
-      "Hello!",
-      "Hi, how are you?",
-      "I'm good, thanks! How about you?",
-      "I'm doing well too.",
-      "Great to hear!",
-      "What's up?",
-      "Not much, just working on a project.Not much, just working on a project.Not much, just working on a project.",
-      "Cool! Tell me more about it."
+      // "Hello!",
+      // "Hi, how are you?",
+      // "I'm good, thanks! How about you?",
+      // "I'm doing well too.",
+      // "Great to hear!",
+      // "What's up?",
+      // "Not much, just working on a project.Not much, just working on a project.Not much, just working on a project.",
+      // "Cool! Tell me more about it."
     ];
     return DefaultLayout(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          '홍길동${widget.id}',
+          '홍길동',
           style: tsNotoSansKR(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -90,14 +147,34 @@ class _ChatInfoScreenState extends State<ChatInfoScreen> {
                   size: 40,
                   color: auctionColor.mainColor,
                 ),
-                Expanded(child: CustomTextFormField(controller: _textController, hintText: '메시지 보내기', borderRadius: 100,),),
-                SizedBox(width: 10,),
-                Transform.rotate(
-                  angle: -45 * 3.14 / 180,
-                  child: Icon(Icons.send,size: 30,color: auctionColor.mainColor,),),
+                Expanded(
+                  child: CustomTextFormField(
+                    controller: _textController,
+                    hintText: '메시지 보내기',
+                    borderRadius: 100,
+                  ),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    publishMessage();
+                  },
+                  child: Transform.rotate(
+                    angle: -45 * 3.14 / 180,
+                    child: Icon(
+                      Icons.send,
+                      size: 30,
+                      color: auctionColor.mainColor,
+                    ),
+                  ),
+                ),
               ],
             ),
-            SizedBox(height: ratio.height * 35,),
+            SizedBox(
+              height: ratio.height * 35,
+            ),
           ],
         ),
       ),

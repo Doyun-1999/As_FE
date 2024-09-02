@@ -10,13 +10,11 @@ class PaginationProvider<T, U extends BasePaginationRepository> extends StateNot
   PaginationProvider({
     required this.repo,
   }):super(CursorPaginationLoading()){
-    print("${U} 타입의 Repository를 가진 Pagination Provider 생성");
     paginate();
   }
 
   // 임시 pagination
   void paginate() async {
-    print("repo Type : ${repo}");
     final resp = await repo.paginate();
     state = resp;
   }

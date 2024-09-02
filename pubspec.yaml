@@ -51,6 +51,7 @@ dependencies:
   card_swiper: ^3.0.1
   skeletonizer: ^1.4.2
   iamport_flutter: ^0.10.19
+  stomp_dart_client: ^2.0.0
   # crypto: ^3.0.3
   # shared_preferences: ^2.2.3
   # platform: ^3.1.5

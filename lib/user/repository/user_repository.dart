@@ -245,7 +245,6 @@ class UserRepository extends BasePaginationRepository<ProductModel> {
         data: data.toJson(),
         options: Options(headers: {'accessToken': 'true'}));
     print("resp.statusCode : ${resp.statusCode}");
-    print("resp.data : ${resp.data}");
     return AddressModel.fromJson(resp.data);
   }
 
@@ -258,7 +257,6 @@ class UserRepository extends BasePaginationRepository<ProductModel> {
         data: data.toJson(),
         options: Options(headers: {'accessToken': 'true'}));
     print("resp.statusCode : ${resp.statusCode}");
-    print("resp.data : ${resp.data}");
   }
 
   Future<bool> deleteAddress({
@@ -268,10 +266,25 @@ class UserRepository extends BasePaginationRepository<ProductModel> {
         data: deleteList,
         options: Options(
           contentType: 'application/json',
-          headers: {'accessToken': 'true'}));
+          headers: {'accessToken': 'true'},),);
+    print("resp.statusCode : ${resp.statusCode}");
+    if(resp.statusCode != 204){
+      return false;
+    }
+    return true;
+    
+  }
+
+  Future<bool> changeDefaultAddress({
+    required int addressId,
+  }) async {
+    final resp = await dio.patch(baseUrl + '/address/${addressId}/default',
+        options: Options(
+          contentType: 'application/json',
+          headers: {'accessToken': 'true'},),);
     print("resp.statusCode : ${resp.statusCode}");
     print("resp.data : ${resp.data}");
-    if(resp.statusCode != 204){
+    if(resp.statusCode != 200){
       return false;
     }
     return true;

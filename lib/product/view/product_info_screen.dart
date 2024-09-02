@@ -1,10 +1,15 @@
+import 'package:auction_shop/chat/model/chat_model.dart';
+import 'package:auction_shop/chat/provider/chatroom_provider.dart';
+import 'package:auction_shop/chat/repository/chat_repository.dart';
 import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/component/button.dart';
 import 'package:auction_shop/common/component/dialog.dart';
 import 'package:auction_shop/common/component/textformfield.dart';
 import 'package:auction_shop/common/component/image_widget.dart';
+import 'package:auction_shop/common/dio/dio.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/variable/color.dart';
+import 'package:auction_shop/common/variable/function.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/view/error_screen.dart';
 import 'package:auction_shop/main.dart';
@@ -20,6 +25,7 @@ import 'package:auction_shop/product/view/product_revise_screen.dart';
 import 'package:auction_shop/user/provider/block_provider.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:card_swiper/card_swiper.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -42,8 +48,7 @@ class ProductInfoScreen extends ConsumerStatefulWidget {
   ConsumerState<ProductInfoScreen> createState() => _ProductInfoScreenState();
 }
 
-class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
-    with SingleTickerProviderStateMixin {
+class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen> with SingleTickerProviderStateMixin {
   late TabController controller;
   int index = 0;
   ValueNotifier<int> swiperIndex = ValueNotifier<int>(0);
@@ -104,6 +109,8 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
     final data = widget.isSkeleton
         ? ref.read(productDetailProvider.notifier).fakeData()
         : ref.watch(getProductDetailProvider(int.parse(widget.id)));
+
+    final user = ref.read(userProvider.notifier).getUser();
     if (data == null) {
       return DefaultLayout(
         appBar: CustomAppBar().noActionAppBar(title: "", context: context),
@@ -126,11 +133,15 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                     children: [
                       imageWidget(
                         data: data,
+                        memberId: user.id
                       ),
                       SizedBox(
                         height: 18,
                       ),
                       productInfo(
+                        yourId: user.id,
+                        userId : data.memberId,
+                        product_id: data.product_id,
                         categories: data.categories,
                         createdBy: data.createdBy,
                         title: data.title,
@@ -216,12 +227,12 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
               children: [
                 Spacer(),
                 CustomButton(
-                  text: '입찰하기',
+                  text: '현재 가격에 거래하기',
                   // 바텀 시트 올라오는 함수
                   func: () async {
 
                     Navigator.push(context, MaterialPageRoute(builder: (context) {
-                      final user = ref.read(userProvider.notifier).getUser();
+                      
                       final model = PurchaseData(productId: int.parse(widget.id), price: data.current_price, user: user);
                       return Payment(model: model,);
                     }));
@@ -247,6 +258,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
 
   IntrinsicHeight imageWidget({
     required ProductDetailModel data,
+    required int memberId,
   }) {
     final productId = data.product_id;
     return IntrinsicHeight(
@@ -421,9 +433,8 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                       onTap: () async {
                         final productId = int.parse(widget.id);
                         final isPlus = !data.liked;
-                        ref
-                            .read(productProvider.notifier)
-                            .liked(productId: productId, isPlus: isPlus);
+                        final likeData = Like(productId: productId, memberId: memberId);
+                        ref.read(productProvider.notifier).liked(likeData: likeData, isPlus: isPlus);
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
@@ -461,6 +472,9 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
   }
 
   Padding productInfo({
+    required int userId,
+    required int yourId,
+    required int product_id,
     required List<String> categories,
     required String createdBy,
     required String title,
@@ -555,7 +569,11 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                         left: -10,
                         right: -10,
                         child: GestureDetector(
-                          onTap: (){},
+                          onTap: (){
+                            print("눌림");
+                            final data = MakeRoom(userId: (userId).toString(), postId: (product_id).toString(), yourId: (yourId).toString(),);
+                            ref.read(chatRepository).enterChatting(data);
+                          },
                           child: Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 4,
@@ -612,7 +630,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 2),
             child: Text(
-              "입찰중 ${current_price}원",
+              "자동 입찰중 ${formatToManwon(current_price)}",
               style: tsNotoSansKR(
                 fontSize: 20,
                 fontWeight: FontWeight.w900,
@@ -621,7 +639,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
             ),
           ),
           Text(
-            "시작가격 ${initial_price}원",
+            "시작가격 ${formatToManwon(initial_price)}",
             style: tsNotoSansKR(
               fontSize: 14,
               fontWeight: FontWeight.w400,

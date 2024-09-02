@@ -79,8 +79,10 @@ class ProductRepository extends BasePaginationRepository<ProductModel> {
   }
 
   // 좋아요 등록
-  Future<bool> liked(int productId) async {
-    final resp = await dio.post(baseUrl + '/like/${productId}',
+  Future<bool> liked(Like likeData) async {
+    print("likeData.toJson() : ${likeData.toJson()}");
+    final resp = await dio.post(baseUrl + '/like',
+        data: likeData.toJson(),
         options: Options(
           headers: {'accessToken': 'true'},
         ));

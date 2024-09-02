@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:auction_shop/chat/model/chat_model.dart';
+import 'package:auction_shop/chat/provider/sse_provider.dart';
 import 'package:auction_shop/chat/view/chat_info_screen.dart';
 import 'package:auction_shop/chat/view/chat_list_screen.dart';
 import 'package:auction_shop/common/view/error_screen.dart';
@@ -64,11 +66,14 @@ class AuthNotifier extends ChangeNotifier {
               builder: (_, __) => ChatListScreen(),
               routes: [
                 GoRoute(
-                  path: 'info/:cid',
+                  path: 'info',
                   name: ChatInfoScreen.routeName,
-                  builder: (_, __) => ChatInfoScreen(
-                    id: __.pathParameters['cid']!,
-                  ),
+                  builder: (_, __) {
+                    final extra = __.extra;
+                    return ChatInfoScreen(
+                      data: extra as ChattingRoom,
+                    );
+                  }
                 ),
               ],
             ),
@@ -304,7 +309,16 @@ class AuthNotifier extends ChangeNotifier {
     // 그 외는 기존에 이동하려던 경로로 정상 이동
     if (user is UserModel) {
       print('로그인 상태');
-      return (isLoggin || isSignup || isSplash) ? '/' : null;
+      // 첫 로그인 / 회원가입일 경우,
+      // 혹은 스플래쉬 화면에서 홈 화면으로 넘어가는 경우
+      // SSE 연결 시도
+      if((isLoggin || isSignup || isSplash)){
+        final memberId = ref.read(userProvider.notifier).getMemberId();
+        ref.read(SSEProvider.notifier).connect(memberId);
+        return '/';  
+      }
+      return null;
+      //return (isLoggin || isSignup || isSplash) ? '/' : null;
     }
 
     // 유저 정보에 에러가 존재하고 로그인 상태가 아니라면

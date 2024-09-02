@@ -248,3 +248,20 @@ class RegisterPagingData{
 
   Map<String, dynamic> toJson() => _$RegisterPagingDataToJson(this);
 }
+
+// 좋아요 등록할 때
+// 서버로 전송하는 데이터 모델
+@JsonSerializable()
+class Like{
+  final int productId;
+  final int memberId;
+
+  Like({
+    required this.productId,
+    required this.memberId,
+  });
+
+  factory Like.fromJson(Map<String, dynamic> json) => _$LikeFromJson(json);
+
+  Map<String, dynamic> toJson() => _$LikeToJson(this);
+}
