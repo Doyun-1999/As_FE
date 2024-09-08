@@ -1,16 +1,17 @@
 import 'dart:convert';
 import 'package:auction_shop/chat/model/chat_model.dart';
+import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/component/textformfield.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
-import 'package:auction_shop/common/view/root_tab.dart';
 import 'package:auction_shop/main.dart';
+import 'package:auction_shop/user/provider/block_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 
 class ChatInfoScreen extends ConsumerStatefulWidget {
@@ -45,7 +46,7 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
 
   // 연결 성공 시 호출되는 콜백 함수
   void onConnect(StompFrame frame) {
-    print('Connected to STOMP server');
+    print('STOMP 연결 완료');
 
     // 서버에서 구독을 시작합니다.
     subscribeToTopic();
@@ -56,14 +57,18 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
 
   // 연결 해제 시 호출되는 콜백 함수
   void onDisconnect(StompFrame frame) {
-    print('Disconnected from STOMP server');
+    print('STOMP 연결 해제됨');
   }
 
   void subscribeToTopic() {
     // STOMP 클라이언트의 subscribe 메서드를 사용하여 토픽을 구독합니다.
     client.subscribe(
+      headers: {'content-type': 'application/json'},
       destination: '/sub/chatroom/${widget.data.roomId}', // 구독할 토픽의 경로
       callback: (frame) {
+        print("frame : ${frame}");
+        print("frame.command : ${frame.command}");
+        print("frame.binaryBody : ${frame.binaryBody}");
         print('Received message: ${frame.body}');
       },
     );
@@ -80,9 +85,16 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
       client.send(
         destination: '/pub/chatroom/${widget.data.roomId}', // 발행할 경로
         body: jsonEncode(msg),
+        headers: {'content-type': 'application/json'},
       );
     }
   }
+
+  // @override
+  // void dispose() {
+  //   onDisconnect;
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -98,25 +110,19 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
     ];
     return DefaultLayout(
       resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(
-          '홍길동',
-          style: tsNotoSansKR(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: auctionColor.subBlackColor49),
-        ),
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          onPressed: () {
-            context.goNamed(RootTab.routeName);
-          },
-          icon: Icon(
-            Icons.arrow_back_ios,
-          ),
-        ),
-      ),
+      appBar: CustomAppBar().allAppBar(popupList: [
+        popupItem(text: "채팅방 나가기"),
+        PopupMenuDivider(),
+        popupItem(text: "계정 차단하기"),
+      ], vertFunc: (val){
+        if(val == "채팅방 나가기"){
+          return;
+        }
+        if(val == "계정 차단하기"){
+          ref.read(blockProvider.notifier).blockUser(int.parse(widget.data.userId));
+          return;
+        }
+      }, title: widget.data.userId, context: context),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
@@ -149,8 +155,12 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
                 ),
                 Expanded(
                   child: CustomTextFormField(
+                    borderColor: auctionColor.subGreyColorEF,
+                    fillColor: auctionColor.subGreyColorEF,
+                    filled: true,
                     controller: _textController,
                     hintText: '메시지 보내기',
+                    contentPadding: const EdgeInsets.only(top: 0, bottom: 0, left: 20),
                     borderRadius: 100,
                   ),
                 ),

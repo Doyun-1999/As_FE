@@ -1,5 +1,6 @@
 import 'package:auction_shop/chat/model/chat_model.dart';
 import 'package:auction_shop/chat/provider/chatroom_provider.dart';
+import 'package:auction_shop/chat/provider/chatting_provider.dart';
 import 'package:auction_shop/chat/repository/chat_repository.dart';
 import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/component/button.dart';
@@ -219,6 +220,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen> with Sing
               ],
             ),
           ),
+          // button
           Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: 16,
@@ -246,7 +248,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen> with Sing
                   },
                 ),
                 SizedBox(
-                  height: ratio.height * 59,
+                  height: ratio.height * 60,
                 ),
               ],
             ),
@@ -572,7 +574,8 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen> with Sing
                           onTap: (){
                             print("눌림");
                             final data = MakeRoom(userId: (userId).toString(), postId: (product_id).toString(), yourId: (yourId).toString(),);
-                            ref.read(chatRepository).enterChatting(data);
+                            
+                            ref.read(chatProvider.notifier).enterChat(data);
                           },
                           child: Container(
                             padding: const EdgeInsets.symmetric(

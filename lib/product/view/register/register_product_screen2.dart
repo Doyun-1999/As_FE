@@ -303,7 +303,7 @@ class _RegisterProductScreen2State
                                     },
                             ),
                           ),
-                          SizedBox(height: ratio.height * 59),
+                          SizedBox(height: ratio.height * 60),
                         ],
                       ),
             )

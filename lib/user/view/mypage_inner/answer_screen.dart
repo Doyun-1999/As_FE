@@ -74,6 +74,7 @@ class _AnswerScreenState extends ConsumerState<AnswerScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
+              SizedBox(height: 4,),
               // 통일 위젯
               answerList(list: (data as AnswerListModel).list),
 
@@ -82,6 +83,9 @@ class _AnswerScreenState extends ConsumerState<AnswerScreen> {
               // answerList(list: (data as AnswerListModel).list.where((e) => e.status == false).toList()),
               // // 답변 O 데이터
               // answerList(list: (data as AnswerListModel).list.where((e) => e.status == true).toList()),
+              SizedBox(
+                height: 12,
+              ),
               AddButton(
                 text: '새 문의하기',
                 func: () async {
@@ -89,7 +93,7 @@ class _AnswerScreenState extends ConsumerState<AnswerScreen> {
                 },
               ),
               SizedBox(
-                height: 30,
+                height: ratio.height * 60,
               ),
             ],
           ),

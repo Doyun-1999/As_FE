@@ -1,10 +1,12 @@
 import 'dart:ui';
+import 'package:auction_shop/chat/provider/sse_provider.dart';
 import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/component/image_widget.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/model/cursor_pagination_model.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/product/model/product_model.dart';
+import 'package:auction_shop/product/repository/product_repository.dart';
 import 'package:auction_shop/user/provider/Q&A_provider.dart';
 import 'package:auction_shop/user/provider/block_provider.dart';
 import 'package:auction_shop/user/provider/my_like_provider.dart';
@@ -33,6 +35,7 @@ class MyPageScreen extends ConsumerWidget {
     final address = ref.read(userProvider.notifier).getDefaultAddress();
     return DefaultLayout(
       appBar: AppBar(
+        backgroundColor: Colors.white,
         centerTitle: true,
         title: Text(
           '마이페이지',
@@ -95,7 +98,8 @@ class MyPageScreen extends ConsumerWidget {
               IconText(
                 imgName: 'bid_mypage',
                 text: "입찰 내역",
-                func: () {},
+                func: () {
+                },
               ),
               IconText(
                 imgName: 'sell',

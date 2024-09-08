@@ -2,19 +2,22 @@ import 'package:auction_shop/common/component/textformfield.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
+import 'package:auction_shop/product/repository/product_repository.dart';
+import 'package:auction_shop/product/view/searched_product_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class SearchScreen extends StatefulWidget {
+class SearchScreen extends ConsumerStatefulWidget {
   static String get routeName => "search";
   const SearchScreen({super.key});
 
   @override
-  State<SearchScreen> createState() => _SearchScreenState();
+  ConsumerState<SearchScreen> createState() => _SearchScreenState();
 }
 
-class _SearchScreenState extends State<SearchScreen> {
+class _SearchScreenState extends ConsumerState<SearchScreen> {
   TextEditingController _searchController = TextEditingController();
 
   @override
@@ -38,30 +41,35 @@ class _SearchScreenState extends State<SearchScreen> {
                 SizedBox(width: 18),
                 Expanded(
                   child: CustomTextFormField(
+                    isDense: true,
                     controller: _searchController,
                     hintText: "검색어를 입력해주세요.",
-                    borderColor: auctionColor.mainColorEF,
-                    fillColor: auctionColor.mainColorEF,
+                    borderColor: auctionColor.subGreyColorEF,
+                    fillColor: auctionColor.subGreyColorEF,
                     filled: true,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     borderRadius: 5,
                   ),
                 ),
                 SizedBox(width: 21),
               ],
             ),
-            SizedBox(height: 40),
-            titleText("최근 검색어"),
-            SizedBox(height: 12),
-            currentSearch(text: "카메라"),
-            currentSearch(text: "아기옷"),
-            SizedBox(height: 44),
-            titleText("추천 검색어"),
-            SizedBox(height: 8),
-            recommendSearch("IT 디지털"),
-            recommendSearch("IT 디지털"),
-            recommendSearch("IT 디지털"),
-            recommendSearch("IT 디지털"),
+            IconButton(onPressed: (){
+              ref.read(productRepositoryProvider).searchProducts(_searchController.text);
+              context.pushNamed(SearchedProductScreen.routeName);
+            }, icon: Icon(Icons.abc)),
+            // SizedBox(height: 40),
+            // titleText("최근 검색어"),
+            // SizedBox(height: 12),
+            // currentSearch(text: "카메라"),
+            // currentSearch(text: "아기옷"),
+            // SizedBox(height: 44),
+            // titleText("추천 검색어"),
+            // SizedBox(height: 8),
+            // recommendSearch("IT 디지털"),
+            // recommendSearch("IT 디지털"),
+            // recommendSearch("IT 디지털"),
+            // recommendSearch("IT 디지털"),
           ],
         ),
       ),

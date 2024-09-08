@@ -1,10 +1,8 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:auction_shop/common/model/formdata_model.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:auction_shop/common/variable/data.dart';
-import 'package:auction_shop/product/model/product_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 

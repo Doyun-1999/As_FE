@@ -1,6 +1,7 @@
 import 'package:auction_shop/common/component/button.dart';
 import 'package:auction_shop/common/component/dialog.dart';
 import 'package:auction_shop/common/variable/color.dart';
+import 'package:auction_shop/main.dart';
 import 'package:auction_shop/user/component/add_button.dart';
 import 'package:auction_shop/user/component/info_box.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
@@ -70,6 +71,7 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
       child: SingleChildScrollView(
         child: Column(
           children: [
+            SizedBox(height : 4),
             InfoBox(
               // isChecked: deleteValues == null ? null : deleteValues![0],
               sideFunc: () {
@@ -79,8 +81,7 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
                 //   });
                 //   return;
                 // }
-                context.pushNamed(ManageAddressScreen.routeName,
-                    extra: defaultAddress);
+                context.pushNamed(ManageAddressScreen.routeName,extra: defaultAddress);
               },
               firstBoxText: '기본 배송지',
               widget: Padding(
@@ -117,6 +118,7 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
                       changeValue(index);
                       return;
                     }
+                    context.pushNamed(ManageAddressScreen.routeName,extra: defaultAddress);
 
                     final extra = addresses[index];
                     context.pushNamed(ManageAddressScreen.routeName,
@@ -161,7 +163,7 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
                   ),
              if(values != null)
              Padding(
-                    padding: const EdgeInsets.only(left: 16, right: 16),
+                    padding: const EdgeInsets.only(left: 16, right: 16,),
                     child: CustomButton(
                       text: values!.isDelete ? "삭제" : "변경하기",
                       func: () {
@@ -204,7 +206,7 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
                     ),
                   ),
             SizedBox(
-              height: 30,
+              height: ratio.height * 60,
             ),
           ],
         ),

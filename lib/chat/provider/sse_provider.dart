@@ -32,38 +32,38 @@ class SSENotifier extends StateNotifier<SSEConnectionStatus>{
   // 결과값에 따라서 상태 변화
   void connect(int memberId) async {
     if(state == SSEConnectionStatus.connected){
-      print("이미 연결됨");
-      return;
+        print("이미 연결됨");
+        return;
     }
     try {
+      if(state == SSEConnectionStatus.connected){
+        print("이미 연결됨");
+        return;
+      }
       final stream = repo.connectToSSE(memberId);
       // SSE 연동시 자동으로 채팅방 리스트 재요청
-      ref.read(chatRoomProvider.notifier).paginate();
+      
 
       stream.listen((data) {
-        print("data : $data");
-        // 데이터 수신 및 처리
-        if (data.contains("data:")) {
-          if (data.contains("0")) {
-            print("연결 성공");
-            print("data : ${data}");
-            state = SSEConnectionStatus.connected;
-          }
-        }
+        ref.read(chatRoomProvider.notifier).paginate();
       }, onError: (error) {
-        print("연결 에러");
         state = SSEConnectionStatus.error;
+        print("연결 에러");
+        print("state : ${state}");
         _reconnect();
       }, onDone: () {
-        print("연결 완료돼서 해제");
         state = SSEConnectionStatus.disconnected;
+        print("연결 완료돼서 해제");
+        print("state : ${state}");
         _reconnect();
       });
-      print("연결 완료");
       state = SSEConnectionStatus.connected;
+      print("연결 완료");
+      print("state : ${state}");
     } catch (error) {
-      print("연결 에러");
       state = SSEConnectionStatus.error;
+      print("연결 에러");
+      print("state : ${state}");
       _reconnect();
     }
   }
@@ -72,6 +72,7 @@ class SSENotifier extends StateNotifier<SSEConnectionStatus>{
   void _reconnect() {
     if (state == SSEConnectionStatus.error || state == SSEConnectionStatus.disconnected) {
       print("재연결 시도 중...");
+      print("재연결 시도중 현재 state : ${state}");
       final memberId = ref.read(userProvider.notifier).getMemberId();
       // 0.5초 후 재연결 시도
       Timer(Duration(milliseconds: 500), () => connect(memberId));

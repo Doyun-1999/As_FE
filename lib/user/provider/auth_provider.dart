@@ -7,7 +7,9 @@ import 'package:auction_shop/common/view/error_screen.dart';
 import 'package:auction_shop/common/view/splash_screen.dart';
 import 'package:auction_shop/notification/view/notification_screen.dart';
 import 'package:auction_shop/product/model/product_model.dart';
+import 'package:auction_shop/product/provider/recommend_product_provider.dart';
 import 'package:auction_shop/product/view/search_screen.dart';
+import 'package:auction_shop/product/view/searched_product_screen.dart';
 import 'package:auction_shop/product/view/select_category_screen.dart';
 import 'package:auction_shop/product/view/product_category_screen.dart';
 import 'package:auction_shop/product/view/product_info_screen.dart';
@@ -268,6 +270,11 @@ class AuthNotifier extends ChangeNotifier {
             return ErrorScreen();
           },
         ),
+        GoRoute(
+          path: '/search/product',
+          name: SearchedProductScreen.routeName,
+          builder: (_, __) => SearchedProductScreen(),
+        ),
       ];
 
   // 앱을 처음 시작했을 때
@@ -314,7 +321,9 @@ class AuthNotifier extends ChangeNotifier {
       // SSE 연결 시도
       if((isLoggin || isSignup || isSplash)){
         final memberId = ref.read(userProvider.notifier).getMemberId();
-        ref.read(SSEProvider.notifier).connect(memberId);
+        ref.read(mainProductProvider.notifier).getNewData();
+        ref.read(mainProductProvider.notifier).getHotData();
+        //ref.read(SSEProvider.notifier).connect(memberId);
         return '/';  
       }
       return null;

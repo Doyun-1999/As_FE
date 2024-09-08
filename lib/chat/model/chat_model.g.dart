@@ -6,6 +6,17 @@ part of 'chat_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+ChatDetails _$ChatDetailsFromJson(Map<String, dynamic> json) => ChatDetails(
+      data: (json['data'] as List<dynamic>)
+          .map((e) => Chatting.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$ChatDetailsToJson(ChatDetails instance) =>
+    <String, dynamic>{
+      'data': instance.data,
+    };
+
 Chatting _$ChattingFromJson(Map<String, dynamic> json) => Chatting(
       id: json['id'] as String,
       roomId: (json['roomId'] as num).toInt(),
@@ -47,7 +58,6 @@ Map<String, dynamic> _$MakeRoomToJson(MakeRoom instance) => <String, dynamic>{
     };
 
 ChattingRoom _$ChattingRoomFromJson(Map<String, dynamic> json) => ChattingRoom(
-      id: (json['id'] as num).toInt(),
       userId: json['userId'] as String,
       yourId: json['yourId'] as String,
       postId: json['postId'] as String,
@@ -56,7 +66,6 @@ ChattingRoom _$ChattingRoomFromJson(Map<String, dynamic> json) => ChattingRoom(
 
 Map<String, dynamic> _$ChattingRoomToJson(ChattingRoom instance) =>
     <String, dynamic>{
-      'id': instance.id,
       'userId': instance.userId,
       'yourId': instance.yourId,
       'postId': instance.postId,

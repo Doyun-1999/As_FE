@@ -2,6 +2,17 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'chat_model.g.dart';
 
+@JsonSerializable()
+class ChatDetails{
+  final List<Chatting> data;
+
+  ChatDetails({
+    required this.data,
+  });
+
+  factory ChatDetails.fromJson(Map<String, dynamic> json) => _$ChatDetailsFromJson(json);
+}
+
 // 하나의 채팅 모델
 @JsonSerializable()
 class Chatting{
@@ -61,14 +72,12 @@ class MakeRoom{
 // 채팅 룸 데이터 모델
 @JsonSerializable()
 class ChattingRoom {
-  final int id;
   final String userId;
   final String yourId;
   final String postId;
   final int roomId;
 
   ChattingRoom({
-    required this.id,
     required this.userId,
     required this.yourId,
     required this.postId,

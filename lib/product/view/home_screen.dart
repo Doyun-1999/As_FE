@@ -1,20 +1,26 @@
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/data.dart';
+import 'package:auction_shop/common/variable/function.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/main.dart';
+import 'package:auction_shop/product/model/product_model.dart';
+import 'package:auction_shop/product/provider/recommend_product_provider.dart';
 import 'package:auction_shop/product/view/product_category_screen.dart';
+import 'package:auction_shop/product/view/product_info_screen.dart';
 import 'package:auction_shop/product/view/search_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(mainProductProvider);
     return DefaultLayout(
       child: CustomScrollView(
         slivers: [
@@ -23,7 +29,7 @@ class HomeScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
-                  height: MediaQuery.of(context).size.height / 16,
+                  height: 8,
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -32,15 +38,15 @@ class HomeScreen extends StatelessWidget {
                     children: [
                       Image.asset(
                         'assets/logo/main_logo.png',
-                        height: ratio.height * 50,
+                        height: ratio.height * 40,
                       ),
                       GestureDetector(
-                        onTap: (){
+                        onTap: () {
                           context.pushNamed(SearchScreen.routeName);
                         },
                         child: Icon(
                           Icons.search,
-                          size: 40,
+                          size: 35,
                           color: auctionColor.mainColor,
                         ),
                       ),
@@ -49,11 +55,19 @@ class HomeScreen extends StatelessWidget {
                 ),
                 Container(
                   margin: const EdgeInsets.only(
-                    bottom: 40,
+                    bottom: 24,
                     top: 20,
                   ),
-                  height: 220,
-                  color: auctionColor.subGreyColorD9,
+                  height: ratio.height * 200,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: NetworkImage(
+                        "https://www.meconomynews.com/news/photo/201903/21505_22590_442.jpg",
+                      ),
+                      fit: BoxFit.fill,
+                    ),
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(
@@ -63,15 +77,18 @@ class HomeScreen extends StatelessWidget {
                   child: Text(
                     "카테고리 메뉴",
                     style: tsNotoSansKR(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: auctionColor.subBlackColor49,),
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: auctionColor.subBlackColor49,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-          SliverGrid.builder(
+          SliverPadding(
+            padding: const EdgeInsets.only(bottom: 30),
+            sliver: SliverGrid.builder(
               itemCount: images.length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 4,
@@ -105,39 +122,48 @@ class HomeScreen extends StatelessWidget {
                     ),
                     Text(
                       category[index + 1],
-                      style: tsNotoSansKR(fontSize: 12, fontWeight: FontWeight.w500,),
+                      style: tsNotoSansKR(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ],
                 );
               },
             ),
-          auctionRowBox(
-            typeText: '추천경매',
-            title: "10만원 시작",
-            content: "원목 캐주얼 가구 판매 원목 캐주얼 가구 판매 원목 캐주얼 가구 판매",
           ),
-          auctionRowBox(
-            typeText: 'HOT경매',
-            title: "10만원 시작",
-            content: "원목 캐주얼 가구 판매 원목 캐주얼 가구 판매 원목 캐주얼 가구 판매",
-          ),
-          auctionRowBox(
-            typeText: 'NEW경매',
-            title: "10만원 시작",
-            content: "원목 캐주얼 가구 판매 원목 캐주얼 가구 판매 원목 캐주얼 가구 판매",
-          ),
+          if (state is MainProducts && (state as MainProducts).recommendData != null)
+            auctionRowBox(
+              context,
+              typeText: '추천경매',
+              data: [],
+            ),
+          if (state is MainProducts && (state as MainProducts).hotData != null)
+            auctionRowBox(
+              context,
+              typeText: 'HOT경매',
+              data: (state as MainProducts).hotData!,
+            ),
+          if (state is MainProducts && (state as MainProducts).newData != null)
+            auctionRowBox(
+              context,
+              height: 56,
+              typeText: 'NEW경매',
+              data: (state as MainProducts).newData!,
+            ),
         ],
       ),
     );
   }
 
-  SliverPadding auctionRowBox({
+  SliverPadding auctionRowBox(
+    BuildContext context, {
+    double height = 0,
     required String typeText,
-    required String title,
-    required String content,
+    required List<RecommendProduct> data,
   }) {
     return SliverPadding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       sliver: SliverToBoxAdapter(
         child: Column(
           children: [
@@ -161,37 +187,54 @@ class HomeScreen extends StatelessWidget {
               child: Row(
                 children: [
                   ...List.generate(
-                    4,
+                    data.length,
                     (index) {
-                      return Container(
-                        width: 155,
-                        margin: const EdgeInsets.only(right: 8),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.only(bottom: 14),
-                              color: Colors.grey,
-                              height: 220,
-                            ),
-                            Text(
-                              title,
-                              style: tsNotoSansKR(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: auctionColor.subBlackColor49,
+                      final model = data[index];
+                      return GestureDetector(
+                        onTap: () {
+                          context.pushNamed(ProductInfoScreen.routeName,
+                              pathParameters: {
+                                "pid": (model.product_id).toString()
+                              });
+                        },
+                        child: Container(
+                          width: 155,
+                          margin: const EdgeInsets.only(right: 8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.only(bottom: 14),
+                                height: 220,
+                                child: model.imageUrl == null
+                                    ? Image.asset(
+                                        'assets/img/no_image.png',
+                                        fit: BoxFit.fill,
+                                      )
+                                    : Image.network(
+                                        model.imageUrl!,
+                                        fit: BoxFit.fill,
+                                      ),
                               ),
-                            ),
-                            Text(
-                              content,
-                              style: tsNotoSansKR(
-                                fontSize: 16,
-                                fontWeight: FontWeight.normal,
-                                color: auctionColor.subBlackColor49,
+                              Text(
+                                "${formatToManwon(model.initial_price)} 시작",
+                                style: tsNotoSansKR(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: auctionColor.subBlackColor49,
+                                ),
                               ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
+                              Text(
+                                model.title,
+                                style: tsNotoSansKR(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.normal,
+                                  color: auctionColor.subBlackColor49,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     },
@@ -199,6 +242,9 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
             ),
+            SizedBox(
+              height: height,
+            )
           ],
         ),
       ),
