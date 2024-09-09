@@ -1,10 +1,8 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:auction_shop/common/model/formdata_model.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:auction_shop/common/variable/data.dart';
-import 'package:auction_shop/product/model/product_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 
@@ -65,7 +63,8 @@ Future<FormData> makeFormData({
   final Uint8List jsonBytes = utf8.encode(jsonString) as Uint8List;
   formData.files.add(MapEntry(
       '$key',
-      MultipartFile.fromBytes(jsonBytes, contentType: MediaType.parse('application/json'))));
+      MultipartFile.fromBytes(jsonBytes,
+          contentType: MediaType.parse('application/json'))));
 
   // 이미지 추가
   if (images != null && images.isNotEmpty) {
@@ -92,25 +91,28 @@ Future<FormData> makeFormData2({
   required String key,
 }) async {
   FormData formData = FormData();
-    
-    final jsonString = jsonEncode(data.toJson());
-    final Uint8List jsonBytes = utf8.encode(jsonString) as Uint8List;
+
+  final jsonString = jsonEncode(data.toJson());
+  final Uint8List jsonBytes = utf8.encode(jsonString) as Uint8List;
+  formData.files.add(
+    MapEntry(
+      key,
+      MultipartFile.fromBytes(jsonBytes,
+          contentType: MediaType.parse('application/json')),
+    ),
+  );
+
+  // 이미지 파일 추가
+  if (image != null) {
     formData.files.add(
       MapEntry(
-        key,
-        MultipartFile.fromBytes(jsonBytes, contentType: MediaType.parse('application/json')),
+        'image',
+        await MultipartFile.fromFile(
+          image,
+        ),
       ),
     );
-    
-    // 이미지 파일 추가
-    if(image != null){
-      formData.files.add(
-        MapEntry(
-          'image',
-          await MultipartFile.fromFile(image,),
-        ),
-      );
-    }
+  }
   return formData;
 }
 
@@ -153,4 +155,15 @@ void startImgCache() {
       }
     },
   );
+}
+
+String formatToManwon(int amount) {
+  if (amount >= 100000) {
+    // 100,000 이상일 때 만원 단위로 변환
+    final manwon = amount ~/ 10000;
+    return '${manwon}만원';
+  } else {
+    // 100,000 미만일 때 원 단위로 반환
+    return '${amount}원';
+  }
 }

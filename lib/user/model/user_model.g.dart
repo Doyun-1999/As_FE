@@ -44,6 +44,9 @@ SignupUser _$SignupUserFromJson(Map<String, dynamic> json) => SignupUser(
       address: json['address'] as String?,
       zipcode: json['zipcode'] as String?,
       detailAddress: json['detailAddress'] as String?,
+      categories: (json['categories'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
     );
 
 Map<String, dynamic> _$SignupUserToJson(SignupUser instance) =>
@@ -55,4 +58,5 @@ Map<String, dynamic> _$SignupUserToJson(SignupUser instance) =>
       'address': instance.address,
       'zipcode': instance.zipcode,
       'detailAddress': instance.detailAddress,
+      'categories': instance.categories,
     };

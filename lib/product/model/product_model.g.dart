@@ -163,3 +163,35 @@ Map<String, dynamic> _$RegisterPagingDataToJson(RegisterPagingData instance) =>
       'conditions': instance.conditions,
       'tradeLocation': instance.tradeLocation,
     };
+
+Like _$LikeFromJson(Map<String, dynamic> json) => Like(
+      productId: (json['productId'] as num).toInt(),
+      memberId: (json['memberId'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$LikeToJson(Like instance) => <String, dynamic>{
+      'productId': instance.productId,
+      'memberId': instance.memberId,
+    };
+
+RecommendProduct _$RecommendProductFromJson(Map<String, dynamic> json) =>
+    RecommendProduct(
+      product_id: (json['product_id'] as num).toInt(),
+      imageUrl: json['imageUrl'] as String?,
+      title: json['title'] as String,
+      tradeTypes: (json['tradeTypes'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+      initial_price: (json['initial_price'] as num).toInt(),
+      current_price: (json['current_price'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$RecommendProductToJson(RecommendProduct instance) =>
+    <String, dynamic>{
+      'product_id': instance.product_id,
+      'title': instance.title,
+      'tradeTypes': instance.tradeTypes,
+      'initial_price': instance.initial_price,
+      'current_price': instance.current_price,
+      'imageUrl': instance.imageUrl,
+    };

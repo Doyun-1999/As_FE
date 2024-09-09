@@ -18,7 +18,81 @@ class ProductRepository extends BasePaginationRepository<ProductModel> {
   ProductRepository(
     this.dio, {
     required this.baseUrl,
-  }){print("ProductRepository가 불렸움");}
+  }) {
+    print("ProductRepository가 불렸움");
+  }
+
+  // NEW 경매 추천
+  Future<List<RecommendProduct>> recommendProducts() async {
+    final resp = await dio.get(
+      baseUrl + '/product/category',
+      options: Options(
+        headers: {"accessToken" : "true"},
+      ),
+    );
+    print("추천 경매");
+    final data = (resp.data as List<dynamic>).map((e) => RecommendProduct.fromJson(e)).toList();
+    return data;
+  }
+
+  // NEW 경매 추천
+  // authorization이 필요 없으므로 dioProvider 사용 X
+  Future<List<RecommendProduct>> newProducts() async {
+    final dio = Dio();
+    final resp = await dio.get(
+      baseUrl + '/product/new',
+    );
+    print("new 경매");
+    final data = (resp.data as List<dynamic>).map((e) => RecommendProduct.fromJson(e)).toList();
+    return data;
+  }
+
+  // HOT 경매 추천
+  // authorization이 필요 없으므로 dioProvider 사용 X
+  Future<List<RecommendProduct>> hotProducts() async {
+    final dio = Dio();
+    final resp = await dio.get(
+      baseUrl + '/product/hot',
+    );
+    print("hot 경매");
+    final data = (resp.data as List<dynamic>).map((e) => RecommendProduct.fromJson(e)).toList();
+    return data;
+  }
+
+  // 최근 검색어 확인
+  Future searchText() async {
+    final resp = await dio.get(
+      baseUrl + '/search',
+      options: Options(
+        headers: {"accessToken": "true"},
+      ),
+    );
+    print("최근 검색어");
+    print(resp.statusCode);
+    print(resp.data);
+    if (resp.statusCode != 200) {
+      return ProductError();
+    }
+  }
+
+  // 경매 물품 검색 조회
+  Future<ProductBase> searchProducts(String title) async {
+    final resp = await dio.get(
+      baseUrl + '/search/${title}',
+      options: Options(
+        headers: {"accessToken": "true"},
+      ),
+    );
+    print("검색 물품 데이터");
+    print(resp.statusCode);
+    print(resp.data);
+    if (resp.statusCode != 200) {
+      return ProductError();
+    }
+    final respData = {"data": resp.data};
+    final data = ProductListModel.fromJson(respData);
+    return data;
+  }
 
   // 경매 물품 상세 조회
   Future<ProductDetailModel> getDetail(int productId) async {
@@ -34,7 +108,10 @@ class ProductRepository extends BasePaginationRepository<ProductModel> {
   Future<CursorPagination<ProductModel>> paginate() async {
     final resp = await dio.get(
       baseUrl + '/product',
-      options: Options(headers: {'accessToken': 'true'},),);
+      options: Options(
+        headers: {'accessToken': 'true'},
+      ),
+    );
     print("일반 product provider 데이터");
     print(resp.statusCode);
     print(resp.data);
@@ -56,18 +133,20 @@ class ProductRepository extends BasePaginationRepository<ProductModel> {
         print(resp.statusCode);
         final respData = ProductDetailModel.fromJson(resp.data);
         final data = ProductModel(
-            imageUrl: respData.imageUrls.length == 0 ? null : respData.imageUrls[0],
-            tradeLocation: respData.tradeLocation,
-            product_id: respData.product_id,
-            title: respData.title,
-            conditions: respData.conditions,
-            categories: respData.categories,
-            tradeTypes: respData.tradeTypes,
-            initial_price: respData.initial_price,
-            current_price: respData.current_price,
-            likeCount: respData.likeCount,
-            liked: respData.liked,
-            sold: respData.sold,);
+          imageUrl:
+              respData.imageUrls.length == 0 ? null : respData.imageUrls[0],
+          tradeLocation: respData.tradeLocation,
+          product_id: respData.product_id,
+          title: respData.title,
+          conditions: respData.conditions,
+          categories: respData.categories,
+          tradeTypes: respData.tradeTypes,
+          initial_price: respData.initial_price,
+          current_price: respData.current_price,
+          likeCount: respData.likeCount,
+          liked: respData.liked,
+          sold: respData.sold,
+        );
         return data;
       }
       return null;
@@ -79,8 +158,10 @@ class ProductRepository extends BasePaginationRepository<ProductModel> {
   }
 
   // 좋아요 등록
-  Future<bool> liked(int productId) async {
-    final resp = await dio.post(baseUrl + '/like/${productId}',
+  Future<bool> liked(Like likeData) async {
+    print("likeData.toJson() : ${likeData.toJson()}");
+    final resp = await dio.post(baseUrl + '/like',
+        data: likeData.toJson(),
         options: Options(
           headers: {'accessToken': 'true'},
         ));

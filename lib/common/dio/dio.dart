@@ -129,8 +129,10 @@ class CustomInterceptor extends Interceptor {
           // 요청한 옵션 가져온 후 토큰값 변경
           final options = err.requestOptions;
           options.headers.addAll({'Authorization': 'Bearer $accessToken'});
-
+          print("요청 보내겠습니다. options : ${options}");
           final response = await dio.fetch(options);
+          print("response.statusCode : ${response.statusCode}");
+          print("response.data : ${response.data}");
           print("재요청 완료하였습니다.");
           return handler.resolve(response);
         });
@@ -148,8 +150,7 @@ class CustomInterceptor extends Interceptor {
 
         if (err.response?.statusCode == 600) {
           print('600에러입니다.');
-          ref.read(routerProvider).pushNamed(ErrorScreen.routeName,
-              queryParameters: {'route': RootTab.routeName});
+          ref.read(routerProvider).pushNamed(ErrorScreen.routeName, queryParameters: {'route': RootTab.routeName});
         }
 
         //ref.read(userProvider.notifier).logout();

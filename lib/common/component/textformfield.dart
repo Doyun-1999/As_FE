@@ -24,6 +24,7 @@ class CustomTextFormField extends StatelessWidget {
   final Color? borderColor;
   final EdgeInsets? contentPadding;
   final bool filled;
+  final bool isDense;
   const CustomTextFormField({
     required this.controller,
     required this.hintText,
@@ -33,6 +34,7 @@ class CustomTextFormField extends StatelessWidget {
     this.readOnly = false,
     this.obsecure = false,
     this.expands = false,
+    this.isDense = false,
     this.maxLines,
     this.validator,
     this.suffixIcon,
@@ -63,6 +65,7 @@ class CustomTextFormField extends StatelessWidget {
       onChanged: onChanged,
       controller: controller,
       decoration: InputDecoration(
+        isDense: isDense,
         fillColor: fillColor,
         filled: filled,
         errorStyle: tsNotoSansKR(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.red,),
@@ -108,9 +111,11 @@ class CustomTextFormField extends StatelessWidget {
 class TextLable extends StatelessWidget {
   final String text;
   final TextStyle? style;
+  final double topMargin;
   const TextLable({
     required this.text,
     this.style,
+    this.topMargin = 20,
     super.key,
   });
 
@@ -118,8 +123,8 @@ class TextLable extends StatelessWidget {
   Widget build(BuildContext context) {
     // TextField 위 text 라벨
     return Padding(
-      padding: const EdgeInsets.only(
-        top: 20,
+      padding: EdgeInsets.only(
+        top: topMargin,
         bottom: 8,
       ),
       child: Text(

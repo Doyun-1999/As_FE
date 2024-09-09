@@ -38,7 +38,7 @@ Future<void> CustomDialog({
                 style: tsSFPro(fontSize: 16, fontWeight: FontWeight.bold,),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 33), // 제목과 버튼 사이의 간격
+              const SizedBox(height: 33), // 제목과 버튼 사이의 간격9085
               CancelText == null ? 
               Container(
                 width: double.infinity,

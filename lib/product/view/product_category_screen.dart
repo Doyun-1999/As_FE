@@ -1,3 +1,5 @@
+import 'package:auction_shop/chat/model/chat_model.dart';
+import 'package:auction_shop/chat/provider/chatroom_provider.dart';
 import 'package:auction_shop/common/component/dropdown.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/model/cursor_pagination_model.dart';
@@ -61,6 +63,7 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(productProvider);
+
     // 로딩 화면
     if (state is CursorPaginationLoading) {
       return DefaultLayout(

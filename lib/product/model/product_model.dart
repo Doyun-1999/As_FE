@@ -4,8 +4,14 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'product_model.g.dart';
 
+class ProductBase{}
+
+class ProductLoading extends ProductBase{}
+
+class ProductError extends ProductBase{}
+
 @JsonSerializable()
-class ProductListModel{
+class ProductListModel extends ProductBase{
   final List<ProductModel> data;
 
   ProductListModel({
@@ -247,4 +253,87 @@ class RegisterPagingData{
   factory RegisterPagingData.fromJson(Map<String, dynamic> json) => _$RegisterPagingDataFromJson(json);
 
   Map<String, dynamic> toJson() => _$RegisterPagingDataToJson(this);
+}
+
+// 좋아요 등록할 때
+// 서버로 전송하는 데이터 모델
+@JsonSerializable()
+class Like{
+  final int productId;
+  final int memberId;
+
+  Like({
+    required this.productId,
+    required this.memberId,
+  });
+
+  factory Like.fromJson(Map<String, dynamic> json) => _$LikeFromJson(json);
+
+  Map<String, dynamic> toJson() => _$LikeToJson(this);
+}
+
+
+// 메인 화면 경매 추천 데이터
+@JsonSerializable()
+class RecommendProduct{
+  final int product_id;
+  final String title;
+  final List<String> tradeTypes;
+  final int initial_price;
+  final int current_price;
+  final String? imageUrl;
+  
+  RecommendProduct({
+    required this.product_id,
+    this.imageUrl,
+    required this.title,
+    required this.tradeTypes,
+    required this.initial_price,
+    required this.current_price,
+  });
+
+  RecommendProduct copyWith({
+    int? product_id,
+    String? imageUrl,
+    String? title,
+    List<String>? tradeTypes,
+    int? initial_price,
+    int? current_price,
+  }) {
+    return RecommendProduct(
+      product_id: product_id ?? this.product_id,
+      imageUrl: imageUrl ?? this.imageUrl,
+      title: title ?? this.title,
+      tradeTypes: tradeTypes ?? this.tradeTypes,
+      initial_price: initial_price ?? this.initial_price,
+      current_price: current_price ?? this.current_price,
+    );
+  }
+
+  factory RecommendProduct.fromJson(Map<String, dynamic> json) => _$RecommendProductFromJson(json);
+}
+
+
+class MainProducts extends ProductBase{
+  final List<RecommendProduct>? hotData;
+  final List<RecommendProduct>? newData;
+  final List<RecommendProduct>? recommendData;
+  
+  MainProducts({
+    this.hotData,
+    this.newData,
+    this.recommendData,
+  });
+
+  MainProducts copyWith({
+    List<RecommendProduct>? hotData,
+    List<RecommendProduct>? newData,
+    List<RecommendProduct>? recommendData,
+  }) {
+    return MainProducts(
+      hotData: hotData ?? this.hotData,
+      newData: newData ?? this.newData,
+      recommendData: recommendData ?? this.recommendData,
+    );
+  }
 }

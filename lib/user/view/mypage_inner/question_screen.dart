@@ -201,7 +201,7 @@ class _QuestionScreenState extends ConsumerState<QuestionScreen> {
                     },
             ),
             SizedBox(
-              height: ratio.height * 55,
+              height: ratio.height * 60,
             ),
           ],
         ),

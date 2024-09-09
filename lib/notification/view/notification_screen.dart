@@ -34,14 +34,13 @@ class NotificationScreen extends StatelessWidget {
         popupList: [
           popupItem(text: '수정하기'),
           PopupMenuDivider(),
-          PopupMenuItem(
-            height: 30,
-            padding: const EdgeInsets.only(right: 100, left: 30),
-            child: Text(
-              '수정하기2',
-              style: tsSFPro(),
-            ),
-          ),
+          popupItem(text: '수정하기2'),
+          PopupMenuDivider(),
+          popupItem(text: '수정3하기'),
+          PopupMenuDivider(),
+          popupItem(text: '수정6하기'),
+          PopupMenuDivider(),
+          popupItem(text: '수정5하기'),
         ],
         title: '알림',
       ),

@@ -7,6 +7,7 @@ import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/variable/validator.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/main.dart';
+import 'package:auction_shop/product/view/select_category_screen.dart';
 import 'package:auction_shop/user/component/nickname_checkbox.dart';
 import 'package:auction_shop/user/model/user_model.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
@@ -40,7 +41,11 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _detailAddressController = TextEditingController();
+  final TextEditingController _categoryController = TextEditingController();
   Map<String, String> formData = {};
+
+  // 카테고리 변수
+  List<String> categories = [];
 
   // 이름 중복 검사 변수
   bool? nameCheck = null;
@@ -213,6 +218,27 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   controller: _phoneController,
                   hintText: "전화번호를 입력해주세요.",
                 ),
+                TextLable(text: "선호하는 카테고리"),
+                GestureDetector(
+                  onTap: () async {
+                        final result = await context.pushNamed(SelectCategoryScreen.routeName, queryParameters: {"isSignup" : "true"});
+                        if (result != null) {
+                          setState(() {
+                            categories = result as List<String>;
+                            _categoryController.text = (result as List<String>).join(', ');
+                          });
+                        }
+                      },
+                  child: CustomTextFormField(
+                    enabled: false,
+                    validator: (String? val) {
+                      return supportXValidator(val, name: '카테고리');
+                    },
+                    suffixIcon: Icon(Icons.arrow_forward_ios, color: auctionColor.subGreyColorB6,),
+                    controller: _categoryController,
+                    hintText: "선호하는 카테고리를 선택해주세요.",
+                  ),
+                ),
                 SizedBox(
                   height: ratio.height * 40,
                 ),
@@ -293,6 +319,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                               phone: _phoneController.text,
                               address: _addressController.text,
                               detailAddress: _detailAddressController.text,
+                              categories: categories,
                             );
                             ref.read(userProvider.notifier).signup(
                                   fileData: _image,

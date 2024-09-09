@@ -312,7 +312,7 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
                       ),
                     ),
                     SizedBox(
-                      height: 23,
+                      height: 21,
                     ),
                     CustomButton(
                       text: '다음',
@@ -349,7 +349,7 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
                       },
                     ),
                     SizedBox(
-                      height: ratio.height * 59,
+                      height: ratio.height * 60,
                     ),
                   ],
                 ),
