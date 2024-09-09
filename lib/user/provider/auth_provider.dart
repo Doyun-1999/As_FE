@@ -68,15 +68,14 @@ class AuthNotifier extends ChangeNotifier {
               builder: (_, __) => ChatListScreen(),
               routes: [
                 GoRoute(
-                  path: 'info',
-                  name: ChatInfoScreen.routeName,
-                  builder: (_, __) {
-                    final extra = __.extra;
-                    return ChatInfoScreen(
-                      data: extra as ChattingRoom,
-                    );
-                  }
-                ),
+                    path: 'info',
+                    name: ChatInfoScreen.routeName,
+                    builder: (_, __) {
+                      final extra = __.extra;
+                      return ChatInfoScreen(
+                        data: extra as ChattingRoom,
+                      );
+                    }),
               ],
             ),
 
@@ -157,7 +156,9 @@ class AuthNotifier extends ChangeNotifier {
                         }
                         // 데이터가 있으면 내 배송지 수정 화면으로
                         final address = __.extra as AddressModel;
-                        return ManageAddressScreen(address: address,);
+                        return ManageAddressScreen(
+                          address: address,
+                        );
                       },
                     ),
                   ],
@@ -220,12 +221,17 @@ class AuthNotifier extends ChangeNotifier {
                 );
               },
             ),
-            GoRoute(
-              path: 'category',
-              name: SelectCategoryScreen.routeName,
-              builder: (_, __) => SelectCategoryScreen(),
-            ),
           ],
+        ),
+        // 카테고리 선택
+        GoRoute(
+          path: '/category',
+          name: SelectCategoryScreen.routeName,
+          builder: (_, __){
+            final isSignup = __.uri.queryParameters["isSignup"];
+
+            return SelectCategoryScreen(isSignup: isSignup ?? "false",);
+          },
         ),
         // 경매 물품 수정 화면
         GoRoute(
@@ -264,7 +270,7 @@ class AuthNotifier extends ChangeNotifier {
           name: ErrorScreen.routeName,
           builder: (_, __) {
             final route = __.uri.queryParameters['route'];
-            if(route != null){
+            if (route != null) {
               return ErrorScreen(route: route);
             }
             return ErrorScreen();
@@ -289,6 +295,7 @@ class AuthNotifier extends ChangeNotifier {
     final isLoggin = gState.fullPath == '/login';
     final isSignup = gState.fullPath == '/signup';
     final isSplash = gState.fullPath == '/splash';
+    final isCategory = gState.fullPath == '/category';
 
     // 유저 정보가 없고 로그인 중이라면
     // 로그인 화면로 이동
@@ -308,7 +315,7 @@ class AuthNotifier extends ChangeNotifier {
     // 만약 유저가 앱내에서 회원가입이 진행되지 않은 회원이라면
     // 회원가입 화면으로 이동
     if (user is UserModelSignup) {
-      return '/signup';
+      return isCategory ? null : '/signup';
     }
 
     // 유저 정보가 존재한 상태에서
@@ -319,12 +326,13 @@ class AuthNotifier extends ChangeNotifier {
       // 첫 로그인 / 회원가입일 경우,
       // 혹은 스플래쉬 화면에서 홈 화면으로 넘어가는 경우
       // SSE 연결 시도
-      if((isLoggin || isSignup || isSplash)){
+      if ((isLoggin || isSignup || isSplash)) {
         final memberId = ref.read(userProvider.notifier).getMemberId();
         ref.read(mainProductProvider.notifier).getNewData();
         ref.read(mainProductProvider.notifier).getHotData();
-        //ref.read(SSEProvider.notifier).connect(memberId);
-        return '/';  
+        ref.read(mainProductProvider.notifier).recommendProducts();
+        ref.read(SSEProvider.notifier).connect(memberId);
+        return '/';
       }
       return null;
       //return (isLoggin || isSignup || isSplash) ? '/' : null;

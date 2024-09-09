@@ -23,6 +23,19 @@ class ProductRepository extends BasePaginationRepository<ProductModel> {
   }
 
   // NEW 경매 추천
+  Future<List<RecommendProduct>> recommendProducts() async {
+    final resp = await dio.get(
+      baseUrl + '/product/category',
+      options: Options(
+        headers: {"accessToken" : "true"},
+      ),
+    );
+    print("추천 경매");
+    final data = (resp.data as List<dynamic>).map((e) => RecommendProduct.fromJson(e)).toList();
+    return data;
+  }
+
+  // NEW 경매 추천
   // authorization이 필요 없으므로 dioProvider 사용 X
   Future<List<RecommendProduct>> newProducts() async {
     final dio = Dio();
@@ -30,9 +43,6 @@ class ProductRepository extends BasePaginationRepository<ProductModel> {
       baseUrl + '/product/new',
     );
     print("new 경매");
-    print(resp.statusCode);
-    print(resp.data);
-    print("---------------------");
     final data = (resp.data as List<dynamic>).map((e) => RecommendProduct.fromJson(e)).toList();
     return data;
   }
@@ -45,9 +55,6 @@ class ProductRepository extends BasePaginationRepository<ProductModel> {
       baseUrl + '/product/hot',
     );
     print("hot 경매");
-    print(resp.statusCode);
-    print(resp.data);
-    print("---------------------");
     final data = (resp.data as List<dynamic>).map((e) => RecommendProduct.fromJson(e)).toList();
     return data;
   }

@@ -136,7 +136,7 @@ class HomeScreen extends ConsumerWidget {
             auctionRowBox(
               context,
               typeText: '추천경매',
-              data: [],
+              data: (state as MainProducts).recommendData!,
             ),
           if (state is MainProducts && (state as MainProducts).hotData != null)
             auctionRowBox(
@@ -182,66 +182,130 @@ class HomeScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  ...List.generate(
-                    data.length,
-                    (index) {
-                      final model = data[index];
-                      return GestureDetector(
-                        onTap: () {
-                          context.pushNamed(ProductInfoScreen.routeName,
-                              pathParameters: {
-                                "pid": (model.product_id).toString()
-                              });
-                        },
-                        child: Container(
-                          width: 155,
-                          margin: const EdgeInsets.only(right: 8),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                margin: const EdgeInsets.only(bottom: 14),
-                                height: 220,
-                                child: model.imageUrl == null
-                                    ? Image.asset(
-                                        'assets/img/no_image.png',
-                                        fit: BoxFit.fill,
-                                      )
-                                    : Image.network(
-                                        model.imageUrl!,
-                                        fit: BoxFit.fill,
-                                      ),
-                              ),
-                              Text(
-                                "${formatToManwon(model.initial_price)} 시작",
-                                style: tsNotoSansKR(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: auctionColor.subBlackColor49,
+            Container(
+              height: 280,
+              child: ListView.builder(
+                itemCount: data.length,
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (context, index){
+                final model = data[index];
+                        return GestureDetector(
+                          onTap: () {
+                            context.pushNamed(ProductInfoScreen.routeName,
+                                pathParameters: {
+                                  "pid": (model.product_id).toString()
+                                });
+                          },
+                          child: Container(
+                            width: 155,
+                            margin: const EdgeInsets.only(right: 8),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(bottom: 14),
+                                  height: 220,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey,
+                                    image: DecorationImage(
+                                      fit: BoxFit.fill,
+                                      image: (model.imageUrl == null)
+                                      ? AssetImage(
+                                          'assets/img/no_image.png',
+                                        ) as ImageProvider
+                                      : NetworkImage(
+                                          model.imageUrl!,
+                                        ),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                model.title,
-                                style: tsNotoSansKR(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.normal,
-                                  color: auctionColor.subBlackColor49,
+                                Text(
+                                  "${formatToManwon(model.initial_price)} 시작",
+                                  style: tsNotoSansKR(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: auctionColor.subBlackColor49,
+                                  ),
                                 ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
+                                Text(
+                                  model.title,
+                                  style: tsNotoSansKR(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.normal,
+                                    color: auctionColor.subBlackColor49,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
+                        );
+              }),
             ),
+            // SingleChildScrollView(
+            //   scrollDirection: Axis.horizontal,
+            //   child: Row(
+            //     children: [
+            //       ...List.generate(
+            //         data.length,
+            //         (index) {
+            //           final model = data[index];
+            //           return GestureDetector(
+            //             onTap: () {
+            //               context.pushNamed(ProductInfoScreen.routeName,
+            //                   pathParameters: {
+            //                     "pid": (model.product_id).toString()
+            //                   });
+            //             },
+            //             child: Container(
+            //               width: 155,
+            //               margin: const EdgeInsets.only(right: 8),
+            //               child: Column(
+            //                 crossAxisAlignment: CrossAxisAlignment.start,
+            //                 children: [
+            //                   Container(
+            //                     margin: const EdgeInsets.only(bottom: 14),
+            //                     height: 220,
+            //                     decoration: BoxDecoration(
+            //                       color: Colors.grey,
+            //                       image: DecorationImage(
+            //                         fit: BoxFit.fill,
+            //                         image: (model.imageUrl == null)
+            //                         ? AssetImage(
+            //                             'assets/img/no_image.png',
+            //                           ) as ImageProvider
+            //                         : NetworkImage(
+            //                             model.imageUrl!,
+            //                           ),
+            //                       ),
+            //                     ),
+            //                   ),
+            //                   Text(
+            //                     "${formatToManwon(model.initial_price)} 시작",
+            //                     style: tsNotoSansKR(
+            //                       fontSize: 16,
+            //                       fontWeight: FontWeight.bold,
+            //                       color: auctionColor.subBlackColor49,
+            //                     ),
+            //                   ),
+            //                   Text(
+            //                     model.title,
+            //                     style: tsNotoSansKR(
+            //                       fontSize: 16,
+            //                       fontWeight: FontWeight.normal,
+            //                       color: auctionColor.subBlackColor49,
+            //                     ),
+            //                     overflow: TextOverflow.ellipsis,
+            //                   ),
+            //                 ],
+            //               ),
+            //             ),
+            //           );
+            //         },
+            //       ),
+            //     ],
+            //   ),
+            // ),
             SizedBox(
               height: height,
             )

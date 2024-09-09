@@ -5,13 +5,18 @@ import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/data.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/main.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 class SelectCategoryScreen extends StatefulWidget {
   static String get routeName => "category";
-  const SelectCategoryScreen({super.key});
+  final String isSignup;
+  const SelectCategoryScreen({
+    required this.isSignup,
+    super.key,
+  });
 
   @override
   State<SelectCategoryScreen> createState() => _SelectCategoryScreenState();
@@ -24,16 +29,22 @@ class _SelectCategoryScreenState extends State<SelectCategoryScreen> {
   Widget build(BuildContext context) {
     return DefaultLayout(
       appBar: CustomAppBar().noActionAppBar(
-        title: "카테고리",
+        title: widget.isSignup == "true" ? "" : "카테고리",
         context: context,
       ),
-      child: Column(
-        children: [
-          SizedBox(
-            height: ratio.height * 100,
+      child: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: widget.isSignup == "true" ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: description(),
+            ) : SizedBox(
+                  height: 125,
+                ) ,
           ),
-          GridView.builder(
-            shrinkWrap: true,
+
+          // 카테고리 선택하는 GridView
+          SliverGrid.builder(
             itemCount: unselectedImages.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 4,
@@ -128,18 +139,24 @@ class _SelectCategoryScreenState extends State<SelectCategoryScreen> {
               );
             },
           ),
-          Spacer(),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: CustomButton(
-              text: "선택 완료",
-              func: () {
-                context.pop(getCategory());
-              },
+          SliverFillRemaining(
+            child: Column(
+              children: [
+                Spacer(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: CustomButton(
+                    text: "선택 완료",
+                    func: () {
+                      context.pop(getCategory());
+                    },
+                  ),
+                ),
+                SizedBox(
+                  height: ratio.height * 60,
+                ),
+              ],
             ),
-          ),
-          SizedBox(
-            height: ratio.height * 60,
           ),
         ],
       ),
@@ -161,8 +178,61 @@ class _SelectCategoryScreenState extends State<SelectCategoryScreen> {
   }
 
   // 선택된 카테고리의 index + 1의 값 반환
-  String getSelectIndex(int index){
+  String getSelectIndex(int index) {
     int order = indexList.indexOf(index);
     return (order + 1).toString();
+  }
+
+  List<Widget> description() {
+    return [
+      Padding(
+        padding: const EdgeInsets.only(left: 12, bottom: 6),
+        child: Text(
+          "필요한 물품들을 추천받아요.",
+          style: tsNotoSansKR(
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
+            color: auctionColor.subGreyColorAC,
+          ),
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.only(left: 12, bottom: 30),
+        child: Row(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "관심 카테고리를",
+                  style: tsNotoSansKR(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  "설정해주세요",
+                  style: tsNotoSansKR(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 24, left: 30),
+              child: Text(
+                "최대 3개까지!",
+                style: tsNotoSansKR(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: auctionColor.mainColor,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ];
   }
 }

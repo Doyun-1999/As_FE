@@ -93,6 +93,8 @@ class SignupUser{
   final String? address;
   final String? zipcode;
   final String? detailAddress;
+  final List<String>? categories;
+  
 
   SignupUser({
     required this.name,
@@ -102,6 +104,7 @@ class SignupUser{
     this.address,
     this.zipcode,
     this.detailAddress,
+    this.categories,
   });
 
   Map<String, dynamic> toJson() => _$SignupUserToJson(this);

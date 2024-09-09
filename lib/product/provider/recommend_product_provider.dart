@@ -14,6 +14,18 @@ class MainProductNotifier extends StateNotifier<ProductBase>{
     required this.repo,
   }):super(ProductLoading());
 
+  // 추천 데이터 얻어오기
+  void recommendProducts() async {
+    final resp = await repo.recommendProducts();
+    if(!(state is MainProducts)){
+      final newState = MainProducts(recommendData: resp);
+      state = newState;
+      return;
+    }
+    final pState = state as MainProducts;
+    state = pState.copyWith(recommendData: resp);
+  }
+
   // HOT 데이터 얻어오기
   void getHotData() async {
     final resp = await repo.hotProducts();
