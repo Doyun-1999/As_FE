@@ -1,4 +1,8 @@
 import 'dart:convert';
+import 'package:auction_shop/admin/QandA/view/consumer_answer_info_screen.dart';
+import 'package:auction_shop/admin/QandA/view/consumer_answer_screen.dart';
+import 'package:auction_shop/admin/QandA/view/reply_answer_screen.dart';
+import 'package:auction_shop/admin/view/admin_home_screen.dart';
 import 'package:auction_shop/chat/model/chat_model.dart';
 import 'package:auction_shop/chat/provider/sse_provider.dart';
 import 'package:auction_shop/chat/view/chat_info_screen.dart';
@@ -280,6 +284,27 @@ class AuthNotifier extends ChangeNotifier {
           path: '/search/product',
           name: SearchedProductScreen.routeName,
           builder: (_, __) => SearchedProductScreen(),
+        ),
+
+        // Admin 관련 페이지
+        GoRoute(
+          path: '/admin_home',
+          name: AdminHomeScreen.routeName,
+          builder: (_, __) => AdminHomeScreen(),
+          routes: [
+            GoRoute(
+              path: 'consumer_answer',
+              name: ConsumerAnswerScreen.routeName,
+              builder: (_, __) => ConsumerAnswerScreen(),
+              routes: [
+                GoRoute(
+                  path: 'info',
+                  name: ConsumerAnswerInfoScreen.routeName,
+                  builder: (_, __) => ConsumerAnswerInfoScreen(),
+                ),
+              ]
+            ),  
+          ],
         ),
       ];
 

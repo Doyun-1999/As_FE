@@ -1,3 +1,4 @@
+import 'package:auction_shop/admin/view/admin_home_screen.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/data.dart';
 import 'package:auction_shop/common/variable/function.dart';
@@ -53,19 +54,24 @@ class HomeScreen extends ConsumerWidget {
                     ],
                   ),
                 ),
-                Container(
-                  margin: const EdgeInsets.only(
-                    bottom: 24,
-                    top: 20,
-                  ),
-                  height: ratio.height * 200,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: NetworkImage(
-                        "https://www.meconomynews.com/news/photo/201903/21505_22590_442.jpg",
+                GestureDetector(
+                  onTap: (){
+                    context.pushNamed(AdminHomeScreen.routeName);
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.only(
+                      bottom: 24,
+                      top: 20,
+                    ),
+                    height: ratio.height * 200,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: NetworkImage(
+                          "https://www.meconomynews.com/news/photo/201903/21505_22590_442.jpg",
+                        ),
+                        fit: BoxFit.fill,
                       ),
-                      fit: BoxFit.fill,
                     ),
                   ),
                 ),
