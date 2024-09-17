@@ -1,6 +1,7 @@
 import 'package:auction_shop/common/dio/dio.dart';
 import 'package:auction_shop/common/model/cursor_pagination_model.dart';
 import 'package:auction_shop/common/repository/base_cursorpagination_repository.dart';
+import 'package:auction_shop/product/model/bid_model.dart';
 import 'package:auction_shop/product/model/product_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,7 +23,21 @@ class ProductRepository extends BasePaginationRepository<ProductModel> {
     print("ProductRepository가 불렸움");
   }
 
-  // NEW 경매 추천
+  // 경매 이력
+  Future<List<BidModel>> bidData(int productId) async {
+    final dio = Dio();
+    final resp = await dio.get(
+      baseUrl + '/bids/${productId}',
+    );
+    print("경매 이력");
+    print("resp.data : ${resp.data}");
+    print("resp.statusCode : ${resp.statusCode}");
+    
+    final data = (resp.data as List<dynamic>).map((e) => BidModel.fromJson(e)).toList();
+    return data;
+  }
+
+  // 추천 경매
   Future<List<RecommendProduct>> recommendProducts() async {
     final resp = await dio.get(
       baseUrl + '/product/category',
@@ -31,6 +46,9 @@ class ProductRepository extends BasePaginationRepository<ProductModel> {
       ),
     );
     print("추천 경매");
+    print("resp.statusCode : ${resp.statusCode}");
+    print("resp.data : ${resp.data}");
+    
     final data = (resp.data as List<dynamic>).map((e) => RecommendProduct.fromJson(e)).toList();
     return data;
   }
@@ -91,6 +109,7 @@ class ProductRepository extends BasePaginationRepository<ProductModel> {
     }
     final respData = {"data": resp.data};
     final data = ProductListModel.fromJson(respData);
+    print("data : ${data}");
     return data;
   }
 
@@ -116,16 +135,14 @@ class ProductRepository extends BasePaginationRepository<ProductModel> {
     print(resp.statusCode);
     print(resp.data);
     final data = {"data": resp.data};
-    final dataList = CursorPagination.fromJson(
-        data, (json) => ProductModel.fromJson(json as Map<String, dynamic>));
+    final dataList = CursorPagination.fromJson(data, (json) => ProductModel.fromJson(json as Map<String, dynamic>));
     return dataList;
   }
 
   // 경매 물품 등록
   Future<ProductModel?> registerProduct(FormData data) async {
     try {
-      final resp = await dio.post(baseUrl + '/product/registration',
-          data: data, options: Options(headers: {'refreshToken': 'true'}));
+      final resp = await dio.post(baseUrl + '/product/registration', data: data, options: Options(headers: {'refreshToken': 'true'},),);
 
       if (resp.statusCode == 200) {
         print('성공---------------');
@@ -133,8 +150,8 @@ class ProductRepository extends BasePaginationRepository<ProductModel> {
         print(resp.statusCode);
         final respData = ProductDetailModel.fromJson(resp.data);
         final data = ProductModel(
-          imageUrl:
-              respData.imageUrls.length == 0 ? null : respData.imageUrls[0],
+          imageUrl: respData.imageUrls.length == 0 ? null : respData.imageUrls[0],
+          productType: respData.productType,
           tradeLocation: respData.tradeLocation,
           product_id: respData.product_id,
           title: respData.title,
@@ -145,6 +162,8 @@ class ProductRepository extends BasePaginationRepository<ProductModel> {
           current_price: respData.current_price,
           likeCount: respData.likeCount,
           liked: respData.liked,
+          createdBy: respData.createdBy,
+          bidCount: respData.bidCount,
           sold: respData.sold,
         );
         return data;

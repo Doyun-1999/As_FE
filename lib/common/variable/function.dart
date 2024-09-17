@@ -157,6 +157,8 @@ void startImgCache() {
   );
 }
 
+// 돈 UI 출력 변경 함수
+// 100,000 이상이면 10만원으로 변경
 String formatToManwon(int amount) {
   if (amount >= 100000) {
     // 100,000 이상일 때 만원 단위로 변환
@@ -166,4 +168,12 @@ String formatToManwon(int amount) {
     // 100,000 미만일 때 원 단위로 반환
     return '${amount}원';
   }
+}
+
+// 상향식 / 하향식 경매 변수값 변경 함수
+String getProductType(String text){
+  if(text == "DESCENDING"){
+    return "하향식";
+  }
+  return "상향식";
 }

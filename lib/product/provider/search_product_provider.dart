@@ -2,7 +2,7 @@ import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/product/repository/product_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final searchProductProvider = StateNotifierProvider((ref) {
+final searchProductProvider = StateNotifierProvider<SearchProductNotifier, ProductBase>((ref) {
   final repo = ref.watch(productRepositoryProvider);
 
   return SearchProductNotifier(repo: repo);
@@ -18,6 +18,8 @@ class SearchProductNotifier extends StateNotifier<ProductBase> {
 
   void getSearchData(String title) async {
     final resp = await repo.searchProducts(title);
+    
+    print("resp : ${resp}");
     state = resp;
   }
 }

@@ -1,5 +1,3 @@
-import 'package:auction_shop/chat/model/chat_model.dart';
-import 'package:auction_shop/chat/provider/chatroom_provider.dart';
 import 'package:auction_shop/common/component/dropdown.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/model/cursor_pagination_model.dart';
@@ -7,6 +5,7 @@ import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/data.dart';
 import 'package:auction_shop/common/variable/function.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
+import 'package:auction_shop/main.dart';
 import 'package:auction_shop/product/component/product_card.dart';
 import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/product/provider/product_provider.dart';
@@ -33,8 +32,7 @@ class ProductCategoryScreen extends ConsumerStatefulWidget {
       _ProductCategoryScreenState();
 }
 
-class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
-    with SingleTickerProviderStateMixin {
+class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen> with SingleTickerProviderStateMixin {
   late TabController controller;
   int index = 0;
   List<String> dropDownList = ["최신순", "가격순"];
@@ -43,8 +41,7 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
   @override
   void initState() {
     super.initState();
-    controller = TabController(
-        length: category.length, vsync: this, initialIndex: widget.index + 1);
+    controller = TabController(length: category.length, vsync: this, initialIndex: widget.index + 1);
     controller.addListener(tabListener);
   }
 
@@ -69,6 +66,7 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
       return DefaultLayout(
         bgColor: Colors.white,
         appBar: AppBar(
+          backgroundColor: Colors.white,
           leading: IconButton(
             onPressed: () {
               context.pop();
@@ -123,6 +121,7 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
 
     return DefaultLayout(
       appBar: AppBar(
+        backgroundColor: Colors.white,
         leading: IconButton(
           onPressed: () {
             context.pop();
@@ -169,6 +168,7 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
               ),
 
               // 드롭다운(최신순, 가격순 등)
+              if(data.length != 0)
               dropDownWidget(),
 
               // 경매 상품 리스트
@@ -259,9 +259,16 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
         padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 100),
         sliver: SliverToBoxAdapter(
           child: Center(
-            child: Text(
-              "해당 카테고리의 데이터가 없습니다.",
-              textAlign: TextAlign.center,
+            child: Column(
+              children: [
+                Image.asset('assets/img/no_product.png'),
+                SizedBox(height: ratio.height * 50),
+                Text(
+                  "해당 카테고리의 데이터가 없습니다.",
+                  style: tsNotoSansKR(fontSize: 20, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
           ),
         ),

@@ -8,11 +8,13 @@ class PurchaseData{
   final int productId;
   final int price;
   final UserModel user;
+  final bool isDESCENDING;
 
   PurchaseData({
     required this.productId,
     required this.price,
     required this.user,
+    required this.isDESCENDING,
   });
 
   factory PurchaseData.fromJson(Map<String, dynamic> json) => _$PurchaseDataFromJson(json);

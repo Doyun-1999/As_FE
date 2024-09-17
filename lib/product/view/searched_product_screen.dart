@@ -15,6 +15,8 @@ class SearchedProductScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(searchProductProvider);
 
+    print("state : ${state}");
+
     // 로딩 화면
     if (state is ProductLoading) {
       return DefaultLayout(
@@ -35,6 +37,7 @@ class SearchedProductScreen extends ConsumerWidget {
     // 에러 발생시
     if (state is ProductError) {
       return DefaultLayout(
+        appBar: CustomAppBar().noActionAppBar(title: "검색 화면", context: context),
         child: Center(
           child: Text("오류 발생"),
         ),
@@ -42,12 +45,19 @@ class SearchedProductScreen extends ConsumerWidget {
     }
 
     final data = (state as ProductListModel).data;
+    print("data : ${data}");
     return DefaultLayout(
-      child: ListView.builder(
-        itemCount: data.length,
-        itemBuilder: (context, index) {
-          return ProductCard.fromModel(model: data[index]);
-        },
+      appBar: CustomAppBar().noActionAppBar(title: "검색 화면", context: context),
+      child: Padding(
+        padding: const EdgeInsets.only(left: 16, right: 16, top: 40),
+        child: ListView.builder(
+          shrinkWrap: true,
+          itemCount: data.length,
+          itemBuilder: (context, index) {
+            print(data[index]);
+            return IntrinsicHeight(child: ProductCard.fromModel(model: data[index]));
+          },
+        ),
       ),
     );
   }

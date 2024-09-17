@@ -48,7 +48,9 @@ class ProductDetailNotifier extends StateNotifier<List<ProductDetailModel>> {
     if (data == null && !isUpdate) {
       print("상세 데이터 새로 얻겠습니다.");
       final resp = await repo.getDetail(productId);
-      state = [...state, resp];
+      final bidData = await repo.bidData(productId);
+      final newData = resp.copyWith(bidData: bidData);
+      state = [...state, newData];
       return;
     }
     // 2. 데이터가 있지만 업데이트를 해야하는 상황 ex) 좋아요
@@ -57,7 +59,9 @@ class ProductDetailNotifier extends StateNotifier<List<ProductDetailModel>> {
       state.removeWhere((e) => e.product_id == productId);
       print("제거");
       final resp = await repo.getDetail(productId);
-      final updatedList = [...state, resp];
+      final bidData = await repo.bidData(productId);
+      final newData = resp.copyWith(bidData: bidData);
+      final updatedList = [...state, newData];
       state = updatedList;
     }
   }
@@ -114,10 +118,11 @@ class ProductDetailNotifier extends StateNotifier<List<ProductDetailModel>> {
       minimum_price: 5000,
       current_price: 15000,
       createdBy: "createdBy",
+      productType: "DESCEDING",
       startTime: "startTime",
       endTime: "endTime",
-      details:
-          "detailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetails",
+      details: "detailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetails",
+      bidCount: 0,
       imageUrls: [],
       owner: false,
       sold: false,

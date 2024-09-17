@@ -32,9 +32,12 @@ ProductModel _$ProductModelFromJson(Map<String, dynamic> json) => ProductModel(
       tradeLocation: json['tradeLocation'] as String?,
       initial_price: (json['initial_price'] as num).toInt(),
       current_price: (json['current_price'] as num).toInt(),
+      productType: json['productType'] as String,
+      createdBy: json['createdBy'] as String,
       likeCount: (json['likeCount'] as num).toInt(),
       liked: json['liked'] as bool,
       sold: json['sold'] as bool,
+      bidCount: (json['bidCount'] as num).toInt(),
     );
 
 Map<String, dynamic> _$ProductModelToJson(ProductModel instance) =>
@@ -47,10 +50,13 @@ Map<String, dynamic> _$ProductModelToJson(ProductModel instance) =>
       'tradeLocation': instance.tradeLocation,
       'initial_price': instance.initial_price,
       'current_price': instance.current_price,
+      'productType': instance.productType,
       'imageUrl': instance.imageUrl,
+      'createdBy': instance.createdBy,
       'likeCount': instance.likeCount,
       'liked': instance.liked,
       'sold': instance.sold,
+      'bidCount': instance.bidCount,
     };
 
 RegisterProductModel _$RegisterProductModelFromJson(
@@ -65,10 +71,11 @@ RegisterProductModel _$RegisterProductModelFromJson(
           .map((e) => e as String)
           .toList(),
       conditions: json['conditions'] as String,
+      productType: json['productType'] as String,
       tradeLocation: json['tradeLocation'] as String?,
       trade: json['trade'] as String,
       initial_price: (json['initial_price'] as num).toInt(),
-      minimum_price: (json['minimum_price'] as num).toInt(),
+      minimum_price: (json['minimum_price'] as num?)?.toInt(),
       startTime: json['startTime'] as String,
       endTime: json['endTime'] as String,
     );
@@ -81,6 +88,7 @@ Map<String, dynamic> _$RegisterProductModelToJson(
       'tradeTypes': instance.tradeTypes,
       'categories': instance.categories,
       'conditions': instance.conditions,
+      'productType': instance.productType,
       'tradeLocation': instance.tradeLocation,
       'trade': instance.trade,
       'initial_price': instance.initial_price,
@@ -94,6 +102,7 @@ ProductDetailModel _$ProductDetailModelFromJson(Map<String, dynamic> json) =>
       memberId: (json['memberId'] as num).toInt(),
       product_id: (json['product_id'] as num).toInt(),
       title: json['title'] as String,
+      productType: json['productType'] as String,
       conditions: json['conditions'] as String,
       categories: (json['categories'] as List<dynamic>)
           .map((e) => e as String)
@@ -115,6 +124,10 @@ ProductDetailModel _$ProductDetailModelFromJson(Map<String, dynamic> json) =>
       owner: json['owner'] as bool,
       sold: json['sold'] as bool,
       liked: json['liked'] as bool,
+      bidCount: (json['bidCount'] as num).toInt(),
+      bidData: (json['bidData'] as List<dynamic>?)
+          ?.map((e) => BidModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$ProductDetailModelToJson(ProductDetailModel instance) =>
@@ -122,6 +135,7 @@ Map<String, dynamic> _$ProductDetailModelToJson(ProductDetailModel instance) =>
       'memberId': instance.memberId,
       'product_id': instance.product_id,
       'title': instance.title,
+      'productType': instance.productType,
       'conditions': instance.conditions,
       'categories': instance.categories,
       'tradeTypes': instance.tradeTypes,
@@ -138,6 +152,8 @@ Map<String, dynamic> _$ProductDetailModelToJson(ProductDetailModel instance) =>
       'owner': instance.owner,
       'sold': instance.sold,
       'liked': instance.liked,
+      'bidCount': instance.bidCount,
+      'bidData': instance.bidData,
     };
 
 RegisterPagingData _$RegisterPagingDataFromJson(Map<String, dynamic> json) =>
@@ -179,6 +195,7 @@ RecommendProduct _$RecommendProductFromJson(Map<String, dynamic> json) =>
       product_id: (json['product_id'] as num).toInt(),
       imageUrl: json['imageUrl'] as String?,
       title: json['title'] as String,
+      productType: json['productType'] as String,
       tradeTypes: (json['tradeTypes'] as List<dynamic>)
           .map((e) => e as String)
           .toList(),
@@ -192,6 +209,7 @@ Map<String, dynamic> _$RecommendProductToJson(RecommendProduct instance) =>
       'title': instance.title,
       'tradeTypes': instance.tradeTypes,
       'initial_price': instance.initial_price,
+      'productType': instance.productType,
       'current_price': instance.current_price,
       'imageUrl': instance.imageUrl,
     };

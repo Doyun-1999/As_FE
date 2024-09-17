@@ -19,14 +19,15 @@ class ErrorScreen extends StatelessWidget {
     return DefaultLayout(
       child: Center(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Spacer(),
+            
             Image.asset(
               'assets/img/error.png',
-              width: 200,
+              width: ratio.width * 180,
             ),
             SizedBox(
-              height: 50,
+              height: 80,
             ),
             Text(
               "오류가 발생했습니다.",
@@ -35,9 +36,9 @@ class ErrorScreen extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            Spacer(),
+            SizedBox(height: ratio.height * 200),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: CustomButton(
                 text: "다시 시도",
                 func: (){
@@ -51,7 +52,7 @@ class ErrorScreen extends StatelessWidget {
                 },
               ),
             ),
-            SizedBox(height: ratio.height * 50,),
+            SizedBox(height: ratio.height * 60,),
           ],
         ),
       ),

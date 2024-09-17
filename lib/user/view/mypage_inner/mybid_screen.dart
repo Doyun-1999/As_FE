@@ -115,8 +115,7 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
     final soldProducts = products.data.where((e) => e.sold == true).toList();
 
     // 안팔린 경매 물품
-    final notSoldProducts =
-        products.data.where((e) => e.sold == false).toList();
+    final notSoldProducts = products.data.where((e) => e.sold == false).toList();
 
     // 정상적으로 데이터를 불러왔을 때
     return DefaultLayout(

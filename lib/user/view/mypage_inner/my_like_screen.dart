@@ -34,6 +34,7 @@ class _MyLikeScreenState extends ConsumerState<MyLikeScreen> {
       return DefaultLayout(
         bgColor: Colors.white,
         appBar: AppBar(
+          foregroundColor: Colors.white,
           leading: IconButton(
             onPressed: () {
               context.pop();
