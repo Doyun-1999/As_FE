@@ -126,7 +126,7 @@ ProductDetailModel _$ProductDetailModelFromJson(Map<String, dynamic> json) =>
       liked: json['liked'] as bool,
       bidCount: (json['bidCount'] as num).toInt(),
       bidData: (json['bidData'] as List<dynamic>?)
-          ?.map((e) => BidModel.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => BidBase.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 

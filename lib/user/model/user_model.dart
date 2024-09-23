@@ -94,6 +94,7 @@ class SignupUser{
   final String? zipcode;
   final String? detailAddress;
   final List<String>? categories;
+  final bool changeImage;
   
 
   SignupUser({
@@ -105,6 +106,7 @@ class SignupUser{
     this.zipcode,
     this.detailAddress,
     this.categories,
+    this.changeImage = true,
   });
 
   Map<String, dynamic> toJson() => _$SignupUserToJson(this);

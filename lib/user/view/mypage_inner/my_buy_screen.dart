@@ -6,53 +6,34 @@ import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/product/component/product_card.dart';
 import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/product/view/product_loading_screen.dart';
-import 'package:auction_shop/user/provider/my_like_provider.dart';
+import 'package:auction_shop/user/provider/my_buy_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
-class MyLikeScreen extends ConsumerStatefulWidget {
-  static String get routeName => "mylike";
-  const MyLikeScreen({super.key});
+class MyBuyScreen extends ConsumerStatefulWidget {
+  static String get routeName => "mybuy";
+  const MyBuyScreen({super.key});
 
   @override
-  ConsumerState<MyLikeScreen> createState() => _MyLikeScreenState();
+  ConsumerState<MyBuyScreen> createState() => _MyBuyScreenState();
 }
 
-class _MyLikeScreenState extends ConsumerState<MyLikeScreen> {
-  List<String> dropDownList = ['최신순', '가격순'];
-  String dropDownValue = '최신순';
+class _MyBuyScreenState extends ConsumerState<MyBuyScreen> {
+
+  final dropdownList = ["최신순", "가격순"];
+
+  String dropdownValue = "최신순";
 
   @override
   Widget build(BuildContext context) {
-    
-    final state = ref.watch(MyLikeProvider);
+    final state = ref.watch(MyBuyProvider);
 
     // 로딩 화면 with Skeleton
     if (state is CursorPaginationLoading) {
       return DefaultLayout(
         bgColor: Colors.white,
-        appBar: AppBar(
-          leading: IconButton(
-            onPressed: () {
-              context.pop();
-            },
-            icon: Icon(
-              Icons.arrow_back_ios,
-            ),
-          ),
-          actions: [
-            IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.search,
-                color: auctionColor.mainColor,
-                size: 34,
-              ),
-            ),
-          ],
-        ),
+        appBar: CustomAppBar().noActionAppBar(title: "판매내역", context: context),
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -80,21 +61,12 @@ class _MyLikeScreenState extends ConsumerState<MyLikeScreen> {
     final list = data.data;
 
     return DefaultLayout(
-      appBar: CustomAppBar().allAppBar(
-        popupList: [
-          popupItem(
-            text: "수정하기",
-          ),
-        ],
-        vertFunc: (String? val) {},
-        title: "관심 목록",
-        context: context,
-      ),
+      appBar: CustomAppBar().noActionAppBar(title: "구매내역", context: context),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: RefreshIndicator(
           onRefresh: () async {
-            ref.read(MyLikeProvider.notifier).refetching();
+            ref.read(MyBuyProvider.notifier).refetching();
           },
           child: SingleChildScrollView(
             child: Column(
@@ -108,19 +80,19 @@ class _MyLikeScreenState extends ConsumerState<MyLikeScreen> {
                     ProductDropDown(
                       onChanged: (String? val) {
                         setState(() {
-                          dropDownValue = val!;
+                          dropdownValue = val!;
                         });
-                        if (dropDownValue == '최신순') {
-                          ref.read(MyLikeProvider.notifier).sortState(true);
+                        if (dropdownValue == '최신순') {
+                          ref.read(MyBuyProvider.notifier).sortState(true);
                           return;
                         }
-                        if (dropDownValue == '가격순') {
-                          ref.read(MyLikeProvider.notifier).sortState(false);
+                        if (dropdownValue == '가격순') {
+                          ref.read(MyBuyProvider.notifier).sortState(false);
                           return;
                         }
                       },
-                      dropDownList: dropDownList,
-                      dropDownValue: dropDownValue,
+                      dropDownList: dropdownList,
+                      dropDownValue: dropdownValue,
                     ),
                   ],
                 ),

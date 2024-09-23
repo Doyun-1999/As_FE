@@ -5,6 +5,7 @@ import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/data.dart';
 import 'package:auction_shop/common/variable/function.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
+import 'package:auction_shop/common/view/root_tab.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/product/component/product_card.dart';
 import 'package:auction_shop/product/model/product_model.dart';
@@ -69,7 +70,7 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen> w
           backgroundColor: Colors.white,
           leading: IconButton(
             onPressed: () {
-              context.pop();
+              context.goNamed(RootTab.routeName);
             },
             icon: Icon(
               Icons.arrow_back_ios,

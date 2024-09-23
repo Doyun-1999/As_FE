@@ -30,6 +30,8 @@ import 'package:auction_shop/user/view/mypage_inner/manage_address_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/address_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/block_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/answer_screen.dart';
+import 'package:auction_shop/user/view/mypage_inner/my_bidding_screen.dart';
+import 'package:auction_shop/user/view/mypage_inner/my_buy_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/my_like_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/mybid_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/question_screen.dart';
@@ -136,11 +138,28 @@ class AuthNotifier extends ChangeNotifier {
               builder: (_, __) => MyPageScreen(),
               // 마이페이지 내부에서 이동하는 화면들
               routes: [
+                // ------------------------------------------
                 GoRoute(
                   path: 'mybid',
                   name: MyBidScreen.routeName,
                   builder: (_, __) => MyBidScreen(),
                 ),
+                GoRoute(
+                  path: 'mybuy',
+                  name: MyBuyScreen.routeName,
+                  builder: (_, __) => MyBuyScreen(),
+                ),
+                GoRoute(
+                  path: 'mybidding',
+                  name: MyBiddingScreen.routeName,
+                  builder: (_, __) => MyBiddingScreen(),
+                ),
+                GoRoute(
+                  path: 'mylike',
+                  name: MyLikeScreen.routeName,
+                  builder: (_, __) => MyLikeScreen(),
+                ),
+                // ------------------------------------------
                 GoRoute(
                   path: 'block',
                   name: BlockScreen.routeName,
@@ -168,11 +187,6 @@ class AuthNotifier extends ChangeNotifier {
                       },
                     ),
                   ],
-                ),
-                GoRoute(
-                  path: 'mylike',
-                  name: MyLikeScreen.routeName,
-                  builder: (_, __) => MyLikeScreen(),
                 ),
                 GoRoute(
                   path: 'revise_user',
@@ -290,9 +304,12 @@ class AuthNotifier extends ChangeNotifier {
         
         // 결제 완료
         GoRoute(
-          path: '/payment_complete',
+          path: '/payment_complete/:pid',
           name: PaymentCompleteScreen.routeName,
-          builder: (_, __) => PaymentCompleteScreen(),
+          builder: (_, __) {
+            final productId = __.pathParameters["pid"]!;
+            return PaymentCompleteScreen(productId: productId,);
+          },
         ),
 
         // Admin 관련 페이지

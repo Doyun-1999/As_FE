@@ -40,6 +40,7 @@ class _RegisterProductScreen2State
   // 토글 버튼
   List<bool> isSelected = [true, false];
 
+
   // TextFormField
   final gkey = GlobalKey<FormState>();
   TextEditingController _priceController = TextEditingController();
@@ -115,7 +116,7 @@ class _RegisterProductScreen2State
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Center(
-                        child: Text("상향식 경매는 설정하신 제한 시간 내에\n구매를 원하시는 사람이 입찰을 제시합니다.", style: tsNotoSansKR(fontSize: 14, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
+                        child: Text(isSelected[0] ? "상향식 경매는 설정하신 제한 시간 내에\n구매를 원하시는 사람이 입찰을 제시합니다." : "하향식 경매는 설정하신 제한 시간 내에\n최소 가격으로 자동으로 입찰됩니다.", style: tsNotoSansKR(fontSize: 14, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
                       ),
                     ),
 
@@ -380,7 +381,7 @@ class _RegisterProductScreen2State
                     children: [
                       Text(
                         text,
-                        style: tsInter(
+                        style: tsNotoSansKR(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                             color: auctionColor.mainColor),
@@ -394,7 +395,7 @@ class _RegisterProductScreen2State
                       ),
                       Text(
                         method,
-                        style: tsInter(
+                        style: tsNotoSansKR(
                           fontSize: 18,
                           fontWeight: FontWeight.w400,
                           color: Colors.black,
@@ -441,7 +442,7 @@ class _RegisterProductScreen2State
                 children: [
                   Text(
                     text,
-                    style: tsInter(
+                    style: tsNotoSansKR(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: auctionColor.subGreyColorB6,
@@ -456,7 +457,7 @@ class _RegisterProductScreen2State
                   ),
                   Text(
                     method,
-                    style: tsInter(
+                    style: tsNotoSansKR(
                       fontSize: 18,
                       fontWeight: FontWeight.w400,
                       color: Colors.black.withOpacity(0.5),
@@ -469,6 +470,7 @@ class _RegisterProductScreen2State
   }
 }
 
+// 말풍선 꼬리 위젯
 class TriangleWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -482,6 +484,8 @@ class TriangleWidget extends StatelessWidget {
   }
 }
 
+// CustomPainter
+// 말풍선 꼬리 모양 생성
 class TrianglePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {

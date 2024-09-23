@@ -168,7 +168,7 @@ class ProductDetailModel{
   final bool sold;
   final bool liked;
   final int bidCount;
-  final List<BidModel>? bidData;
+  final List<BidBase>? bidData;
   
   ProductDetailModel({
     required this.memberId,
@@ -217,7 +217,7 @@ class ProductDetailModel{
     bool? owner,
     bool? sold,
     bool? liked,
-    List<BidModel>? bidData,
+    List<BidBase>? bidData,
   }) {
     return ProductDetailModel(
       memberId: memberId ?? this.memberId,

@@ -25,6 +25,7 @@ class ProductCard extends ConsumerWidget {
   final String conditions;
   final List<String> tradeTypes;
   final String productType;
+  final bool sold;
 
   const ProductCard({
     required this.product_id,
@@ -38,6 +39,7 @@ class ProductCard extends ConsumerWidget {
     required this.conditions,
     required this.tradeTypes,
     required this.productType,
+    required this.sold,
     this.isSkeletion = false,
     super.key,
   });
@@ -58,6 +60,7 @@ class ProductCard extends ConsumerWidget {
       conditions: model.conditions,
       tradeTypes: model.tradeTypes,
       productType: model.productType,
+      sold: model.sold,
       isSkeletion: isSkeletion,
     );
   }
@@ -70,8 +73,7 @@ class ProductCard extends ConsumerWidget {
     final Debouncer debounce = Debouncer(seconds: 2);
     return InkWell(
       onTap: () {
-        context.pushNamed(ProductInfoScreen.routeName,
-            pathParameters: {'pid': (product_id).toString()});
+        context.pushNamed(ProductInfoScreen.routeName, pathParameters: {'pid': (product_id).toString()});
       },
       child: Row(
         children: [
@@ -92,41 +94,27 @@ class ProductCard extends ConsumerWidget {
                         ),
                 ),
               ),
-              !isSkeletion ? Container(
-                height: 45,
-                width: 140,
-                padding: const EdgeInsets.only(left: 8, top: 8),
-                alignment: Alignment.topLeft,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.black.withOpacity(0.6),
-                      Colors.black.withOpacity(0),
-                    ],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                ),
-                child: FittedBox(
-                  child: Container(
-                    padding:
-                        const EdgeInsets.only(bottom: 3, left: 6, right: 6),
-                    decoration: BoxDecoration(
-                      color: auctionColor.mainColorEF,
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    child: Center(
-                      child: Text(
-                        "${getProductType(productType)} 경매",
-                        style: tsNotoSansKR(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
+              (!isSkeletion)
+                  ? Container(
+                      height: 45,
+                      width: 140,
+                      padding: const EdgeInsets.only(left: 8, top: 8),
+                      alignment: Alignment.topLeft,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.black.withOpacity(0.6),
+                            Colors.black.withOpacity(0),
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
                         ),
                       ),
-                    ),
-                  ),
-                ),
-              ) : SizedBox(),
+                      child: FittedBox(
+                        child: productTypeBox(sold, productType: productType),
+                      ),
+                    )
+                  : SizedBox(),
             ],
           ),
           SizedBox(
@@ -287,6 +275,71 @@ class ProductCard extends ConsumerWidget {
             ),
           )
         ],
+      ),
+    );
+  }
+
+  Container productTypeBox(bool sold,{
+   required String productType,
+  }) {
+    // 판매가 완료된 상품
+    if(sold){
+      return Container(
+      padding: const EdgeInsets.only(bottom: 3, left: 6, right: 6),
+      decoration: BoxDecoration(
+        border: Border.all(color: auctionColor.subGreyColorE2),
+        color: auctionColor.subGreyColorE2,
+        borderRadius: BorderRadius.circular(100),
+      ),
+      child: Center(
+        child: Text(
+          "판매완료",
+          style: tsNotoSansKR(
+            fontSize: 10,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+    }
+    // 하향식일때 Widget
+    if (productType == "DESCENDING") {
+      return Container(
+        padding: const EdgeInsets.only(bottom: 3, left: 6, right: 6),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.white),
+          color: auctionColor.mainColor,
+          borderRadius: BorderRadius.circular(100),
+        ),
+        child: Center(
+          child: Text(
+            "${getProductType(productType)} 경매",
+            style: tsNotoSansKR(
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      );
+    }
+    // 상향식일때 Widget
+    return Container(
+      padding: const EdgeInsets.only(bottom: 3, left: 6, right: 6),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.white),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(100),
+      ),
+      child: Center(
+        child: Text(
+          "${getProductType(productType)} 경매",
+          style: tsNotoSansKR(
+            fontSize: 10,
+            fontWeight: FontWeight.bold,
+            color: auctionColor.mainColor,
+          ),
+        ),
       ),
     );
   }

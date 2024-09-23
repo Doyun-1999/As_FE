@@ -1,12 +1,8 @@
 import 'dart:ui';
-import 'package:auction_shop/chat/provider/sse_provider.dart';
 import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/component/image_widget.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
-import 'package:auction_shop/common/model/cursor_pagination_model.dart';
 import 'package:auction_shop/common/variable/color.dart';
-import 'package:auction_shop/product/model/product_model.dart';
-import 'package:auction_shop/product/repository/product_repository.dart';
 import 'package:auction_shop/user/provider/Q&A_provider.dart';
 import 'package:auction_shop/user/provider/block_provider.dart';
 import 'package:auction_shop/user/provider/my_like_provider.dart';
@@ -14,6 +10,8 @@ import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:auction_shop/user/view/mypage_inner/address_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/block_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/answer_screen.dart';
+import 'package:auction_shop/user/view/mypage_inner/my_bidding_screen.dart';
+import 'package:auction_shop/user/view/mypage_inner/my_buy_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/my_like_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/mybid_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/revise_user_screen.dart';
@@ -83,8 +81,7 @@ class MyPageScreen extends ConsumerWidget {
               userInfo(
                 name: state.nickname,
                 point: state.point,
-                address:
-                    "${address.address} ${address.detailAddress}",
+                address: "${address.address} ${address.detailAddress}",
                 context: context,
                 imgPath: state.profileImageUrl,
               ),
@@ -97,19 +94,17 @@ class MyPageScreen extends ConsumerWidget {
               ),
               IconText(
                 imgName: 'bid_mypage',
-                text: "입찰 내역",
+                text: "입찰중 목록",
                 func: () {
+                  context.pushNamed(MyBiddingScreen.routeName);
                 },
               ),
               IconText(
-                imgName: 'sell',
-                text: "판매 내역",
-                func: () {},
-              ),
-              IconText(
-                imgName: 'buy',
-                text: "구매 내역",
-                func: () {},
+                imgName: 'bid_com',
+                text: "낙찰완료 목록",
+                func: () {
+                  context.pushNamed(MyBuyScreen.routeName);
+                },
               ),
               Divider(
                 color: auctionColor.subGreyColorE2,
@@ -193,7 +188,6 @@ class MyPageScreen extends ConsumerWidget {
       padding: const EdgeInsets.only(
         left: 11,
         right: 4,
-        top: 14,
         bottom: 15,
       ),
       decoration: BoxDecoration(
@@ -216,8 +210,8 @@ class MyPageScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                SizedBox(height: 13),
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
@@ -227,19 +221,29 @@ class MyPageScreen extends ConsumerWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 12),
+                    // 내 경매장 보기
+                    Container(
+                      margin: const EdgeInsets.only(right: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5.5),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: auctionColor.mainColorEF,
+                      ),
                       child: GestureDetector(
                         onTap: () {
                           context.pushNamed(MyBidScreen.routeName);
                         },
-                        child: Text(
-                          "내 경매장 보기",
-                          style: tsNotoSansKR(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: auctionColor.subGreyColor94,
-                          ),
+                        child: Row(
+                          children: [
+                            Image.asset('assets/icon/sell.png', width: 30),
+                            Text(
+                              "내 경매장 보기",
+                              style: tsNotoSansKR(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -247,7 +251,6 @@ class MyPageScreen extends ConsumerWidget {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(
-                    top: 4,
                     bottom: 6,
                   ),
                   child: Text(

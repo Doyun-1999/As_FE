@@ -34,8 +34,10 @@ class PaymentRepository {
     print('---------------------');
     print("결제 요청 보냈음, 결과 : ${resp.data}, StatusCode : ${resp.statusCode}");
     if (resp.statusCode != 200) {
+      print("결제 실패");
       return false;
     }
+    print("결제 성공");
     return true;
   }
 }

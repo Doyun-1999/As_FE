@@ -161,9 +161,15 @@ void startImgCache() {
 // 100,000 이상이면 10만원으로 변경
 String formatToManwon(int amount) {
   if (amount >= 100000) {
-    // 100,000 이상일 때 만원 단위로 변환
-    final manwon = amount ~/ 10000;
-    return '${manwon}만원';
+    // 100,000 이상일 때 만원 단위와 원 단위를 함께 표시
+    final manwon = amount ~/ 10000; // 만원 단위
+    final won = amount % 10000; // 만원 이하 단위
+    if (won == 0) {
+      // 만원 이하 단위가 없을 때 (예: 100,000원)
+      return '${manwon}만 원';
+    } else {
+      return '${manwon}만 ${won}원';
+    }
   } else {
     // 100,000 미만일 때 원 단위로 반환
     return '${amount}원';

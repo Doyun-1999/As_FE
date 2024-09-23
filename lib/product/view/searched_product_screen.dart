@@ -47,7 +47,7 @@ class SearchedProductScreen extends ConsumerWidget {
     final data = (state as ProductListModel).data;
     print("data : ${data}");
     return DefaultLayout(
-      appBar: CustomAppBar().noActionAppBar(title: "검색 화면", context: context),
+      appBar: CustomAppBar().noActionAppBar(title: "검색 화면", context: context), 
       child: Padding(
         padding: const EdgeInsets.only(left: 16, right: 16, top: 40),
         child: ListView.builder(

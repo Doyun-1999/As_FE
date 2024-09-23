@@ -1,6 +1,7 @@
 import 'package:auction_shop/common/component/button.dart';
 import 'package:auction_shop/common/component/dialog.dart';
 import 'package:auction_shop/common/variable/color.dart';
+import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/user/component/add_button.dart';
 import 'package:auction_shop/user/component/info_box.dart';
@@ -32,9 +33,9 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
     final addresses = ref.read(userProvider.notifier).getAddresses();
     return DefaultLayout(
       bgColor: auctionColor.subGreyColorF6,
-      appBar: CustomAppBar().allAppBar(
+      appBar: values == null ? CustomAppBar().allAppBar(
         context: context,
-        vertFunc: (String? val) {
+        vertFunc: (val) {
           if (val == "전체 삭제") {
             CustomDialog(
               context: context,
@@ -51,36 +52,23 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
           if (val == "배송지 설정") {
             setValues(addresses, false);
           }
-          if (val == "취소") {
-            setValues(addresses, false);
-          }
         },
-        popupList: values == null
-            ? [
+        popupList: [
                 popupItem(text: "선택 삭제"),
                 PopupMenuDivider(),
                 popupItem(text: "전체 삭제"),
                 PopupMenuDivider(),
                 popupItem(text: "배송지 설정"),
-              ]
-            : [
-                popupItem(text: "취소"),
               ],
         title: '주소 관리',
-      ),
+      ) : isNotNullAppBar(),
       child: SingleChildScrollView(
         child: Column(
           children: [
             SizedBox(height : 4),
+            // 현재 사용자 정보에 설정된 기본 배송지 데이터
             InfoBox(
-              // isChecked: deleteValues == null ? null : deleteValues![0],
               sideFunc: () {
-                // if (deleteValues != null) {
-                //   setState(() {
-                //     deleteValues![0] = !deleteValues![0];
-                //   });
-                //   return;
-                // }
                 context.pushNamed(ManageAddressScreen.routeName,extra: defaultAddress);
               },
               firstBoxText: '기본 배송지',
@@ -108,6 +96,8 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
                 ),
               ),
             ),
+
+            // 외에 추가된 배송지 데이터들
             ...List.generate(
               addresses.length,
               (index) {
@@ -147,9 +137,16 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
                 );
               },
             ),
+
+            // gap
             SizedBox(
               height: 12,
             ),
+
+            // 현재 배송지를 삭제하는건지, 일반 화면인지에 따라
+            // 버튼이 달라짐
+            // 1. 배송지를 삭제하는 상태일 때 => 삭제 버튼
+            // 2. 일반 상태일 때 => 배송지 추가 화면 이동 버튼
             if(values == null)
             AddButton(
                     text: '배송지 추가하기',
@@ -214,6 +211,7 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
     );
   }
 
+  // 선택된 주소 인덱스들 얻는 함수
   List<int> getIndexes() {
     List<int> trueIndices = [];
     for (int i = 0; i < values!.values.length; i++) {
@@ -224,6 +222,7 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
     return trueIndices;
   }
 
+  // 주소 선택시 변수에 값 할당하는 함수
   void setValues(List<AddressModel> addresses, bool isDelete) {
     setState(() {
       if (values == null) {
@@ -241,6 +240,7 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
     });
   }
 
+  // 주소 선택시 변수값 변경
   void changeValue(int index) {
     setState(() {
       if(values!.isDelete){
@@ -253,8 +253,55 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
       }
     });
   }
+
+  // 주소 선택할 때 새로 할당하는 AppBar
+  // actions에 선택 취소 버튼 추가
+  AppBar isNotNullAppBar(){
+    return AppBar(
+      backgroundColor: Colors.white,
+      centerTitle: true,
+      title: Text(
+        "주소 관리",
+        style: tsNotoSansKR(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: auctionColor.subBlackColor49,
+        ),
+      ),
+      leading: IconButton(
+        onPressed: () {
+              context.pop();
+            },
+        icon: Icon(
+          Icons.arrow_back_ios,
+        ),
+      ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 10),
+          child: GestureDetector(
+            onTap: (){
+              setState(() {
+                values = null;
+              });
+            },
+            child: Text("선택 취소",
+              style: tsNotoSansKR(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: auctionColor.subBlackColor49,
+              ),
+            ),
+          ),
+        )
+      ],
+    );
+  }
 }
 
+// 주소 선택에서 필요한 객체 정의
+// values - 선택된 주소들의 index값
+// isDelete - 현재 주소지를 삭제하는건지, 기본 배송지를 설정하는건지
 class CheckValue {
   final List<bool> values;
   final bool isDelete;

@@ -59,23 +59,31 @@ class HomeScreen extends ConsumerWidget {
                   onTap: () {
                     // context.pushNamed(PaymentCompleteScreen.routeName);
                     // context.pushNamed(ErrorScreen.routeName);
-                    context.pushNamed(AdminHomeScreen.routeName);
+                    context.pushNamed(
+                      ProductCategoryScreen.routeName,
+                      pathParameters: {
+                        'cid': "1",
+                      },
+                    );
                   },
                   child: Container(
                     margin: const EdgeInsets.only(
                       bottom: 24,
                       top: 20,
                     ),
+                    padding: const EdgeInsets.only(left: 16, bottom: 9),
+                    alignment: Alignment.bottomLeft,
                     height: ratio.height * 200,
                     width: double.infinity,
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         image: NetworkImage(
-                          "https://www.meconomynews.com/news/photo/201903/21505_22590_442.jpg",
+                          "https://www.shinsegaegroupnewsroom.com/wp-content/uploads/2019/12/%EC%9E%90%EC%A3%BCJAJU-%EB%B4%84-%EC%9D%B8%ED%85%8C%EB%A6%AC%EC%96%B4-%EA%B0%80%EA%B5%AC-%EC%84%A0%EB%B3%B4%EC%97%AC.jpg",
                         ),
                         fit: BoxFit.fill,
                       ),
                     ),
+                    child: Text("아늑한 가구로\n가을 맞이 집 새단장!", style: tsNotoSansKR(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white,),),
                   ),
                 ),
                 Padding(

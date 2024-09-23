@@ -13,7 +13,9 @@ import 'package:auction_shop/common/view/error_screen.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/payment/model/payment_model.dart';
 import 'package:auction_shop/payment/view/payment_screen.dart';
+import 'package:auction_shop/product/component/bid_card.dart';
 import 'package:auction_shop/product/component/toggle_button.dart';
+import 'package:auction_shop/product/model/bid_model.dart';
 import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/product/provider/product_detail_provider.dart';
 import 'package:auction_shop/product/provider/product_provider.dart';
@@ -118,8 +120,6 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
       );
     }
 
-    print(data.toJson());
-
     return DefaultLayout(
       child: Stack(
         children: [
@@ -200,17 +200,57 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                                     height: 6,
                                   ),
                                   ...List.generate(
-                                    data.bidData == null ? 0 : data.bidData!.length,
+                                    data.bidData == null
+                                        ? 0
+                                        : data.bidData!.length,
                                     (index) {
-                                      final bidData = data.bidData![index];
-                                      final date = "${bidData.bidTime.year}-${bidData.bidTime.month.toString().padLeft(2, '0')}-${bidData.bidTime.day.toString().padLeft(2, '0')}";
-                                      return bidBox(
-                                        date: date,
-                                        imgpath: bidData.profileImageUrl,
-                                        price: bidData.amount,
-                                        isFirst: index == 0 ? true : false,
-                                      );
+                                      // 하향식일 때
+                                      if (data.productType == "DESCENDING") {
+                                        final bidData = data.bidData![index]
+                                            as DownBidModel;
+                                        final date =
+                                            "${bidData.changeDate.year}-${bidData.changeDate.month.toString().padLeft(2, '0')}-${bidData.changeDate.day.toString().padLeft(2, '0')}";
+                                        return BidCard(
+                                          rightSideText:
+                                              "${bidData.changeOrder}회 입찰",
+                                          reducedPrice: bidData.reducedPrice,
+                                          bottomMargin: 10,
+                                          isNow: index == 0 ? true : false,
+                                          date: date,
+                                          price: bidData.newPrice,
+                                        );
+                                        // 상향식일 때
+                                      } else {
+                                        final bidData =
+                                            data.bidData![index] as UpBidModel;
+                                        final date =
+                                            "${bidData.bidTime.year}-${bidData.bidTime.month.toString().padLeft(2, '0')}-${bidData.bidTime.day.toString().padLeft(2, '0')}";
+                                        return BidCard(
+                                          date: date,
+                                          rightSideText:
+                                              "${bidData.bidCount}회 입찰",
+                                          imgPath: bidData.profileImageUrl,
+                                          price: bidData.amount,
+                                          isNow: index == 0 ? true : false,
+                                          bottomMargin: 10,
+                                        );
+                                        // bidBox(
+                                        //   date: date,
+                                        //   bidCount: bidData.bidCount,
+                                        //   imgpath: bidData.profileImageUrl,
+                                        //   price: bidData.amount,
+                                        //   isNow: index == 0 ? true : false,
+                                        // );
+                                      }
                                     },
+                                  ),
+                                  BidCard(
+                                    date: data.startTime.substring(0, 10),
+                                    isFirst: true,
+                                    price: data.initial_price,
+                                    isNow: false,
+                                    rightSideText: "시작가격",
+                                    bottomMargin: 10,
                                   ),
                                 ],
                               ),
@@ -236,18 +276,36 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                   text: '입찰하기',
                   // 바텀 시트 올라오는 함수
                   func: () async {
-                    if(data.sold){
-                      CustomDialog(context: context, title: "판매된 상품입니다.", OkText: "확인", func: (){context.pop();});
+                    // 이미 판매된 경우에는 입찰 금지 팝업창
+                    if (data.sold) {
+                      CustomDialog(
+                          context: context,
+                          title: "판매된 상품입니다.",
+                          OkText: "확인",
+                          func: () {
+                            context.pop();
+                          });
+                      return;
+                    }
+                    // 자신의 경매 물품일 경우에는 입찰 금지 팝업창
+                    if (data.owner) {
+                      CustomDialog(
+                          context: context,
+                          title: "자신의 경매 물품에는\n입찰하실 수 없습니다.",
+                          OkText: "확인",
+                          func: () {
+                            context.pop();
+                          });
                       return;
                     }
                     if (data.productType == "DESCENDING") {
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
                         final model = PurchaseData(
-                            productId: int.parse(widget.id),
-                            price: data.current_price,
-                            user: user,
-                            isDESCENDING: true,
+                          productId: int.parse(widget.id),
+                          price: data.current_price,
+                          user: user,
+                          isDESCENDING: true,
                         );
                         return PaymentScreen(model: model);
                       }));
@@ -307,7 +365,6 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                             index: value,
                             onIndexChanged: (val) {
                               swiperIndex.value = val;
-                              print("swiperIndex : ${swiperIndex}");
                             },
                             itemCount: data.imageUrls.length,
                             itemBuilder: (BuildContext context, int index) {
@@ -344,7 +401,12 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                     padding: const EdgeInsets.only(top: 4, left: 4),
                     child: IconButton(
                       onPressed: () {
-                        context.pop();
+                        context.goNamed(
+                          ProductCategoryScreen.routeName,
+                          pathParameters: {
+                            'cid': 0.toString(),
+                          },
+                        );
                       },
                       icon: Icon(
                         Icons.arrow_back_ios,
@@ -369,7 +431,9 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                             CancelText: "삭제 취소",
                             OkText: "삭제",
                             func: () async {
-                              final resp = await ref.read(productDetailProvider.notifier).deleteData(productId);
+                              final resp = await ref
+                                  .read(productDetailProvider.notifier)
+                                  .deleteData(productId);
                               // 삭제에 성공하면 경매 물품 목록 화면으로 이동
                               if (resp) {
                                 context.goNamed(
@@ -598,7 +662,6 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                         right: -10,
                         child: GestureDetector(
                           onTap: () {
-                            print("눌림");
                             final data = MakeRoom(
                               userId: (userId).toString(),
                               postId: (product_id).toString(),
@@ -752,49 +815,18 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
               widget.isSkeleton
                   ? SizedBox()
                   : StreamBuilder<DateTime>(
-                      stream: Stream.periodic(
-                          Duration(seconds: 1), (_) => DateTime.now()),
+                      stream: Stream.periodic(Duration(seconds: 1), (_) => DateTime.now()),
                       builder: (context, snapshot) {
                         // snapshot 데이터가 로딩중이거나, 에러가 있거나, 데이터가 없거나 제한 시간 데이터가 아직 들어오지 않았을 때,
                         // 로딩 화면 출력
-                        if ((limitTime == null) ||
-                            (snapshot.connectionState ==
-                                ConnectionState.waiting) ||
-                            (snapshot.hasError) ||
-                            (!snapshot.hasData)) {
-                          return Center(
-                            child: Text('-'),
-                          );
+                        if ((limitTime == null) || (snapshot.connectionState == ConnectionState.waiting) || (snapshot.hasError) || (!snapshot.hasData)) {
+                          return remainedTime('남은 시간 00:00:00');
                         }
                         currentTime = snapshot.data!;
                         final limitedTime = DateTime.parse(limitTime);
-                        Duration timeDifference =
-                            limitedTime.difference(currentTime);
-
-                        return Positioned(
-                          top: -10,
-                          right: 25,
-                          left: 25,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: auctionColor.mainColorE2,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 5,
-                              vertical: 3,
-                            ),
-                            child: Text(
-                              '남은 시간 ${timeDifference.inHours}:${timeDifference.inMinutes % 60}:${timeDifference.inSeconds % 60}',
-                              style: tsInter(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: auctionColor.mainColor,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        );
+                        Duration timeDifference = limitedTime.difference(currentTime);
+                        
+                        return remainedTime('남은 시간 ${timeDifference.inHours}:${timeDifference.inMinutes % 60}:${timeDifference.inSeconds % 60}');
                       },
                     ),
               Align(
@@ -810,111 +842,38 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
     );
   }
 
-  // 경매에 필요한 하나의 박스
-  Container bidBox({
-    required String date,
-    required int price,
-    String? imgpath,
-    bool isFirst = false,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(
-        bottom: 10,
-      ),
-      padding: const EdgeInsets.only(
-        left: 10,
-        right: 8.5,
-        bottom: 5.5,
-        top: 9,
-      ),
-      decoration: BoxDecoration(
-        color: isFirst ? auctionColor.mainColorE2 : auctionColor.subGreyColorEF,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: IntrinsicHeight(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // 채팅걸기 + 날짜
-            Container(
-              width: 70,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  isFirst
-                      ? Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 4,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: auctionColor.mainColor,
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: Text(
-                            '채팅걸기',
-                            style: tsInter(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+  Positioned remainedTime(String time){
+    return Positioned(
+                          top: -10,
+                          right: 25,
+                          left: 25,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: auctionColor.mainColorE2,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 5,
+                              vertical: 3,
+                            ),
+                            child: Text(
+                              time,
+                              style: tsInter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: auctionColor.mainColor,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
                           ),
-                        )
-                      : SizedBox(
-                          height: 15,
-                        ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Text(
-                    date,
-                    style: tsNotoSansKR(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                      color: auctionColor.mainColor,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // 가격
-            Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    '$price원',
-                    style: tsInter(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // 유저 이미지
-            Container(
-              width: 70,
-              alignment: Alignment.bottomRight,
-              child: UserImage(
-                size: 30,
-                imgPath: imgpath,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+                        );
   }
 
   // 올라오는 바텀 시트 내부 위젯
   Container customBottomSheet() {
     return Container(
       // 고정 크기 => 텍스트, 버튼 전부 고정 크기이므로
-      height: 600,
+      height: 420,
       padding: const EdgeInsets.symmetric(
         horizontal: 16,
       ),
@@ -928,31 +887,31 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            height: 50,
-          ),
-          TextLable(text: '희망 거래 방식'),
-          Row(
-            children: [
-              ToggleBox(
-                isSelected: isSelected[0],
-                func: () {
-                  toggleSelect(0);
-                },
-                text: '비대면',
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              ToggleBox(
-                isSelected: isSelected[1],
-                func: () {
-                  toggleSelect(1);
-                },
-                text: '직거래',
-              ),
-            ],
-          ),
+          // SizedBox(
+          //   height: 50,
+          // ),
+          // TextLable(text: '희망 거래 방식'),
+          // Row(
+          //   children: [
+          //     ToggleBox(
+          //       isSelected: isSelected[0],
+          //       func: () {
+          //         toggleSelect(0);
+          //       },
+          //       text: '비대면',
+          //     ),
+          //     SizedBox(
+          //       width: 10,
+          //     ),
+          //     ToggleBox(
+          //       isSelected: isSelected[1],
+          //       func: () {
+          //         toggleSelect(1);
+          //       },
+          //       text: '직거래',
+          //     ),
+          //   ],
+          // ),
           SizedBox(
             height: 30,
           ),
@@ -978,10 +937,10 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
               final user = ref.read(userProvider.notifier).getUser();
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 final model = PurchaseData(
-                    productId: int.parse(widget.id),
-                    price: int.parse(_priceController.text),
-                    user: user,
-                    isDESCENDING: false,
+                  productId: int.parse(widget.id),
+                  price: int.parse(_priceController.text),
+                  user: user,
+                  isDESCENDING: false,
                 );
                 return PaymentScreen(model: model);
               }));

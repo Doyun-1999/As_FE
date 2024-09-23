@@ -2,8 +2,8 @@ import 'package:auction_shop/common/component/button.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
-import 'package:auction_shop/common/view/root_tab.dart';
 import 'package:auction_shop/main.dart';
+import 'package:auction_shop/product/view/product_info_screen.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,7 +11,11 @@ import 'package:go_router/go_router.dart';
 
 class PaymentCompleteScreen extends ConsumerWidget {
   static String get routeName => "payment_complete";
-  const PaymentCompleteScreen({super.key});
+  final String productId;
+  const PaymentCompleteScreen({
+    required this.productId,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -51,7 +55,7 @@ class PaymentCompleteScreen extends ConsumerWidget {
               child: CustomButton(
                 text: "확인",
                 func: () {
-                  context.goNamed(RootTab.routeName);
+                  context.goNamed(ProductInfoScreen.routeName, pathParameters: {'pid': (productId).toString()});
                 },
               ),
             ),

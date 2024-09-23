@@ -47,6 +47,7 @@ SignupUser _$SignupUserFromJson(Map<String, dynamic> json) => SignupUser(
       categories: (json['categories'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
+      changeImage: json['changeImage'] as bool? ?? true,
     );
 
 Map<String, dynamic> _$SignupUserToJson(SignupUser instance) =>
@@ -59,4 +60,5 @@ Map<String, dynamic> _$SignupUserToJson(SignupUser instance) =>
       'zipcode': instance.zipcode,
       'detailAddress': instance.detailAddress,
       'categories': instance.categories,
+      'changeImage': instance.changeImage,
     };

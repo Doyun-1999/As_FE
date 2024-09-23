@@ -1,7 +1,6 @@
 import 'package:auction_shop/common/dio/dio.dart';
 import 'package:auction_shop/common/model/cursor_pagination_model.dart';
 import 'package:auction_shop/common/repository/base_cursorpagination_repository.dart';
-import 'package:auction_shop/product/model/bid_model.dart';
 import 'package:auction_shop/product/model/product_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,20 +20,6 @@ class ProductRepository extends BasePaginationRepository<ProductModel> {
     required this.baseUrl,
   }) {
     print("ProductRepository가 불렸움");
-  }
-
-  // 경매 이력
-  Future<List<BidModel>> bidData(int productId) async {
-    final dio = Dio();
-    final resp = await dio.get(
-      baseUrl + '/bids/${productId}',
-    );
-    print("경매 이력");
-    print("resp.data : ${resp.data}");
-    print("resp.statusCode : ${resp.statusCode}");
-    
-    final data = (resp.data as List<dynamic>).map((e) => BidModel.fromJson(e)).toList();
-    return data;
   }
 
   // 추천 경매
@@ -60,7 +45,6 @@ class ProductRepository extends BasePaginationRepository<ProductModel> {
     final resp = await dio.get(
       baseUrl + '/product/new',
     );
-    print("new 경매");
     final data = (resp.data as List<dynamic>).map((e) => RecommendProduct.fromJson(e)).toList();
     return data;
   }
@@ -72,7 +56,6 @@ class ProductRepository extends BasePaginationRepository<ProductModel> {
     final resp = await dio.get(
       baseUrl + '/product/hot',
     );
-    print("hot 경매");
     final data = (resp.data as List<dynamic>).map((e) => RecommendProduct.fromJson(e)).toList();
     return data;
   }
@@ -101,9 +84,7 @@ class ProductRepository extends BasePaginationRepository<ProductModel> {
         headers: {"accessToken": "true"},
       ),
     );
-    print("검색 물품 데이터");
-    print(resp.statusCode);
-    print(resp.data);
+    print("검색 물품 데이터 : ${resp.statusCode}");
     if (resp.statusCode != 200) {
       return ProductError();
     }
@@ -115,11 +96,8 @@ class ProductRepository extends BasePaginationRepository<ProductModel> {
 
   // 경매 물품 상세 조회
   Future<ProductDetailModel> getDetail(int productId) async {
-    print(productId);
     final resp = await dio.get(baseUrl + '/product/search/$productId');
-    print("상세 product provider 데이터");
-    print(resp.statusCode);
-    print(resp.data);
+    print("상세 product provider 데이터 : ${resp.statusCode}");
     return ProductDetailModel.fromJson(resp.data);
   }
 
@@ -130,10 +108,7 @@ class ProductRepository extends BasePaginationRepository<ProductModel> {
       options: Options(
         headers: {'accessToken': 'true'},
       ),
-    );
-    print("일반 product provider 데이터");
-    print(resp.statusCode);
-    print(resp.data);
+    );;
     final data = {"data": resp.data};
     final dataList = CursorPagination.fromJson(data, (json) => ProductModel.fromJson(json as Map<String, dynamic>));
     return dataList;
@@ -145,9 +120,6 @@ class ProductRepository extends BasePaginationRepository<ProductModel> {
       final resp = await dio.post(baseUrl + '/product/registration', data: data, options: Options(headers: {'refreshToken': 'true'},),);
 
       if (resp.statusCode == 200) {
-        print('성공---------------');
-        print(resp.data);
-        print(resp.statusCode);
         final respData = ProductDetailModel.fromJson(resp.data);
         final data = ProductModel(
           imageUrl: respData.imageUrls.length == 0 ? null : respData.imageUrls[0],
@@ -178,14 +150,11 @@ class ProductRepository extends BasePaginationRepository<ProductModel> {
 
   // 좋아요 등록
   Future<bool> liked(Like likeData) async {
-    print("likeData.toJson() : ${likeData.toJson()}");
     final resp = await dio.post(baseUrl + '/like',
         data: likeData.toJson(),
         options: Options(
           headers: {'accessToken': 'true'},
         ));
-    print("resp.statusCode : ${resp.statusCode}");
-    print("resp.data : ${resp.data}");
     if (resp.statusCode != 200) {
       return false;
     }
@@ -198,7 +167,6 @@ class ProductRepository extends BasePaginationRepository<ProductModel> {
         options: Options(
           headers: {'accessToken': 'true'},
         ));
-    print("resp.statusCode : ${resp.statusCode}");
     if (resp.statusCode != 200) {
       return false;
     }
@@ -211,9 +179,6 @@ class ProductRepository extends BasePaginationRepository<ProductModel> {
     if (resp.statusCode != 200) {
       return false;
     }
-    print('삭제 성공---------------');
-    print(resp.data);
-    print(resp.statusCode);
     return true;
   }
 
@@ -229,9 +194,6 @@ class ProductRepository extends BasePaginationRepository<ProductModel> {
       );
 
       if (resp.statusCode == 200) {
-        print('수정 성공---------------');
-        print(resp.data);
-        print(resp.statusCode);
         return true;
       }
       return false;
