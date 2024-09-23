@@ -3,6 +3,7 @@ import 'package:auction_shop/common/component/dialog.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/main.dart';
+import 'package:auction_shop/user/component/QandA_answer_box.dart';
 import 'package:auction_shop/user/component/add_button.dart';
 import 'package:auction_shop/user/component/info_box.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';

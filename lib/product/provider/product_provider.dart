@@ -3,6 +3,7 @@ import 'package:auction_shop/common/provider/pagination_provider.dart';
 import 'package:auction_shop/common/variable/function.dart';
 import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/product/provider/product_detail_provider.dart';
+import 'package:auction_shop/product/repository/bid_repository.dart';
 import 'package:auction_shop/product/repository/product_repository.dart';
 import 'package:auction_shop/user/provider/my_like_provider.dart';
 import 'package:auction_shop/user/provider/user_product_provider.dart';
@@ -12,15 +13,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // 전체 상품 불러오는 provider
 final productProvider = StateNotifierProvider<ProductNotifier, CursorPaginationBase>((ref) {
   final repo = ref.watch(productRepositoryProvider);
+  final bidRepo = ref.watch(bidRepositoryProvider);
 
-  return ProductNotifier(repo: repo, ref: ref);
+  return ProductNotifier(repo: repo, ref: ref, bidRepo: bidRepo);
 });
 
 class ProductNotifier extends PaginationProvider<ProductModel, ProductRepository> {
   final Ref ref;
+  final BidRepository bidRepo;
   ProductNotifier({
     required super.repo,
     required this.ref,
+    required this.bidRepo,
   }){
     print("기본 productProvider 호출됨");
   }

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:auction_shop/common/component/button.dart';
+import 'package:auction_shop/common/component/pick_image_row.dart';
 import 'package:auction_shop/common/component/textformfield.dart';
 import 'package:auction_shop/common/component/image_widget.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
@@ -40,6 +41,7 @@ class _ProductReviseScreenState extends ConsumerState<ProductReviseScreen> {
 
   // 이미지들 데이터
   List<File> _images = [];
+
   // 기존 데이터의 이미지 데이터
   List<String> _setImages = [];
 
@@ -177,44 +179,18 @@ class _ProductReviseScreenState extends ConsumerState<ProductReviseScreen> {
               phrase(),
 
               // 이미지 추가 Row
-              SingleChildScrollView(
-                controller: _scrollController,
-                scrollDirection: Axis.horizontal,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: Row(
-                    children: [
-                      ...List.generate(_setImages.length, (index) {
-                        return setImage(
-                            func: () {}, imgPath: _setImages[index]);
-                      }),
-                      ...List.generate(_images.length, (index) {
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 12),
-                          child: UploadImageBox(
-                            deleteFunc: () {
-                              setState(() {
-                                _images.removeAt(index);
-                              });
-                            },
-                            image: _images[index],
-                            index: index,
-                            func: () {
-                              _pickImage(index: index);
-                            },
-                          ),
-                        );
-                      }),
-                      (_images.length + _setImages.length) == 10
-                          ? SizedBox()
-                          : UploadImageBox(
-                              func: () {
-                                _pickImage();
-                              },
-                            ),
-                    ],
-                  ),
-                ),
+              PickImageRow(
+                onsetImagesChanged: (index) {
+                  setState(() {
+                    _setImages.removeAt(index);
+                  });
+                },
+                setImages: _setImages,
+                onImagesChanged: (images) {
+                  setState(() {
+                    _images = images;
+                  });
+                },
               ),
 
               // 상품명
@@ -228,7 +204,10 @@ class _ProductReviseScreenState extends ConsumerState<ProductReviseScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextLable(text: '상태', topMargin: 24,),
+                  TextLable(
+                    text: '상태',
+                    topMargin: 24,
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -257,7 +236,10 @@ class _ProductReviseScreenState extends ConsumerState<ProductReviseScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextLable(text: '거래 방식', topMargin: 24,),
+                  TextLable(
+                    text: '거래 방식',
+                    topMargin: 24,
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -284,7 +266,10 @@ class _ProductReviseScreenState extends ConsumerState<ProductReviseScreen> {
               ),
 
               // 카테고리
-              TextLable(text: '카테고리', topMargin: 24,),
+              TextLable(
+                text: '카테고리',
+                topMargin: 24,
+              ),
               GestureDetector(
                 onTap: () async {
                   final result =
@@ -311,14 +296,20 @@ class _ProductReviseScreenState extends ConsumerState<ProductReviseScreen> {
               ),
 
               // 장소
-              TextLable(text: '거래 장소', topMargin: 24,),
+              TextLable(
+                text: '거래 장소',
+                topMargin: 24,
+              ),
               CustomTextFormField(
                 controller: _placeController,
                 hintText: "거래 장소를 입력해 주세요.",
               ),
 
               // 설명
-              TextLable(text: '설명', topMargin: 24,),
+              TextLable(
+                text: '설명',
+                topMargin: 24,
+              ),
               CustomTextFormField(
                 controller: _detailsController,
                 hintText: "상세 설명을 작성해 주세요.",

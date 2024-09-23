@@ -16,8 +16,11 @@ class TextColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: color,
+    return Container(      
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(8), bottomRight: Radius.circular(8),),
+      ),
       padding: EdgeInsets.only(top: 16, right: 16, left: 16, bottom: bottomPadding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

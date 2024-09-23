@@ -2,6 +2,7 @@ import 'package:auction_shop/common/component/textformfield.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
+import 'package:auction_shop/product/provider/search_product_provider.dart';
 import 'package:auction_shop/product/repository/product_repository.dart';
 import 'package:auction_shop/product/view/searched_product_screen.dart';
 import 'package:flutter/cupertino.dart';
@@ -47,17 +48,19 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     borderColor: auctionColor.subGreyColorEF,
                     fillColor: auctionColor.subGreyColorEF,
                     filled: true,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    contentPadding: const EdgeInsets.only(left: 6, top: 10),
                     borderRadius: 5,
+                    suffixIcon: GestureDetector(
+                      onTap: () {
+                        ref.read(searchProductProvider.notifier).getSearchData(_searchController.text);
+                        context.pushNamed(SearchedProductScreen.routeName);
+                      },
+                      child: Icon(Icons.search, color: auctionColor.subGreyColorB6, size: 30,)),
                   ),
                 ),
                 SizedBox(width: 21),
               ],
             ),
-            IconButton(onPressed: (){
-              ref.read(productRepositoryProvider).searchProducts(_searchController.text);
-              context.pushNamed(SearchedProductScreen.routeName);
-            }, icon: Icon(Icons.abc)),
             // SizedBox(height: 40),
             // titleText("최근 검색어"),
             // SizedBox(height: 12),

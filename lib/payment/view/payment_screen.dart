@@ -1,7 +1,10 @@
-import 'package:auction_shop/common/component/dialog.dart';
-import 'package:auction_shop/common/view/root_tab.dart';
+import 'package:auction_shop/common/view/error_screen.dart';
 import 'package:auction_shop/payment/model/payment_model.dart';
 import 'package:auction_shop/payment/repository/payment_repository.dart';
+import 'package:auction_shop/payment/view/payment_complete_screen.dart';
+import 'package:auction_shop/product/provider/product_detail_provider.dart';
+import 'package:auction_shop/product/repository/bid_repository.dart';
+import 'package:auction_shop/product/view/product_info_screen.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,10 +15,10 @@ import 'package:iamport_flutter/iamport_payment.dart';
 /* 아임포트 결제 데이터 모델을 불러옵니다. */
 import 'package:iamport_flutter/model/payment_data.dart';
 
-class Payment extends ConsumerWidget {
+class PaymentScreen extends ConsumerWidget {
   final PurchaseData model;
 
-  const Payment({
+  const PaymentScreen({
     required this.model,
     super.key,
   });
@@ -66,15 +69,27 @@ class Payment extends ConsumerWidget {
         final resultData = PaymentResult.fromJson(result);
         print("result : ${resultData.toJson()}");
         print("data : ${data.toJson()}");
-        final resp = await ref.read(PaymentRepositoryProvider).payment(productId: model.productId, impUid: resultData.imp_uid);
-        CustomDialog(
-            context: context,
-            title: (resultData.imp_success != "true") ? "결제에 실패하였습니다." : "결제가 완료되었습니다!",
-            OkText: "확인",
-            func: () {
-              context.goNamed(RootTab.routeName);
-            },
-            );
+        // 상향식일 때
+        if(!model.isDESCENDING){
+          print("상향식 경매 결제 진행하겠습니다.");
+          await ref.read(bidRepositoryProvider).pushBid(productId: model.productId, impUid: resultData.imp_uid);
+        }
+        // 하향식일 때
+        if(model.isDESCENDING){
+          print("하향식 경매 결제 진행하겠습니다.");
+          await ref.read(PaymentRepositoryProvider).payment(productId: model.productId, impUid: resultData.imp_uid);
+        }
+        // 만약 거래가 성공적으로 이루어지지 못했을 경우
+        // 에러 화면으로 이동
+        if(resultData.imp_success != "true"){
+          context.goNamed(ErrorScreen.routeName, queryParameters: {"route" : '/'},);
+          return;
+        }
+        
+        // 입찰 / 결제 후 다시 해당 경매 물품에 대한 데이터 받아온 후
+        // 결제 완료 화면으로 이동
+        await ref.read(productDetailProvider.notifier).getProductDetail(productId: model.productId, isUpdate: true);
+        return context.goNamed(PaymentCompleteScreen.routeName, pathParameters: {'pid': (model.productId).toString()});
       },
     );
   }

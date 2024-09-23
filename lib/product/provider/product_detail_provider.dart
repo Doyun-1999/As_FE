@@ -1,6 +1,8 @@
 import 'package:auction_shop/common/variable/function.dart';
+import 'package:auction_shop/product/model/bid_model.dart';
 import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/product/provider/product_provider.dart';
+import 'package:auction_shop/product/repository/bid_repository.dart';
 import 'package:auction_shop/product/repository/product_repository.dart';
 import 'package:auction_shop/user/provider/my_like_provider.dart';
 import 'package:auction_shop/user/provider/user_product_provider.dart';
@@ -14,23 +16,25 @@ final getProductDetailProvider =
     Provider.family<ProductDetailModel?, int>((ref, id) {
   print("getprovider 호출");
   final data = ref.watch(productDetailProvider);
-  print("detail length : ${data.length}");
   return data.firstWhereOrNull((e) => e.product_id == id);
 });
 
 // 상세 조회했던 데이트들의 리스트
 final productDetailProvider = StateNotifierProvider<ProductDetailNotifier, List<ProductDetailModel>>((ref) {
   final repo = ref.watch(productRepositoryProvider);
+  final bidRepo = ref.watch(bidRepositoryProvider);
 
-  return ProductDetailNotifier(repo: repo, ref: ref);
+  return ProductDetailNotifier(repo: repo, bidRepo: bidRepo, ref: ref);
 });
 
 class ProductDetailNotifier extends StateNotifier<List<ProductDetailModel>> {
   final ProductRepository repo;
+  final BidRepository bidRepo;
   final Ref ref;
 
   ProductDetailNotifier({
     required this.repo,
+    required this.bidRepo,
     required this.ref,
   }) : super([]);
 
@@ -48,7 +52,17 @@ class ProductDetailNotifier extends StateNotifier<List<ProductDetailModel>> {
     if (data == null && !isUpdate) {
       print("상세 데이터 새로 얻겠습니다.");
       final resp = await repo.getDetail(productId);
-      state = [...state, resp];
+      late List<BidBase> bidData;
+      // 경매 이력 데이터 얻기(하향식일 때)
+      if(resp.productType == "DESCENDING"){
+        bidData = await bidRepo.downBidData(productId);
+      }
+      // 경매 이력 데이터 얻기(상향식일 때)
+      else{
+        bidData = await bidRepo.upBidData(productId);
+      }
+      final newData = resp.copyWith(bidData: bidData);
+      state = [...state, newData];
       return;
     }
     // 2. 데이터가 있지만 업데이트를 해야하는 상황 ex) 좋아요
@@ -57,7 +71,17 @@ class ProductDetailNotifier extends StateNotifier<List<ProductDetailModel>> {
       state.removeWhere((e) => e.product_id == productId);
       print("제거");
       final resp = await repo.getDetail(productId);
-      final updatedList = [...state, resp];
+      late List<BidBase> bidData;
+      // 경매 이력 데이터 얻기(하향식일 때)
+      if(resp.productType == "DESCENDING"){
+        bidData = await bidRepo.downBidData(productId);
+      }
+      // 경매 이력 데이터 얻기(상향식일 때)
+      else{
+        bidData = await bidRepo.upBidData(productId);
+      }
+      final newData = resp.copyWith(bidData: bidData);
+      final updatedList = [...state, newData];
       state = updatedList;
     }
   }
@@ -114,10 +138,11 @@ class ProductDetailNotifier extends StateNotifier<List<ProductDetailModel>> {
       minimum_price: 5000,
       current_price: 15000,
       createdBy: "createdBy",
+      productType: "DESCEDING",
       startTime: "startTime",
       endTime: "endTime",
-      details:
-          "detailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetails",
+      details: "detailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetailsdetails",
+      bidCount: 0,
       imageUrls: [],
       owner: false,
       sold: false,

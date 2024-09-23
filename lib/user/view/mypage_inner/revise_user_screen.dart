@@ -12,7 +12,6 @@ import 'package:auction_shop/main.dart';
 import 'package:auction_shop/user/component/nickname_checkbox.dart';
 import 'package:auction_shop/user/model/user_model.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
-import 'package:auction_shop/user/view/mypage_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -188,9 +187,11 @@ class _ReviseUserScreenState extends ConsumerState<ReviseUserScreen> {
                       CustomDialog(context: context, title: "아이디 중복검사를\n진행해주세요.", OkText: "확인", func: (){context.pop();});
                       return;
                     }
+
+                    bool changeImage = _image == null ? false : true;
                     
-                    final reviseData = SignupUser(name: userData.name, nickname: _nicknameController.text, email: userData.email, phone: _phoneController.text);
-              
+                    final reviseData = SignupUser(name: userData.name, nickname: _nicknameController.text, email: userData.email, phone: _phoneController.text, changeImage: changeImage);
+                    print(reviseData.toJson());
                     await ref.read(userProvider.notifier).signup(userData: reviseData, fileData: _image, getMemberId: userData.id);
                     context.goNamed(RootTab.routeName);
                   }

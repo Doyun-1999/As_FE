@@ -56,7 +56,7 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
   @override
   Widget build(BuildContext context) {
     // 유저 데이터
-    final userState = ref.read(userProvider.notifier).getUser();
+    final user = ref.read(userProvider.notifier).getUser();
 
     // 전체 경매 물품
     final productState = ref.watch(userProductProvider);
@@ -77,8 +77,8 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: userInfo(
-                  name: userState.name,
-                  imgPath: userState.profileImageUrl,
+                  name: user.nickname,
+                  imgPath: user.profileImageUrl,
                 ),
               ),
               Padding(
@@ -115,30 +115,11 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
     final soldProducts = products.data.where((e) => e.sold == true).toList();
 
     // 안팔린 경매 물품
-    final notSoldProducts =
-        products.data.where((e) => e.sold == false).toList();
+    final notSoldProducts = products.data.where((e) => e.sold == false).toList();
 
     // 정상적으로 데이터를 불러왔을 때
     return DefaultLayout(
-      appBar: CustomAppBar().allAppBar(
-        popupList: [
-          popupItem(text: "채팅 문의하기"),
-          PopupMenuDivider(),
-          popupItem(text: "계정 차단하기"),
-        ],
-        vertFunc: (String? val) {
-          if (val == '채팅 문의하기') {
-            //context.goNamed(ChatListScreen.routeName);
-            return;
-          }
-          if (val == '계정 차단하기') {
-            context.goNamed(BlockScreen.routeName);
-            return;
-          }
-        },
-        title: "내 경매장",
-        context: context,
-      ),
+      appBar: CustomAppBar().noActionAppBar(title: "내 경매장", context: context),
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: 16,
@@ -154,8 +135,8 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
                 // userInfo
                 SliverToBoxAdapter(
                   child: userInfo(
-                    name: userState.name,
-                    imgPath: userState.profileImageUrl,
+                    name: user.nickname,
+                    imgPath: user.profileImageUrl,
                   ),
                 ),
 
@@ -191,6 +172,7 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
     );
   }
 
+  // User의 데이터가 담긴 Widget
   Row userInfo({
     required String name,
     String? imgPath,
@@ -215,6 +197,7 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
     );
   }
 
+  // 내 경매 TabBar Widget
   TabBar myBidTabBar() {
     return TabBar(
       labelStyle: tsNotoSansKR(
@@ -246,6 +229,8 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
     );
   }
 
+  // 실제 내 경매 데이터
+  // 경매중 / 경매 완료 데이터 각각 넣기
   Padding bidListData(
     List<ProductModel> list,
     bool isComplete,
@@ -287,6 +272,7 @@ class _MyBidScreenState extends ConsumerState<MyBidScreen>
     );
   }
 
+  // 데이터가 없을 경우
   Column allNoData(String text) {
     return Column(
       children: [

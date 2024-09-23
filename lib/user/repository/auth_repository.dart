@@ -96,7 +96,9 @@ class AuthRepository {
   // 구글 로그인 함수
   Future<String?> googleLogin() async {
     // Trigger the authentication flow
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    // Google Error 해결 googleUser 받아오는 함수 변경
+    // final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    final GoogleSignInAccount? googleUser = await GoogleSignIn(scopes: ["profile", "email"]).signIn();
 
     // Obtain the auth details from the request
     final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;

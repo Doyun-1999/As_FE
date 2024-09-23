@@ -1,4 +1,3 @@
-import 'package:auction_shop/common/variable/data.dart';
 import 'package:auction_shop/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -182,4 +181,18 @@ class UploadImageBox extends StatelessWidget {
       ),
     );
   }
+}
+
+// TabBar에 배경색을 추가하기 위한 객체
+class ColoredTabBar extends Container {
+  ColoredTabBar({required this.color, required this.tabBar});
+
+  final Color color;
+  final TabBar tabBar;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        color: color,
+        child: tabBar,
+      );
 }

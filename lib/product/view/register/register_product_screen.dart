@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/component/button.dart';
-import 'package:auction_shop/common/component/image_widget.dart';
+import 'package:auction_shop/common/component/pick_image_row.dart';
 import 'package:auction_shop/common/component/textformfield.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/variable/color.dart';
@@ -12,7 +12,6 @@ import 'package:auction_shop/common/variable/validator.dart';
 import 'package:auction_shop/common/view/root_tab.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/product/component/toggle_button.dart';
-import 'package:auction_shop/product/component/upload_image_box.dart';
 import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/product/view/select_category_screen.dart';
 import 'package:auction_shop/product/view/register/register_product_screen2.dart';
@@ -20,7 +19,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 
 class RegisterProductScreen extends StatefulWidget {
   static String get routeName => 'register';
@@ -40,14 +38,8 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
   // 이미지들 데이터
   List<File> _images = [];
 
-  // 이미지 picker
-  final ImagePicker picker = ImagePicker();
-
   // form 유효성 검사
   final gKey = GlobalKey<FormState>();
-
-  // 스크롤 컨트롤러
-  ScrollController _scrollController = ScrollController();
 
   // 텍스트
   TextEditingController _titleController = TextEditingController();
@@ -80,29 +72,6 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
     }
   }
 
-  // 이미지 선택
-  Future<void> _pickImage({int? index}) async {
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      if (index == null) {
-        setState(() {
-          _images.add(File(pickedFile.path));
-        });
-        // 현재 프레임이 완전히 빌드된 후에 지정한 콜백 함수를 실행하도록 예약
-        //UI가 완전히 렌더링된 후에 특정 작업을 수행
-        // => 이미지가 다 추가되고 ui가 완전히 렌더링 된 후 스크롤 이동
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          scrollToEnd(_scrollController);
-        });
-      } else {
-        setState(() {
-          _images[index] = (File(pickedFile.path));
-        });
-      }
-    }
-  }
-
   String tradeText() {
     if (tradeValue[0] == true) {
       return "비대면";
@@ -132,40 +101,12 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
                 vertical: 20,
               ),
               sliver: SliverToBoxAdapter(
-                child: SingleChildScrollView(
-                  controller: _scrollController,
-                  scrollDirection: Axis.horizontal,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 20),
-                    child: Row(
-                      children: [
-                        ...List.generate(_images.length, (index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 12),
-                            child: UploadImageBox(
-                              image: _images[index],
-                              index: index,
-                              deleteFunc: (){
-                                setState(() {
-                                  _images.removeAt(index);
-                                });
-                              },
-                              func: () {
-                                _pickImage(index: index);
-                              },
-                            ),
-                          );
-                        }),
-                        _images.length == 10
-                            ? SizedBox()
-                            : UploadImageBox(
-                                func: () {
-                                  _pickImage();
-                                },
-                              ),
-                      ],
-                    ),
-                  ),
+                child: PickImageRow(
+                  onImagesChanged: (images) {
+                    setState(() {
+                      _images = images;
+                    });
+                  },
                 ),
               ),
             ),
@@ -188,11 +129,13 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
                     TextLable(text: '카테고리'),
                     GestureDetector(
                       onTap: () async {
-                        final result = await context.pushNamed(SelectCategoryScreen.routeName);
+                        final result = await context
+                            .pushNamed(SelectCategoryScreen.routeName);
                         if (result != null) {
                           setState(() {
                             categories = result as List<String>;
-                            _categoryController.text = (result as List<String>).join(', ');
+                            _categoryController.text =
+                                (result as List<String>).join(', ');
                           });
                         }
                       },
@@ -357,62 +300,6 @@ class _RegisterProductScreenState extends State<RegisterProductScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  
-
-  // 이미지 상자
-  InkWell imageBox({
-    File? image,
-    int? index,
-  }) {
-    return InkWell(
-      onTap: () {
-        _pickImage(index: index);
-      },
-      child: Container(
-        width: 85,
-        height: 85,
-        padding: image != null
-            ? EdgeInsets.all(0)
-            : EdgeInsets.only(
-                top: 21,
-                left: 15,
-                right: 15,
-                bottom: 7,
-              ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: Colors.black.withOpacity(
-              0.3,
-            ),
-          ),
-        ),
-        child: image != null
-            ? Image.file(
-                File(image.path),
-                fit: BoxFit.fill,
-              )
-            : Column(
-                children: [
-                  Icon(
-                    Icons.photo_camera_outlined,
-                    color: auctionColor.subGreyColorB4,
-                    size: 35,
-                  ),
-                  Text(
-                    '10장까지',
-                    style: tsInter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                      color: auctionColor.subGreyColorAE,
-                    ),
-                  ),
-                ],
-              ),
       ),
     );
   }

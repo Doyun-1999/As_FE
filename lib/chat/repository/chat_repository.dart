@@ -62,7 +62,8 @@ class ChatRepository extends BasePaginationRepository{
 
       final stream = response.data.stream;
 
-      // StreamTransformer를 사용하여 데이터를 변환
+      print("Dio stream type : ${stream.runtimeType}");
+      // StreamTransformer를 사용하여 데이터를 변환 (Uint8List => String)
       final transformer = StreamTransformer<Uint8List, String>.fromHandlers(
         handleData: (data, sink) {
           sink.add(utf8.decode(data));

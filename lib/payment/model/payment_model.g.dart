@@ -10,6 +10,7 @@ PurchaseData _$PurchaseDataFromJson(Map<String, dynamic> json) => PurchaseData(
       productId: (json['productId'] as num).toInt(),
       price: (json['price'] as num).toInt(),
       user: UserModel.fromJson(json['user'] as Map<String, dynamic>),
+      isDESCENDING: json['isDESCENDING'] as bool,
     );
 
 Map<String, dynamic> _$PurchaseDataToJson(PurchaseData instance) =>
@@ -17,6 +18,7 @@ Map<String, dynamic> _$PurchaseDataToJson(PurchaseData instance) =>
       'productId': instance.productId,
       'price': instance.price,
       'user': instance.user,
+      'isDESCENDING': instance.isDESCENDING,
     };
 
 PaymentResult _$PaymentResultFromJson(Map<String, dynamic> json) =>

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:auction_shop/common/component/button.dart';
+import 'package:auction_shop/common/component/pick_image_row.dart';
 import 'package:auction_shop/common/component/textformfield.dart';
 import 'package:auction_shop/common/component/image_widget.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
@@ -81,7 +82,7 @@ class _QuestionScreenState extends ConsumerState<QuestionScreen> {
 
       final serverImages = answerData.imageUrl;
       if (serverImages != null) {
-        for(int i = 0; i<serverImages.length; i++){
+        for (int i = 0; i < serverImages.length; i++) {
           _setImages.add(serverImages[i]);
         }
       }
@@ -106,51 +107,19 @@ class _QuestionScreenState extends ConsumerState<QuestionScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SingleChildScrollView(
-              controller: _scrollController,
-              scrollDirection: Axis.horizontal,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 20),
-                child: Row(
-                  children: [
-                    ...List.generate(_setImages.length, (index) {
-                      return GestureDetector(
-                        onTap: (){
-                          
-                        },
-                        child: setImage(func:(){
-                          setState(() {
-                            _setImages.removeAt(index);
-                          });
-                        }, imgPath: _setImages[index]));
-                    }),
-                    ...List.generate(_images.length, (index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 12),
-                        child: UploadImageBox(
-                          deleteFunc: (){
-                              setState(() {
-                                _images.removeAt(index);
-                              });
-                            },
-                          image: _images[index],
-                          index: index,
-                          func: () {
-                            _pickImage(index: index);
-                          },
-                        ),
-                      );
-                    }),
-                    (_images.length + _setImages.length) == 10
-                        ? SizedBox()
-                        : UploadImageBox(
-                            func: () {
-                              _pickImage();
-                            },
-                          ),
-                  ],
-                ),
-              ),
+            // ImageRow
+            PickImageRow(
+              onsetImagesChanged: (index) {
+                setState(() {
+                  _setImages.removeAt(index);
+                });
+              },
+              setImages: _setImages,
+              onImagesChanged: (images) {
+                setState(() {
+                  _images = images;
+                });
+              },
             ),
             TextLable(text: '제목'),
             CustomTextFormField(
@@ -178,22 +147,32 @@ class _QuestionScreenState extends ConsumerState<QuestionScreen> {
               func: (state is QandABaseLoading)
                   ? null
                   : () async {
-                     // 이미지 데이터 경로
+                      // 이미지 데이터 경로
                       final images = _images.map((e) => e.path).toList();
 
                       // 요청
-                      if(widget.answer == null){
+                      if (widget.answer == null) {
                         // 문의 데이터
                         print("생성하기");
-                        final data = QuestionModel(title: _titleController.text, content: _contentController.text);
-                        await ref.read(QandAProvider.notifier).question(data: data,images: images);
+                        final data = QuestionModel(
+                            title: _titleController.text,
+                            content: _contentController.text);
+                        await ref
+                            .read(QandAProvider.notifier)
+                            .question(data: data, images: images);
                       }
 
-                      if(widget.answer != null){
+                      if (widget.answer != null) {
                         // 문의 수정 데이터
                         print("수정하기");
-                        final data = QuestionReviseModel(title: _titleController.text, content: _contentController.text, imageUrlsToKeep: _setImages);
-                        await ref.read(QandAProvider.notifier).revise(data: data, images: images, inquiryId: widget.answer!.id);
+                        final data = QuestionReviseModel(
+                            title: _titleController.text,
+                            content: _contentController.text,
+                            imageUrlsToKeep: _setImages);
+                        await ref.read(QandAProvider.notifier).revise(
+                            data: data,
+                            images: images,
+                            inquiryId: widget.answer!.id);
                       }
 
                       // 요청이 완료되면 다시 페이지 전환
@@ -208,5 +187,4 @@ class _QuestionScreenState extends ConsumerState<QuestionScreen> {
       ),
     );
   }
-
 }
