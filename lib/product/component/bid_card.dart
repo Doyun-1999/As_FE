@@ -84,7 +84,7 @@ class BidCard extends StatelessWidget {
                     style: tsNotoSansKR(
                       fontSize: 12,
                       fontWeight: FontWeight.w400,
-                      color: rightSideText == "" ? auctionColor.subGreyColorAA : auctionColor.mainColor,
+                      color: (!isNow && !isFirst) ? auctionColor.subGreyColorAA : auctionColor.mainColor,
                     ),
                   ),
                 ],

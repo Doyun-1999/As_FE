@@ -312,6 +312,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                               return;
                             }
                             final userData = SignupUser(
+                              changeImage: _image == null ? false : true,
                               name: _nameController.text,
                               nickname: _nicknameController.text,
                               zipcode: _zipcodeController.text,

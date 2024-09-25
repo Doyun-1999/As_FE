@@ -29,6 +29,9 @@ class MyBidRepository extends BasePaginationRepository<MyBidModel> {
         headers: {"accessToken": "true"},
       ),
     );
+    if(resp.statusCode == 204){
+      return CursorPagination(data: []);
+    }
     final data = {"data" : resp.data};
     final dataList = CursorPagination.fromJson(data, (json) => MyBidModel.fromJson(json as Map<String, dynamic>));
     return dataList;

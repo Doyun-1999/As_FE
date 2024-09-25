@@ -1,5 +1,5 @@
 import 'package:auction_shop/admin/QandA/view/consumer_answer_screen.dart';
-import 'package:auction_shop/admin/view/admin_category_screen.dart';
+import 'package:auction_shop/admin/common/view/admin_category_screen.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';

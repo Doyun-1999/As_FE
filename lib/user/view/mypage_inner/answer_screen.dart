@@ -3,11 +3,10 @@ import 'package:auction_shop/common/component/dialog.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/main.dart';
-import 'package:auction_shop/user/component/QandA_answer_box.dart';
 import 'package:auction_shop/user/component/add_button.dart';
-import 'package:auction_shop/user/component/info_box.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/component/appbar.dart';
+import 'package:auction_shop/user/component/info_box.dart';
 import 'package:auction_shop/user/component/textcolumn.dart';
 import 'package:auction_shop/user/model/Q&A_model.dart';
 import 'package:auction_shop/user/provider/Q&A_provider.dart';
@@ -103,7 +102,7 @@ class _AnswerScreenState extends ConsumerState<AnswerScreen> {
     }
   }
 
-  answerList({
+  Widget answerList({
     required List<AnswerModel> list,
   }) {
     return ListView.builder(
@@ -177,23 +176,11 @@ class _AnswerScreenState extends ConsumerState<AnswerScreen> {
     );
   }
 
+  // 문의 내역이 없을 때 나오는 UI
   DefaultLayout noDataUI() {
     return DefaultLayout(
       bgColor: auctionColor.subGreyColorF6,
-      appBar: CustomAppBar().allAppBar(
-        context: context,
-        vertFunc: (String? val) {
-          print('object');
-        },
-        popupList: [
-          PopupMenuItem(
-            child: Text(
-              '수정하기',
-            ),
-          ),
-        ],
-        title: '내 문의',
-      ),
+      appBar: CustomAppBar().noActionAppBar(title: "내 문의", context: context),
       child: Container(
         child: Center(
           child: Column(
@@ -237,6 +224,7 @@ class _AnswerScreenState extends ConsumerState<AnswerScreen> {
     );
   }
 
+  // 에러가 발생했을 때
   DefaultLayout onErrorUI() {
     return DefaultLayout(
       appBar: CustomAppBar().noActionAppBar(

@@ -1,4 +1,4 @@
-import 'package:auction_shop/admin/view/admin_home_screen.dart';
+import 'package:auction_shop/admin/common/view/admin_home_screen.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/data.dart';
 import 'package:auction_shop/common/variable/function.dart';
@@ -11,6 +11,7 @@ import 'package:auction_shop/product/provider/recommend_product_provider.dart';
 import 'package:auction_shop/product/view/product_category_screen.dart';
 import 'package:auction_shop/product/view/product_info_screen.dart';
 import 'package:auction_shop/product/view/search_screen.dart';
+import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -38,9 +39,15 @@ class HomeScreen extends ConsumerWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Image.asset(
-                        'assets/logo/main_logo.png',
-                        height: ratio.height * 40,
+                      GestureDetector(
+                        onTap: (){
+                          context.pushNamed(AdminHomeScreen.routeName);
+                          ref.read(userProvider.notifier).testAdmin();
+                        },
+                        child: Image.asset(
+                          'assets/logo/main_logo.png',
+                          height: ratio.height * 40,
+                        ),
                       ),
                       GestureDetector(
                         onTap: () {
@@ -57,8 +64,6 @@ class HomeScreen extends ConsumerWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    // context.pushNamed(PaymentCompleteScreen.routeName);
-                    // context.pushNamed(ErrorScreen.routeName);
                     context.pushNamed(
                       ProductCategoryScreen.routeName,
                       pathParameters: {

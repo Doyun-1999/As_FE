@@ -17,6 +17,7 @@ class ProductDropDown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButton(
+      dropdownColor: Colors.white,
       underline: Container(),
       icon: Icon(
         Icons.keyboard_arrow_down,

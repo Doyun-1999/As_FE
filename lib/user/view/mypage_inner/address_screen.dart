@@ -69,7 +69,7 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
             // 현재 사용자 정보에 설정된 기본 배송지 데이터
             InfoBox(
               sideFunc: () {
-                context.pushNamed(ManageAddressScreen.routeName,extra: defaultAddress);
+                context.pushNamed(ManageAddressScreen.routeName, extra: defaultAddress);
               },
               firstBoxText: '기본 배송지',
               widget: Padding(
@@ -108,11 +108,10 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
                       changeValue(index);
                       return;
                     }
-                    context.pushNamed(ManageAddressScreen.routeName,extra: defaultAddress);
+                    context.pushNamed(ManageAddressScreen.routeName, extra: defaultAddress);
 
                     final extra = addresses[index];
-                    context.pushNamed(ManageAddressScreen.routeName,
-                        extra: extra);
+                    context.pushNamed(ManageAddressScreen.routeName, extra: extra,);
                   },
                   widget: ListView(
                     shrinkWrap: true,

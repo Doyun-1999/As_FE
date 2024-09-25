@@ -22,6 +22,7 @@ import 'package:auction_shop/product/provider/product_provider.dart';
 import 'package:auction_shop/product/view/product_category_screen.dart';
 import 'package:auction_shop/product/view/product_loading_screen.dart';
 import 'package:auction_shop/product/view/product_revise_screen.dart';
+import 'package:auction_shop/user/model/user_model.dart';
 import 'package:auction_shop/user/provider/block_provider.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:card_swiper/card_swiper.dart';
@@ -125,9 +126,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
         children: [
           RefreshIndicator(
             onRefresh: () async {
-              ref
-                  .read(productDetailProvider.notifier)
-                  .getProductDetail(productId: data.product_id, isUpdate: true);
+              ref.read(productDetailProvider.notifier).getProductDetail(productId: data.product_id, isUpdate: true);
             },
             child: CustomScrollView(
               slivers: [
@@ -135,7 +134,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                 SliverToBoxAdapter(
                   child: Column(
                     children: [
-                      imageWidget(data: data, memberId: user.id),
+                      imageWidget(data: data, memberId: user.id, isAdmin: (user is AdminUser)),
                       SizedBox(
                         height: 18,
                       ),
@@ -335,6 +334,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
   IntrinsicHeight imageWidget({
     required ProductDetailModel data,
     required int memberId,
+    bool isAdmin = false,
   }) {
     final productId = data.product_id;
     return IntrinsicHeight(
@@ -415,14 +415,14 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                     ),
                   ),
                   // 팝업 위젯
+                  if(!isAdmin)
                   Padding(
                     padding: const EdgeInsets.only(top: 4, left: 4),
                     child: PopupMenuButton<String>(
                       color: Colors.white,
                       onSelected: (String? val) async {
                         if (val == "수정하기") {
-                          context.pushNamed(ProductReviseScreen.routeName,
-                              extra: data);
+                          context.pushNamed(ProductReviseScreen.routeName,extra: data);
                         }
                         if (val == "삭제하기") {
                           CustomDialog(
@@ -431,9 +431,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                             CancelText: "삭제 취소",
                             OkText: "삭제",
                             func: () async {
-                              final resp = await ref
-                                  .read(productDetailProvider.notifier)
-                                  .deleteData(productId);
+                              final resp = await ref.read(productDetailProvider.notifier).deleteData(productId);
                               // 삭제에 성공하면 경매 물품 목록 화면으로 이동
                               if (resp) {
                                 context.goNamed(
@@ -459,9 +457,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                             CancelText: "취소",
                             OkText: "확인",
                             func: () async {
-                              await ref
-                                  .read(blockProvider.notifier)
-                                  .blockUser(data.memberId);
+                              await ref.read(blockProvider.notifier).blockUser(data.memberId);
                               context.pop();
                             },
                           );

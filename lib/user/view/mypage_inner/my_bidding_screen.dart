@@ -6,11 +6,13 @@ import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/function.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/product/component/bid_card.dart';
+import 'package:auction_shop/product/view/product_info_screen.dart';
 import 'package:auction_shop/user/model/mybid_model.dart';
 import 'package:auction_shop/user/provider/my_bid_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class MyBiddingScreen extends ConsumerStatefulWidget {
@@ -22,8 +24,8 @@ class MyBiddingScreen extends ConsumerStatefulWidget {
 }
 
 class _MyBiddingScreenState extends ConsumerState<MyBiddingScreen> {
-  final dropDownList = ["최신순", "유력순", "가격순"];
-  String dropDownValue = "최신순";
+  final dropDownList = ["유력순", "최신순", "가격순"];
+  String dropDownValue = "유력순";
 
   @override
   Widget build(BuildContext context) {
@@ -32,11 +34,11 @@ class _MyBiddingScreenState extends ConsumerState<MyBiddingScreen> {
     // 데이터 받아오는 로딩 상태일 때
     if (state is CursorPaginationLoading) {
       final fakeData = [
-        MyBidModel(title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), topBid: false),
-        MyBidModel(title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), topBid: false),
-        MyBidModel(title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), topBid: false),
-        MyBidModel(title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), topBid: false),
-        MyBidModel(title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), topBid: false),
+        MyBidModel(productId: 0, title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), topBid: false),
+        MyBidModel(productId: 0, title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), topBid: false),
+        MyBidModel(productId: 0, title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), topBid: false),
+        MyBidModel(productId: 0, title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), topBid: false),
+        MyBidModel(productId: 0, title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), topBid: false),
       ];
       return DefaultLayout(
         appBar: CustomAppBar().noActionAppBar(title: "입찰 중 목록", context: context),
@@ -96,6 +98,15 @@ class _MyBiddingScreenState extends ConsumerState<MyBiddingScreen> {
           ProductDropDown(
             onChanged: (val) {
               setState(() {
+                if(val == dropDownList[0]){
+                  ref.read(MyBidProvider.notifier).sortState(0);
+                }
+                if(val == dropDownList[1]){
+                  ref.read(MyBidProvider.notifier).sortState(1);
+                }
+                if(val == dropDownList[2]){
+                  ref.read(MyBidProvider.notifier).sortState(2);
+                }
                 dropDownValue = val!;
               });
             },
@@ -107,6 +118,7 @@ class _MyBiddingScreenState extends ConsumerState<MyBiddingScreen> {
     );
   }
 
+  // 입찰 카드 데이터들
   SliverList productSliverList(List<MyBidModel> data) {
     return SliverList.separated(
       itemCount: data.length,
@@ -118,6 +130,7 @@ class _MyBiddingScreenState extends ConsumerState<MyBiddingScreen> {
           children: [
             // Product의 데이터를 담은 Row
             ProductInfo(
+              productId: model.productId,
               title: model.title,
               initial_price: model.initial_price,
               current_price: model.current_price,
@@ -153,6 +166,7 @@ class _MyBiddingScreenState extends ConsumerState<MyBiddingScreen> {
     required String title,
     required int initial_price,
     required int current_price,
+    required int productId,
   }) {
     return Row(
       children: [
@@ -197,7 +211,10 @@ class _MyBiddingScreenState extends ConsumerState<MyBiddingScreen> {
             ],
           ),
         ),
-        Icon(Icons.arrow_forward_ios),
+        IconButton(onPressed: (){
+          print("눌려");
+          context.pushNamed(ProductInfoScreen.routeName, pathParameters: {"pid" : productId.toString()});
+        }, icon: Icon(Icons.arrow_forward_ios)),
       ],
     );
   }

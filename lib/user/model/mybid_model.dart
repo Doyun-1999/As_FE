@@ -4,6 +4,7 @@ part 'mybid_model.g.dart';
 
 @JsonSerializable()
 class MyBidModel{
+  final int productId;
   final String? imageUrl;
   final String title;
   final int initial_price;
@@ -14,6 +15,7 @@ class MyBidModel{
 
   MyBidModel({
     this.imageUrl,
+    required this.productId,
     required this.title,
     required this.initial_price,
     required this.current_price,
