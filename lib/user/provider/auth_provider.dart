@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:auction_shop/admin/QandA/view/consumer_answer_info_screen.dart';
 import 'package:auction_shop/admin/QandA/view/consumer_answer_screen.dart';
 import 'package:auction_shop/admin/QandA/view/reply_answer_screen.dart';
-import 'package:auction_shop/admin/view/admin_category_screen.dart';
-import 'package:auction_shop/admin/view/admin_home_screen.dart';
+import 'package:auction_shop/admin/common/view/admin_category_screen.dart';
+import 'package:auction_shop/admin/common/view/admin_home_screen.dart';
 import 'package:auction_shop/chat/model/chat_model.dart';
 import 'package:auction_shop/chat/provider/sse_provider.dart';
 import 'package:auction_shop/chat/view/chat_info_screen.dart';
@@ -327,6 +327,11 @@ class AuthNotifier extends ChangeNotifier {
                   path: 'info',
                   name: ConsumerAnswerInfoScreen.routeName,
                   builder: (_, __) => ConsumerAnswerInfoScreen(),
+                ),
+                GoRoute(
+                  path: 'reply',
+                  name: ReplyAnswerScreen.routeName,
+                  builder: (_, __) => ReplyAnswerScreen(),
                 ),
               ]
             ),

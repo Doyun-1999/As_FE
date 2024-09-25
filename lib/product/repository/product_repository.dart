@@ -108,7 +108,8 @@ class ProductRepository extends BasePaginationRepository<ProductModel> {
       options: Options(
         headers: {'accessToken': 'true'},
       ),
-    );;
+    );
+    print("resp.data : ${resp.data}");
     final data = {"data": resp.data};
     final dataList = CursorPagination.fromJson(data, (json) => ProductModel.fromJson(json as Map<String, dynamic>));
     return dataList;

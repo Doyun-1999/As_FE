@@ -8,6 +8,7 @@ part of 'mybid_model.dart';
 
 MyBidModel _$MyBidModelFromJson(Map<String, dynamic> json) => MyBidModel(
       imageUrl: json['imageUrl'] as String?,
+      productId: (json['productId'] as num).toInt(),
       title: json['title'] as String,
       initial_price: (json['initial_price'] as num).toInt(),
       current_price: (json['current_price'] as num).toInt(),
@@ -18,6 +19,7 @@ MyBidModel _$MyBidModelFromJson(Map<String, dynamic> json) => MyBidModel(
 
 Map<String, dynamic> _$MyBidModelToJson(MyBidModel instance) =>
     <String, dynamic>{
+      'productId': instance.productId,
       'imageUrl': instance.imageUrl,
       'title': instance.title,
       'initial_price': instance.initial_price,

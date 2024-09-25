@@ -12,6 +12,9 @@ import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/product/provider/product_provider.dart';
 import 'package:auction_shop/product/view/product_loading_screen.dart';
 import 'package:auction_shop/product/view/register/register_product_screen.dart';
+import 'package:auction_shop/product/view/search_screen.dart';
+import 'package:auction_shop/user/model/user_model.dart';
+import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -33,7 +36,8 @@ class ProductCategoryScreen extends ConsumerStatefulWidget {
       _ProductCategoryScreenState();
 }
 
-class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen> with SingleTickerProviderStateMixin {
+class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
+    with SingleTickerProviderStateMixin {
   late TabController controller;
   int index = 0;
   List<String> dropDownList = ["최신순", "가격순"];
@@ -42,7 +46,8 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen> w
   @override
   void initState() {
     super.initState();
-    controller = TabController(length: category.length, vsync: this, initialIndex: widget.index + 1);
+    controller = TabController(
+        length: category.length, vsync: this, initialIndex: widget.index + 1);
     controller.addListener(tabListener);
   }
 
@@ -61,6 +66,7 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen> w
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(productProvider);
+    final userState = ref.read(userProvider.notifier).getUser();
 
     // 로딩 화면
     if (state is CursorPaginationLoading) {
@@ -121,37 +127,7 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen> w
             .toList();
 
     return DefaultLayout(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          onPressed: () {
-            context.pop();
-          },
-          icon: Icon(
-            Icons.arrow_back_ios,
-          ),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              context.goNamed(RegisterProductScreen.routeName);
-            },
-            icon: Icon(
-              Icons.add_circle_outline,
-              color: auctionColor.subBlackColor49,
-              size: 34,
-            ),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.search,
-              color: auctionColor.subBlackColor49,
-              size: 34,
-            ),
-          ),
-        ],
-      ),
+      appBar: AppbarWidget((userState is AdminUser)),
       child: SafeArea(
         // 새로고침을 위한 widget
         // 위로 당기면 새로고침됨
@@ -169,8 +145,7 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen> w
               ),
 
               // 드롭다운(최신순, 가격순 등)
-              if(data.length != 0)
-              dropDownWidget(),
+              if (data.length != 0) dropDownWidget(),
 
               // 경매 상품 리스트
               productList(dataList: data),
@@ -178,6 +153,77 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen> w
           ),
         ),
       ),
+    );
+  }
+
+  // AppBar Widget
+  // 일반 유저 / 관리자에 따라서 달라짐
+  AppBar AppbarWidget(bool isAdmin) {
+    if (isAdmin) {
+      return AppBar(
+        centerTitle: true,
+        title: Text(
+          "게시물 관리",
+          style: tsNotoSansKR(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        leading: IconButton(
+          onPressed: () {
+            context.pop();
+          },
+          icon: Icon(
+            Icons.arrow_back_ios,
+          ),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              context.pushNamed(SearchScreen.routeName);
+            },
+            icon: Icon(
+              Icons.search,
+              color: auctionColor.subBlackColor49,
+              size: 34,
+            ),
+          ),
+        ],
+      );
+    }
+    return AppBar(
+      backgroundColor: Colors.white,
+      leading: IconButton(
+        onPressed: () {
+          context.pop();
+        },
+        icon: Icon(
+          Icons.arrow_back_ios,
+        ),
+      ),
+      actions: [
+        IconButton(
+          onPressed: () {
+            context.goNamed(RegisterProductScreen.routeName);
+          },
+          icon: Icon(
+            Icons.add_circle_outline,
+            color: auctionColor.subBlackColor49,
+            size: 34,
+          ),
+        ),
+        IconButton(
+          onPressed: () {
+            context.pushNamed(SearchScreen.routeName);
+          },
+          icon: Icon(
+            Icons.search,
+            color: auctionColor.subBlackColor49,
+            size: 34,
+          ),
+        ),
+      ],
     );
   }
 
@@ -266,7 +312,8 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen> w
                 SizedBox(height: ratio.height * 50),
                 Text(
                   "해당 카테고리의 데이터가 없습니다.",
-                  style: tsNotoSansKR(fontSize: 20, fontWeight: FontWeight.bold),
+                  style:
+                      tsNotoSansKR(fontSize: 20, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
               ],

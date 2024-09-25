@@ -113,3 +113,36 @@ class SignupUser{
 
   factory SignupUser.fromJson(Map<String, dynamic> json) => _$SignupUserFromJson(json);
 }
+
+@JsonSerializable()
+class AdminUser extends UserModel {
+  AdminUser({
+    required int id,
+    required String username,
+    required String name,
+    required String nickname,
+    required String email,
+    required List<AddressModel> address,
+    required String phone,
+    required int point,
+    required bool available,
+    required String role,
+    String? profileImageUrl,
+  }) : super(
+          id: id,
+          username: username,
+          name: name,
+          nickname: nickname,
+          email: email,
+          address: address,
+          phone: phone,
+          point: point,
+          available: available,
+          role: role,
+          profileImageUrl: profileImageUrl,
+        );
+
+  factory AdminUser.fromJson(Map<String, dynamic> json) => _$AdminUserFromJson(json);
+
+  Map<String, dynamic> toJson() => _$AdminUserToJson(this);
+}
