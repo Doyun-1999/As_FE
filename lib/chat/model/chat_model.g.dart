@@ -62,6 +62,11 @@ ChattingRoom _$ChattingRoomFromJson(Map<String, dynamic> json) => ChattingRoom(
       yourId: json['yourId'] as String,
       postId: json['postId'] as String,
       roomId: (json['roomId'] as num).toInt(),
+      imageUrl: json['imageUrl'] as String,
+      nickname: json['nickname'] as String,
+      latestChatTime: DateTime.parse(json['latestChatTime'] as String),
+      latestChatLog: json['latestChatLog'] as String,
+      profileUrl: json['profileUrl'] as String,
     );
 
 Map<String, dynamic> _$ChattingRoomToJson(ChattingRoom instance) =>
@@ -70,6 +75,11 @@ Map<String, dynamic> _$ChattingRoomToJson(ChattingRoom instance) =>
       'yourId': instance.yourId,
       'postId': instance.postId,
       'roomId': instance.roomId,
+      'imageUrl': instance.imageUrl,
+      'nickname': instance.nickname,
+      'latestChatTime': instance.latestChatTime.toIso8601String(),
+      'latestChatLog': instance.latestChatLog,
+      'profileUrl': instance.profileUrl,
     };
 
 EnterChattingRoom _$EnterChattingRoomFromJson(Map<String, dynamic> json) =>

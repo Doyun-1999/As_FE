@@ -3,8 +3,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:auction_shop/chat/model/chat_model.dart';
 import 'package:auction_shop/common/dio/dio.dart';
-import 'package:auction_shop/common/model/cursor_pagination_model.dart';
-import 'package:auction_shop/common/repository/base_cursorpagination_repository.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,7 +14,7 @@ final chatRepository = Provider((ref) {
   return ChatRepository(dio, ref, baseUrl: baseUrl);
 });
 
-class ChatRepository extends BasePaginationRepository{
+class ChatRepository {
   final Dio dio;
   final String baseUrl;
   final Ref ref;
@@ -28,29 +26,33 @@ class ChatRepository extends BasePaginationRepository{
   });
 
   Future enterChatting(MakeRoom data) async {
-    final resp = await dio.get(BASE_URL + '/chatroom/enter', data: data.toJson());
+    final url = baseUrl + '/chatroom/enter';
+    print("url : ${url}");
+    print("data.toJson() : ${data.toJson()}");
+    final resp = await dio.get(url, data: data.toJson());
     print("resp.statusCode : ${resp.statusCode}");
     print("resp.data : ${resp.data}");
     // return
   }
 
-  // Dio를 이용한 CustomSSE 방식 구현
-  // 채팅방 연결
-  Future<CursorPagination<ChattingRoom>> paginate() async {
+  // 채팅방 데이터 가져오기
+  Future<List<ChattingRoom>> getChattingRoomList() async {
     final memberId = ref.read(userProvider.notifier).getMemberId();
     final resp = await dio.get(
-        BASE_URL + '/chatroom/list/${memberId}',
-      );
-      print("resp.statusCode : ${resp.statusCode}");
-      if((resp.data as List).isEmpty){
-        return CursorPagination(data: []);
-      }
-      final data = {"data" : resp.data};
-      final dataList = CursorPagination.fromJson(data, (json) => ChattingRoom.fromJson(json as Map<String, dynamic>));
-      return dataList;
+      BASE_URL + '/chatroom/list/${memberId}',
+    );
+    print("채팅방 데이터");
+    print("resp.statusCode : ${resp.statusCode}");
+    print("resp.data : ${resp.data}");
+    if ((resp.data as List).isEmpty) {
+      return [];
+    }
+    final dataList = (resp.data as List).map((e) => ChattingRoom.fromJson(e)).toList();
+    return dataList;
   }
 
   // SSE 연결 함수
+  // Dio를 이용한 CustomSSE 방식 구현
   Stream<String> connectToSSE(int userId) async* {
     try {
       final response = await dio.get(
@@ -58,7 +60,6 @@ class ChatRepository extends BasePaginationRepository{
         queryParameters: {"userId": userId},
         options: Options(responseType: ResponseType.stream),
       );
-
 
       final stream = response.data.stream;
 

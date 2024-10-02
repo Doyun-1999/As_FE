@@ -166,7 +166,7 @@ String formatToManwon(int amount) {
     final won = amount % 10000; // 만원 이하 단위
     if (won == 0) {
       // 만원 이하 단위가 없을 때 (예: 100,000원)
-      return '${manwon}만 원';
+      return '${manwon}만원';
     } else {
       return '${manwon}만 ${won}원';
     }

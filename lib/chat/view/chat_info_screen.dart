@@ -60,6 +60,7 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
     print('STOMP 연결 해제됨');
   }
 
+  // 구독을 통한 메시지 데이터 받아오기
   void subscribeToTopic() {
     // STOMP 클라이언트의 subscribe 메서드를 사용하여 토픽을 구독합니다.
     client.subscribe(
@@ -74,6 +75,7 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
     );
   }
 
+  // 메시지 데이터 보내기
   void publishMessage() {
     if (_textController.text.isNotEmpty) {
       final msg = Message(

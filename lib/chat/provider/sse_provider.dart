@@ -47,7 +47,7 @@ class SSENotifier extends StateNotifier<SSEConnectionStatus>{
           print("연결 완료");
           print("state : ${state}");
         }
-        ref.read(chatRoomProvider.notifier).paginate();
+        ref.read(chatRoomProvider.notifier).getChattingRoomList();
       }, onError: (error) {
         state = SSEConnectionStatus.error;
         print("연결 에러");

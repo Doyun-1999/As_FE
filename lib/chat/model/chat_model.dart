@@ -76,12 +76,22 @@ class ChattingRoom {
   final String yourId;
   final String postId;
   final int roomId;
+  final String imageUrl;
+  final String nickname;
+  final DateTime latestChatTime;
+  final String latestChatLog;
+  final String profileUrl;
 
   ChattingRoom({
     required this.userId,
     required this.yourId,
     required this.postId,
     required this.roomId,
+    required this.imageUrl,
+    required this.nickname,
+    required this.latestChatTime,
+    required this.latestChatLog,
+    required this.profileUrl,
   });
 
   factory ChattingRoom.fromJson(Map<String, dynamic> json) => _$ChattingRoomFromJson(json);
