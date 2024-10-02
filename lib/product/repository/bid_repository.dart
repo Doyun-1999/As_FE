@@ -31,8 +31,6 @@ class BidRepository{
       ),
     );
     print("입찰하기");
-    print("입찰 resp.data : ${resp.data}");
-    print("입찰 resp.statusCode : ${resp.statusCode}");
   }
 
   
@@ -56,8 +54,6 @@ class BidRepository{
       baseUrl + '/priceChange/${productId}',
     );
     print("하향식 경매 이력");
-    print("resp.data : ${resp.data}");
-    print("resp.statusCode : ${resp.statusCode}");
     
     final data = (resp.data as List<dynamic>).map((e) => DownBidModel.fromJson(e)).toList();
     return data;

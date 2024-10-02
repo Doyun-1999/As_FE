@@ -17,6 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:card_swiper/card_swiper.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -40,7 +41,7 @@ class HomeScreen extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       GestureDetector(
-                        onTap: (){
+                        onTap: () {
                           context.pushNamed(AdminHomeScreen.routeName);
                           ref.read(userProvider.notifier).testAdmin();
                         },
@@ -62,33 +63,37 @@ class HomeScreen extends ConsumerWidget {
                     ],
                   ),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    context.pushNamed(
-                      ProductCategoryScreen.routeName,
-                      pathParameters: {
-                        'cid': "1",
-                      },
-                    );
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.only(
-                      bottom: 24,
-                      top: 20,
-                    ),
-                    padding: const EdgeInsets.only(left: 16, bottom: 9),
-                    alignment: Alignment.bottomLeft,
-                    height: ratio.height * 200,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: NetworkImage(
-                          "https://www.shinsegaegroupnewsroom.com/wp-content/uploads/2019/12/%EC%9E%90%EC%A3%BCJAJU-%EB%B4%84-%EC%9D%B8%ED%85%8C%EB%A6%AC%EC%96%B4-%EA%B0%80%EA%B5%AC-%EC%84%A0%EB%B3%B4%EC%97%AC.jpg",
+                Container(
+                  height: MediaQuery.of(context).size.width / 2.06,
+                  child: Swiper(
+                    loop: true,
+                    itemCount: bannerPath.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () {
+                          bannerRouting(index, context);
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(
+                            bottom: 24,
+                            top: 20,
+                          ),
+                          padding: const EdgeInsets.only(left: 16, bottom: 9),
+                          alignment: Alignment.bottomLeft,
+                          height: MediaQuery.of(context).size.width / 2,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage(
+                                bannerPath[index],
+                              ),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                          // child: Text("아늑한 가구로\n가을 맞이 집 새단장!", style: tsNotoSansKR(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white,),),
                         ),
-                        fit: BoxFit.fill,
-                      ),
-                    ),
-                    child: Text("아늑한 가구로\n가을 맞이 집 새단장!", style: tsNotoSansKR(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white,),),
+                      );
+                    },
                   ),
                 ),
                 Padding(
@@ -293,5 +298,22 @@ class HomeScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  // 배너 눌렀을 때 라우팅 설정 함수
+  void bannerRouting(int index, BuildContext context) {
+    int categoryIndex = -1;
+    //13, 2, 15;
+    if (index == 1) {
+      categoryIndex = 12;
+    }
+    if (index == 2) {
+      categoryIndex = 1;
+    }
+    if (index == 3) {
+      categoryIndex = 14;
+    }
+    context.pushNamed(ProductCategoryScreen.routeName,
+        pathParameters: {"cid": "$categoryIndex"});
   }
 }

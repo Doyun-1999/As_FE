@@ -140,6 +140,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                       ),
                       productInfo(
                         yourId: user.id,
+                        owner: data.owner,
                         userId: data.memberId,
                         product_id: data.product_id,
                         categories: data.categories,
@@ -561,6 +562,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
   Padding productInfo({
     required int userId,
     required int yourId,
+    required bool owner,
     required int product_id,
     required List<String> categories,
     required String createdBy,
@@ -652,18 +654,21 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                           color: auctionColor.subGreyColorD9,
                         ),
                       ),
+                      // 내 경매 물품일 경우 채팅 못하도록 설정
+                      if(!owner)
                       Positioned(
                         top: -15,
                         left: -10,
                         right: -10,
                         child: GestureDetector(
                           onTap: () {
+                            print("채팅 걸기");
                             final data = MakeRoom(
                               userId: (userId).toString(),
                               postId: (product_id).toString(),
                               yourId: (yourId).toString(),
                             );
-
+                            print(data.toJson());
                             ref.read(chatProvider.notifier).enterChat(data);
                           },
                           child: Container(

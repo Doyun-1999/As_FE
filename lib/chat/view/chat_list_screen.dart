@@ -30,23 +30,6 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
   Widget build(BuildContext context) {
     final state = ref.watch(chatRoomProvider);
 
-    if (state is CursorPaginationLoading) {
-      DefaultLayout(
-          child: Center(
-        child: CircularProgressIndicator(),
-      ));
-    }
-
-    if (state is CursorPaginationError) {
-      DefaultLayout(
-        child: Center(
-          child: Text("error"),
-        ),
-      );
-    }
-
-    final data = (state as CursorPagination<ChattingRoom>).data;
-
     return DefaultLayout(
       appBar: CustomAppBar().noLeadingAppBar(
         popupList: [
@@ -62,28 +45,28 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
         child: CustomScrollView(
           slivers: [
             //topBar(),
-            if (data.length == 0)
+            if (state.length == 0)
               SliverToBoxAdapter(child: SizedBox())
-            else if (data.length != 0)
+            else if (state.length != 0)
               SliverList.builder(
-                itemCount: data.length,
+                itemCount: state.length,
                 itemBuilder: (context, index) {
-                  print( data[index].toJson());
+                  print( state[index].toJson());
                   final memberId = ref.read(userProvider.notifier).getMemberId();
                   print("mymemberId : ${memberId}");
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 25),
                     child: ChatListBox(
                       func: () async {
-                        final extra = data[index];
+                        final extra = state[index];
                         final enterData = MakeRoom(userId: extra.userId, postId: extra.postId, yourId: extra.yourId);
                         ref.read(chatProvider.notifier).enterChat(enterData);
                         
                         context.pushNamed(ChatInfoScreen.routeName, extra: extra);
                       },
-                      username: 'userId : ${data[index].userId}',
-                      date: "postId : ${data[index].postId}",
-                      content: "yourId : ${data[index].yourId}",
+                      username: 'userId : ${state[index].userId}',
+                      date: "postId : ${state[index].postId}",
+                      content: "yourId : ${state[index].yourId}",
                     ),
                   );
                 },

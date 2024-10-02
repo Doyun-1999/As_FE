@@ -225,12 +225,15 @@ class ProductCard extends ConsumerWidget {
         ),
         GestureDetector(
           onTap: () {
-            debounce.run(() {
-              // 실행할 함수 및 변수 정의
-              final isPlus = !liked;
+            final isPlus = !liked;
               final likeData = Like(productId: product_id, memberId: memberId);
               ref.read(productProvider.notifier).liked(likeData: likeData, isPlus: isPlus);
-            });
+            // debounce.run(() {
+            //   // 실행할 함수 및 변수 정의
+            //   final isPlus = !liked;
+            //   final likeData = Like(productId: product_id, memberId: memberId);
+            //   ref.read(productProvider.notifier).liked(likeData: likeData, isPlus: isPlus);
+            // });
           },
           child: liked
               ? Icon(

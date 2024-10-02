@@ -30,10 +30,6 @@ class ProductRepository extends BasePaginationRepository<ProductModel> {
         headers: {"accessToken" : "true"},
       ),
     );
-    print("추천 경매");
-    print("resp.statusCode : ${resp.statusCode}");
-    print("resp.data : ${resp.data}");
-    
     final data = (resp.data as List<dynamic>).map((e) => RecommendProduct.fromJson(e)).toList();
     return data;
   }
@@ -97,7 +93,6 @@ class ProductRepository extends BasePaginationRepository<ProductModel> {
   // 경매 물품 상세 조회
   Future<ProductDetailModel> getDetail(int productId) async {
     final resp = await dio.get(baseUrl + '/product/search/$productId');
-    print("상세 product provider 데이터 : ${resp.statusCode}");
     return ProductDetailModel.fromJson(resp.data);
   }
 
@@ -109,7 +104,6 @@ class ProductRepository extends BasePaginationRepository<ProductModel> {
         headers: {'accessToken': 'true'},
       ),
     );
-    print("resp.data : ${resp.data}");
     final data = {"data": resp.data};
     final dataList = CursorPagination.fromJson(data, (json) => ProductModel.fromJson(json as Map<String, dynamic>));
     return dataList;

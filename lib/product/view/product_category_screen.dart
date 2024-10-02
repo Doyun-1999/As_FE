@@ -46,8 +46,7 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
   @override
   void initState() {
     super.initState();
-    controller = TabController(
-        length: category.length, vsync: this, initialIndex: widget.index + 1);
+    controller = TabController(length: category.length, vsync: this, initialIndex: widget.index + 1);
     controller.addListener(tabListener);
   }
 
