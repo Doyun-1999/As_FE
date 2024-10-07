@@ -213,3 +213,27 @@ Map<String, dynamic> _$RecommendProductToJson(RecommendProduct instance) =>
       'current_price': instance.current_price,
       'imageUrl': instance.imageUrl,
     };
+
+ReviseProductModel _$ReviseProductModelFromJson(Map<String, dynamic> json) =>
+    ReviseProductModel(
+      title: json['title'] as String,
+      details: json['details'] as String,
+      categories: (json['categories'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+      conditions: json['conditions'] as String,
+      imageUrlsToKeep: (json['imageUrlsToKeep'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+      tradeLocation: json['tradeLocation'] as String?,
+    );
+
+Map<String, dynamic> _$ReviseProductModelToJson(ReviseProductModel instance) =>
+    <String, dynamic>{
+      'title': instance.title,
+      'details': instance.details,
+      'categories': instance.categories,
+      'tradeLocation': instance.tradeLocation,
+      'conditions': instance.conditions,
+      'imageUrlsToKeep': instance.imageUrlsToKeep,
+    };

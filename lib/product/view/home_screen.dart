@@ -64,7 +64,7 @@ class HomeScreen extends ConsumerWidget {
                   ),
                 ),
                 Container(
-                  height: MediaQuery.of(context).size.width / 2.06,
+                  height: MediaQuery.of(context).size.width / 2.00,
                   child: Swiper(
                     loop: true,
                     itemCount: bannerPath.length,
@@ -80,14 +80,14 @@ class HomeScreen extends ConsumerWidget {
                           ),
                           padding: const EdgeInsets.only(left: 16, bottom: 9),
                           alignment: Alignment.bottomLeft,
-                          height: MediaQuery.of(context).size.width / 2,
+                          height: MediaQuery.of(context).size.width / 2.00,
                           width: double.infinity,
                           decoration: BoxDecoration(
                             image: DecorationImage(
                               image: AssetImage(
                                 bannerPath[index],
                               ),
-                              fit: BoxFit.fill,
+                              fit: BoxFit.cover,
                             ),
                           ),
                           // child: Text("아늑한 가구로\n가을 맞이 집 새단장!", style: tsNotoSansKR(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white,),),

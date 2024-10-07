@@ -34,22 +34,27 @@ class _MyBiddingScreenState extends ConsumerState<MyBiddingScreen> {
     // 데이터 받아오는 로딩 상태일 때
     if (state is CursorPaginationLoading) {
       final fakeData = [
-        MyBidModel(productId: 0, title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), topBid: false),
-        MyBidModel(productId: 0, title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), topBid: false),
-        MyBidModel(productId: 0, title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), topBid: false),
-        MyBidModel(productId: 0, title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), topBid: false),
-        MyBidModel(productId: 0, title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), topBid: false),
+        MyBidModel(productId: 0, title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), bidStatus: "FAILED"),
+        MyBidModel(productId: 0, title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), bidStatus: "FAILED"),
+        MyBidModel(productId: 0, title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), bidStatus: "FAILED"),
+        MyBidModel(productId: 0, title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), bidStatus: "FAILED"),
+        MyBidModel(productId: 0, title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), bidStatus: "FAILED"),
       ];
-      return DefaultLayout(
-        appBar: CustomAppBar().noActionAppBar(title: "입찰 중 목록", context: context),
-        child: Skeletonizer(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: CustomScrollView(
-              slivers: [
-                productDropdownButton(),
-                productSliverList(fakeData),
-              ],
+      return RefreshIndicator(
+        onRefresh: () async {
+            ref.read(MyBidProvider.notifier).refetching();
+          },
+        child: DefaultLayout(
+          appBar: CustomAppBar().noActionAppBar(title: "입찰 중 목록", context: context),
+          child: Skeletonizer(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: CustomScrollView(
+                slivers: [
+                  productDropdownButton(),
+                  productSliverList(fakeData),
+                ],
+              ),
             ),
           ),
         ),
@@ -139,9 +144,9 @@ class _MyBiddingScreenState extends ConsumerState<MyBiddingScreen> {
             SizedBox(height: 12),
             // 경매 이력 Box
             BidCard(
-              rightSideText: model.topBid ? "유력" : "",
+              rightSideText: (model.bidStatus != "FAILED") ? "유력" : "",
               bottomMargin: 0,
-              isNow: model.topBid,
+              isNow: (model.bidStatus != "FAILED"),
               date: date,
               price: model.amount,
               isImage: false,

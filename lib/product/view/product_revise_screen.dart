@@ -1,24 +1,14 @@
 import 'dart:io';
-import 'package:auction_shop/common/component/button.dart';
 import 'package:auction_shop/common/component/pick_image_row.dart';
-import 'package:auction_shop/common/component/textformfield.dart';
-import 'package:auction_shop/common/component/image_widget.dart';
-import 'package:auction_shop/common/layout/default_layout.dart';
-import 'package:auction_shop/common/variable/color.dart';
-import 'package:auction_shop/common/component/appbar.dart';
-import 'package:auction_shop/common/variable/function.dart';
-import 'package:auction_shop/common/variable/textstyle.dart';
-import 'package:auction_shop/common/variable/validator.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/product/component/toggle_button.dart';
 import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/product/provider/product_detail_provider.dart';
 import 'package:auction_shop/product/view/product_category_screen.dart';
+import 'package:auction_shop/product/view/product_info_screen.dart';
 import 'package:auction_shop/product/view/select_category_screen.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:auction_shop/common/export/variable_export.dart';
 
 class ProductReviseScreen extends ConsumerStatefulWidget {
   static String get routeName => "revise";
@@ -60,64 +50,6 @@ class _ProductReviseScreenState extends ConsumerState<ProductReviseScreen> {
   TextEditingController _priceController = TextEditingController();
   TextEditingController _categoryController = TextEditingController();
 
-  // 이미지 선택
-  Future<void> _pickImage({int? index}) async {
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      if (index == null) {
-        setState(() {
-          _images.add(File(pickedFile.path));
-        });
-        // 현재 프레임이 완전히 빌드된 후에 지정한 콜백 함수를 실행하도록 예약
-        //UI가 완전히 렌더링된 후에 특정 작업을 수행
-        // => 이미지가 다 추가되고 ui가 완전히 렌더링 된 후 스크롤 이동
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          scrollToEnd(_scrollController);
-        });
-      } else {
-        setState(() {
-          _images[index] = (File(pickedFile.path));
-        });
-      }
-    }
-  }
-
-  // 토글 버튼 선택 함수
-  void toggleSelect(int val, {required String type}) {
-    if (type == "trade") {
-      if (val == 0) {
-        setState(() {
-          tradeSelected = [true, false];
-        });
-      } else {
-        setState(() {
-          tradeSelected = [false, true];
-        });
-      }
-    } else if (type == "bid") {
-      if (val == 0) {
-        setState(() {
-          bidSelected = [true, false];
-        });
-      } else {
-        setState(() {
-          bidSelected = [false, true];
-        });
-      }
-    } else if (type == "conditions") {
-      if (val == 0) {
-        setState(() {
-          conditions = [true, false];
-        });
-      } else {
-        setState(() {
-          conditions = [false, true];
-        });
-      }
-    }
-  }
-
   @override
   void initState() {
     // 원래 있는 이미지들 데이터 세팅
@@ -132,10 +64,8 @@ class _ProductReviseScreenState extends ConsumerState<ProductReviseScreen> {
     _titleController = TextEditingController(text: pData.title);
     _placeController = TextEditingController(text: pData.tradeLocation);
     _detailsController = TextEditingController(text: pData.details);
-    _priceController =
-        TextEditingController(text: (pData.initial_price).toString());
-    _categoryController =
-        TextEditingController(text: pData.categories.join(', '));
+    _priceController = TextEditingController(text: (pData.initial_price).toString());
+    _categoryController = TextEditingController(text: pData.categories.join(', '));
     tradeSelected = getTradeTypes(pData.tradeTypes);
     bidSelected = [false, true];
     if (pData.conditions == "중고") {
@@ -296,10 +226,12 @@ class _ProductReviseScreenState extends ConsumerState<ProductReviseScreen> {
               ),
 
               // 장소
+              if(tradeSelected[1])
               TextLable(
                 text: '거래 장소',
                 topMargin: 24,
               ),
+              if(tradeSelected[1])
               CustomTextFormField(
                 controller: _placeController,
                 hintText: "거래 장소를 입력해 주세요.",
@@ -374,25 +306,33 @@ class _ProductReviseScreenState extends ConsumerState<ProductReviseScreen> {
               ),
               CustomButton(
                 text: "등록완료",
-                func: () {
-                  // // 이미지 경로들
-                  // final imagePathData = _images.map((e) => e.path).toList();
-                  // // 경매 물품 데이터
-                  //       final data = RegisterProductModel(
-                  //         title: _titleController.text,
-                  //         tradeTypes: tradeTypes(tradeSelected)!,
-                  //         details: _detailsController.text,
-                  //         categories: widget.data.categories, // 추후 수정해야함
-                  //         conditions: widget.data.conditions, // 추후 수정해야함
-                  //         tradeLocation: _placeController.text,
-                  //         product_type: "아무거나",
-                  //         trade: '하향식',
-                  //         initial_price: widget.data.initial_price,
-                  //         minimum_price: minPrice,
-                  //         startTime: formattedNowDate,
-                  //         endTime: formattedAddedDate,
-                  //       );
-                  // ref.read(productDetailProvider.notifier).reviseProduct(images: imagePathData, data: data, productId: widget.data.product_id);
+                func: () async {
+                  // 이미지 경로들
+                  final imagePathData = _images.map((e) => e.path).toList();
+                  String conditionsData = "중고";
+                  if(conditions[0]){
+                    conditionsData = "새상품";
+                  }
+
+                  // 경매 물품 데이터
+                        final data = ReviseProductModel(
+                          title: _titleController.text,
+                          details: _detailsController.text,
+                          categories: (_categoryController.text).split(','),
+                          conditions: conditionsData,
+                          tradeLocation: _placeController.text,
+                          imageUrlsToKeep: _setImages,
+
+                          // tradeTypes: tradeTypes(tradeSelected)!,
+                          // product_type: "아무거나",
+                          // trade: '하향식',
+                          // initial_price: widget.data.initial_price,
+                          // minimum_price: minPrice,
+                          // startTime: formattedNowDate,
+                          // endTime: formattedAddedDate,
+                        );
+                  await ref.read(productDetailProvider.notifier).reviseProduct(images: imagePathData, data: data, productId: widget.data.product_id);
+                  context.goNamed(ProductInfoScreen.routeName, pathParameters: {"pid" : "${widget.data.product_id}"});
                 },
               ),
               SizedBox(
@@ -427,5 +367,40 @@ class _ProductReviseScreenState extends ConsumerState<ProductReviseScreen> {
         ),
       ),
     );
+  }
+
+  // 토글 버튼 선택 함수
+  void toggleSelect(int val, {required String type}) {
+    if (type == "trade") {
+      if (val == 0) {
+        setState(() {
+          tradeSelected = [true, false];
+        });
+      } else {
+        setState(() {
+          tradeSelected = [false, true];
+        });
+      }
+    } else if (type == "bid") {
+      if (val == 0) {
+        setState(() {
+          bidSelected = [true, false];
+        });
+      } else {
+        setState(() {
+          bidSelected = [false, true];
+        });
+      }
+    } else if (type == "conditions") {
+      if (val == 0) {
+        setState(() {
+          conditions = [true, false];
+        });
+      } else {
+        setState(() {
+          conditions = [false, true];
+        });
+      }
+    }
   }
 }

@@ -1,4 +1,3 @@
-import 'package:auction_shop/chat/view/chat_list_screen.dart';
 import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/component/button.dart';
 import 'package:auction_shop/common/component/image_widget.dart';
@@ -13,7 +12,6 @@ import 'package:auction_shop/product/view/product_loading_screen.dart';
 import 'package:auction_shop/product/view/register/register_product_screen.dart';
 import 'package:auction_shop/user/provider/user_product_provider.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
-import 'package:auction_shop/user/view/mypage_inner/block_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';

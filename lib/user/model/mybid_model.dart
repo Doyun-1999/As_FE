@@ -11,7 +11,7 @@ class MyBidModel{
   final int current_price;
   final int amount;
   final DateTime bidTime;
-  final bool topBid;
+  final String bidStatus;
 
   MyBidModel({
     this.imageUrl,
@@ -21,7 +21,7 @@ class MyBidModel{
     required this.current_price,
     required this.amount,
     required this.bidTime,
-    required this.topBid,
+    required this.bidStatus,
   });
 
   factory MyBidModel.fromJson(Map<String, dynamic> json) => _$MyBidModelFromJson(json);

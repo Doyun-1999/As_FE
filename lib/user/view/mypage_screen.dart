@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:auction_shop/common/component/appbar.dart';
+import 'package:auction_shop/common/component/dialog.dart';
 import 'package:auction_shop/common/component/image_widget.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/variable/color.dart';
@@ -55,11 +56,17 @@ class MyPageScreen extends ConsumerWidget {
                 context.pushNamed(ReviseUserScreen.routeName);
                 return;
               }
+              if (val == "회원 탈퇴") {
+                CustomDialog(context: context, title: "정말 회원 탈퇴를 진행하시겠어요?", OkText: "회원 탈퇴", func: (){context.pop();}, CancelText: "취소");
+                return;
+              }
             },
             itemBuilder: (BuildContext context) => [
               popupItem(text: '로그아웃'),
               PopupMenuDivider(),
               popupItem(text: '정보 수정'),
+              PopupMenuDivider(),
+              popupItem(text: '회원 탈퇴'),
             ],
             icon: Icon(
               Icons.settings_outlined,

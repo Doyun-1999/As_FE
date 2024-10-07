@@ -664,11 +664,10 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                           onTap: () {
                             print("채팅 걸기");
                             final data = MakeRoom(
-                              userId: (userId).toString(),
-                              postId: (product_id).toString(),
-                              yourId: (yourId).toString(),
+                              userId: userId,
+                              postId: product_id,
+                              yourId: yourId,
                             );
-                            print(data.toJson());
                             ref.read(chatProvider.notifier).enterChat(data);
                           },
                           child: Container(

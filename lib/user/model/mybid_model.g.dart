@@ -14,7 +14,7 @@ MyBidModel _$MyBidModelFromJson(Map<String, dynamic> json) => MyBidModel(
       current_price: (json['current_price'] as num).toInt(),
       amount: (json['amount'] as num).toInt(),
       bidTime: DateTime.parse(json['bidTime'] as String),
-      topBid: json['topBid'] as bool,
+      bidStatus: json['bidStatus'] as String,
     );
 
 Map<String, dynamic> _$MyBidModelToJson(MyBidModel instance) =>
@@ -26,5 +26,5 @@ Map<String, dynamic> _$MyBidModelToJson(MyBidModel instance) =>
       'current_price': instance.current_price,
       'amount': instance.amount,
       'bidTime': instance.bidTime.toIso8601String(),
-      'topBid': instance.topBid,
+      'bidStatus': instance.bidStatus,
     };

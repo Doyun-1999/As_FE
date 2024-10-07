@@ -20,7 +20,7 @@ class MyBidNotifier extends PaginationProvider<MyBidModel, MyBidRepository>{
     final sortedData = pState.data;
     // 유력순으로 나열
     if(index == 0){
-      sortedData.sort((a, b) => (b.topBid ? 1 : 0) - (a.topBid ? 1 : 0));
+      sortedData.sort((a, b) => (b.bidStatus == "FAILED" ? 1 : 0) - (b.bidStatus != "FAILED" ? 1 : 0));
     }
     // 최신순으로 나열
     if(index == 1){

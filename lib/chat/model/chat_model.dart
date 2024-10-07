@@ -16,14 +16,14 @@ class ChatDetails{
 // 하나의 채팅 모델
 @JsonSerializable()
 class Chatting{
-  final String id;
+  // final String id;
   final int roomId;
   final String userId;
   final String message;
   final DateTime createdAt;
 
   Chatting({
-    required this.id,
+    // required this.id,
     required this.roomId,
     required this.userId,
     required this.message,
@@ -37,7 +37,7 @@ class Chatting{
 @JsonSerializable()
 class Message{
   final int roomId;
-  final String userId;
+  final int userId;
   final String message;
 
   Message({
@@ -54,9 +54,9 @@ class Message{
 // 방 생성할 때 서버 전송 모델
 @JsonSerializable()
 class MakeRoom{
-  final String userId;
-  final String postId;
-  final String yourId;
+  final int userId;
+  final int postId;
+  final int yourId;
 
   MakeRoom({
     required this.userId,
@@ -72,26 +72,26 @@ class MakeRoom{
 // 채팅 룸 데이터 모델
 @JsonSerializable()
 class ChattingRoom {
-  final String userId;
-  final String yourId;
-  final String postId;
+  final int userId;
+  final int yourId;
+  final int postId;
   final int roomId;
-  final String imageUrl;
   final String nickname;
-  final DateTime latestChatTime;
-  final String latestChatLog;
-  final String profileUrl;
+  final String? imageUrl;
+  final DateTime? latestChatTime;
+  final String? latestChatLog;
+  final String? profileUrl;
 
   ChattingRoom({
     required this.userId,
     required this.yourId,
     required this.postId,
     required this.roomId,
-    required this.imageUrl,
     required this.nickname,
-    required this.latestChatTime,
-    required this.latestChatLog,
-    required this.profileUrl,
+    this.imageUrl,
+    this.latestChatTime,
+    this.latestChatLog,
+    this.profileUrl,
   });
 
   factory ChattingRoom.fromJson(Map<String, dynamic> json) => _$ChattingRoomFromJson(json);
