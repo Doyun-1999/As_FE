@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Auction Shop</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>auction_shop</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UISupportedInterfaceOrientations</key>
+	<key>LSApplicationQueriesSchemes</key>
+	
+	<!-- Image Picker -->
+	<key>NSCameraUsageDescription</key>
+	<string>Used to demonstrate image picker plugin</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Used to capture audio for image picker plugin</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Used to demonstrate image picker plugin</string>
+	
+	<!-- 카카오 로그인 설정 코드(삭제X) -->
+	<array>
+		<!-- 네이버로 로그인 -->
+		<string>naversearchapp</string>
+        <string>naversearchthirdlogin</string>
+		<!-- 카카오톡으로 로그인 -->
+		<string>kakaokompassauth</string>
+		<!-- 카카오톡 공유 -->
+		<string>kakaolink</string>
+		<!-- 카카오톡 채널 -->
+		<string>kakaoplus</string>
+	</array>
+	<!-- 네이버로그인 -->
+	<key>naverServiceAppUrlScheme</key>
+    <string>auctionShopurlscheme</string>
+    <key>naverConsumerKey</key>
+    <string>mM6xnsnae5MCpC_PWp_i</string>
+    <key>naverConsumerSecret</key>
+    <string>Mg11Nw3wrX</string>
+    <key>naverServiceAppName</key>
+    <string>auction-shop</string>
+
+	<!-- 도로명 주소  -->
+	<key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+    </dict>
+
+	<!-- 네이버 로그인 코드 -->
+    <!-- http allows configurations -->
+	<key>NSAppTransportSecurity</key>
+        <dict>
+           <key>NSAllowsArbitraryLoads</key>
+           <true/>
+           <key>NSExceptionDomains</key>
+           <dict>
+              <key>naver.com</key>
+              <dict>
+                 <key>NSExceptionRequiresForwardSecrecy</key>
+                 <false/>
+                 <key>NSIncludesSubdomains</key>
+                 <true/>
+              </dict>
+              <key>naver.net</key>
+              <dict>
+                 <key>NSExceptionRequiresForwardSecrecy</key>
+                 <false/>
+                 <key>NSIncludesSubdomains</key>
+                 <true/>
+              </dict>
+           </dict>
+        </dict>
+
+	<!-- 카카오, 네이버 커스텀 url 스키마 설정 및 추가 코드 (삭제할 수도 있음)-->
+	<key>CFBundleURLTypes</key>
+        <array>
+            <dict>
+                <key>CFBundleTypeRole</key>
+                <string>Editor</string>
+                <key>CFBundleURLSchemes</key>
+                <array>
+					<string>kakao15d66122fbd678ea76c0651f92f55233</string>
+                    <string>auctionShopurlscheme</string>
+                </array>
+            </dict>
+        </array>
+
+	<!-- 외부 앱 등록 -->
+	<key>LSApplicationQueriesSchemes</key>
+		<array>
+			<string>kftc-bankpay</string> <!-- 계좌이체 -->
+			<string>ispmobile</string> <!-- ISP모바일 -->
+			<string>itms-apps</string> <!-- 앱스토어 -->
+			<string>hdcardappcardansimclick</string> <!-- 현대카드-앱카드 -->
+			<string>smhyundaiansimclick</string> <!-- 현대카드-공인인증서 -->
+			<string>shinhan-sr-ansimclick</string> <!-- 신한카드-앱카드 -->
+			<string>smshinhanansimclick</string> <!-- 신한카드-공인인증서 -->
+			<string>kb-acp</string> <!-- 국민카드-앱카드 -->
+			<string>mpocket.online.ansimclick</string> <!-- 삼성카드-앱카드 -->
+			<string>ansimclickscard</string> <!-- 삼성카드-온라인결제 -->
+			<string>ansimclickipcollect</string> <!-- 삼성카드-온라인결제 -->
+			<string>vguardstart</string> <!-- 삼성카드-백신 -->
+			<string>samsungpay</string> <!-- 삼성카드-삼성페이 -->
+			<string>scardcertiapp</string> <!-- 삼성카드-공인인증서 -->
+			<string>lottesmartpay</string> <!-- 롯데카드-모바일결제 -->
+			<string>lotteappcard</string> <!-- 롯데카드-앱카드 -->
+			<string>cloudpay</string> <!-- 하나카드-앱카드 -->
+			<string>nhappcardansimclick</string> <!-- 농협카드-앱카드 -->
+			<string>nonghyupcardansimclick</string> <!-- 농협카드-공인인증서 -->
+			<string>citispay</string> <!-- 씨티카드-앱카드 -->
+			<string>citicardappkr</string> <!-- 씨티카드-공인인증서 -->
+			<string>citimobileapp</string> <!-- 씨티카드-간편결제 -->
+			<string>kakaotalk</string> <!-- 카카오톡 -->
+			<string>payco</string> <!-- 페이코 -->
+			<string>lpayapp</string> <!-- (구)롯데 L페이 -->
+			<string>hanamopmoasign</string> <!-- 하나카드 공인인증앱 -->
+			<string>wooripay</string> <!-- (구) 우리페이 -->
+			<string>nhallonepayansimclick</string> <!-- NH 올원페이 -->
+			<string>hanawalletmembers</string> <!-- 하나카드(하나멤버스 월렛) -->
+			<string>chaipayment</string> <!-- 차이 -->
+			<string>kb-auth</string> <!-- 국민 -->
+			<string>hyundaicardappcardid</string>  <!-- 현대카드 -->
+			<string>com.wooricard.wcard</string>  <!-- 우리WON페이 -->
+			<string>lmslpay</string>  <!-- 롯데 L페이 -->
+			<string>lguthepay-xpay</string>  <!-- 페이나우 -->
+			<string>liivbank</string>  <!-- Liiv 국민 -->
+			<string>supertoss</string> <!-- 토스 -->
+			<string>newsmartpib</string> <!-- 우리WON뱅킹 -->
+			<string>naversearchthirdlogin</string> <!-- 네이버페이 앱 로그인 -->
+		</array>
+	
+	<key>NSAppTransportSecurity</key>
+		<dict>
+			<!-- Allow Arbitrary Loads in Web Content 속성을 true로 설정 -->
+			<key>NSAllowsArbitraryLoadsInWebContent</key>
+			<true/>
+			<key>NSAllowsArbitraryLoads</key>
+			<true/>
+		</dict>
+
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+</dict>
+</plist>
