@@ -4,12 +4,9 @@ import 'package:auction_shop/chat/provider/chatting_provider.dart';
 import 'package:auction_shop/chat/view/chat_info_screen.dart';
 import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/component/image_widget.dart';
-import 'package:auction_shop/common/model/cursor_pagination_model.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
-import 'package:auction_shop/main.dart';
-import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -35,39 +32,51 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
         popupList: [
           popupItem(text: "Example"),
         ],
-        vertFunc: (String? val) {
-          print(val);
-        },
+        vertFunc: (String? val) {},
         title: "채팅 모음",
       ),
       child: Padding(
         padding: const EdgeInsets.only(left: 16, right: 34),
         child: CustomScrollView(
           slivers: [
+            // 간격
+            SliverToBoxAdapter(
+              child: SizedBox(height: 45),
+            ),
             //topBar(),
+            // 채팅방 데이터가 없으면
+            // 아무것도 UI 표시하지 않는다.
             if (state.length == 0)
               SliverToBoxAdapter(child: SizedBox())
             else if (state.length != 0)
-              SliverList.builder(
+              SliverList.separated(
                 itemCount: state.length,
                 itemBuilder: (context, index) {
-                  print( state[index].toJson());
-                  final memberId = ref.read(userProvider.notifier).getMemberId();
-                  print("mymemberId : ${memberId}");
+                  final data = state[index];
+                  return ChatListBox(
+                    nickname: data.nickname,
+                    latestChatLog: data.latestChatLog,
+                    // 첫 채팅 시간이 없으면 '-'을 반환
+                    latestChatTime: data.latestChatTime == null ? '-' : data.latestChatTime.toString(),
+                    productImageUrl: data.imageUrl,
+                    userImageUrl: data.profileUrl,
+                    func: () async {
+                      final extra = state[index];
+                      final enterData = MakeRoom(
+                        userId: extra.userId,
+                        postId: extra.postId,
+                        yourId: extra.yourId,
+                      );
+                      ref.read(chatProvider.notifier).enterChat(enterData);
+
+                      context.pushNamed(ChatInfoScreen.routeName, extra: extra);
+                    },
+                  );
+                },
+                separatorBuilder: (context, index) {
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 25),
-                    child: ChatListBox(
-                      func: () async {
-                        final extra = state[index];
-                        final enterData = MakeRoom(userId: extra.userId, postId: extra.postId, yourId: extra.yourId);
-                        ref.read(chatProvider.notifier).enterChat(enterData);
-                        
-                        context.pushNamed(ChatInfoScreen.routeName, extra: extra);
-                      },
-                      username: 'userId : ${state[index].userId}',
-                      date: "postId : ${state[index].postId}",
-                      content: "yourId : ${state[index].yourId}",
-                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    child: Divider(color: auctionColor.subGreyColorE2),
                   );
                 },
               ),
@@ -77,98 +86,82 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
     );
   }
 
-  SliverToBoxAdapter topBar() {
-    return SliverToBoxAdapter(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: ratio.height * 50,
-          ),
-          Text(
-            "경매 채팅",
-            style: tsNotoSansKR(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: auctionColor.subBlackColor49,
-            ),
-          ),
-          SizedBox(
-            height: ratio.height * 40,
-          ),
-        ],
-      ),
-    );
-  }
-
   GestureDetector ChatListBox({
-    required String username,
-    required String date,
-    required String content,
+    required String nickname,
+    String? latestChatTime,
+    String? latestChatLog,
+    String? productImageUrl,
+    String? userImageUrl,
     required VoidCallback func,
   }) {
     return GestureDetector(
       onTap: func,
-      child: Container(
-        child: IntrinsicHeight(
-          child: Row(
-            children: [
-              Container(
-                margin: const EdgeInsets.only(
-                  right: 15,
-                ),
-                decoration: BoxDecoration(
-                  color: auctionColor.subGreyColorCC,
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                width: ratio.width * 56,
-                height: ratio.height * 56,
+      child: IntrinsicHeight(
+        child: Row(
+          children: [
+            Container(
+              margin: const EdgeInsets.only(
+                right: 15,
               ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        UserImage(size: 25),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                          child: Text(
-                            username,
-                            style: tsNotoSansKR(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: auctionColor.subBlackColor49,
-                            ),
-                          ),
-                        ),
-                        Text(
-                          date,
-                          style: tsNotoSansKR(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: auctionColor.subGreyColor94,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Text(
-                      content,
-                      style: tsNotoSansKR(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: auctionColor.subGreyColor94,
+              decoration: BoxDecoration(
+                  color: productImageUrl == null
+                      ? auctionColor.subGreyColorCC
+                      : null,
+                  borderRadius: BorderRadius.circular(5),
+                  image: productImageUrl == null
+                      ? null
+                      : DecorationImage(image: NetworkImage(productImageUrl))),
+              width: 56,
+              height: 56,
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      UserImage(
+                        size: 25,
+                        imgPath: userImageUrl,
                       ),
-                      overflow: TextOverflow.ellipsis,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 3),
+                        child: Text(
+                          nickname,
+                          style: tsNotoSansKR(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: auctionColor.subBlackColor49,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        latestChatTime ?? '없음',
+                        style: tsNotoSansKR(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: auctionColor.subGreyColor94,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    latestChatLog ?? '-',
+                    style: tsNotoSansKR(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: auctionColor.subGreyColor94,
                     ),
-                    SizedBox(
-                      height: 3,
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  SizedBox(
+                    height: 3,
+                  ),
+                ],
+              ),
+            )
+          ],
         ),
       ),
     );

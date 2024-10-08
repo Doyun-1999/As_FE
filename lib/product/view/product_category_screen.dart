@@ -1,3 +1,4 @@
+import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/component/dropdown.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/model/cursor_pagination_model.dart';
@@ -9,6 +10,7 @@ import 'package:auction_shop/common/view/root_tab.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/product/component/product_card.dart';
 import 'package:auction_shop/product/model/product_model.dart';
+import 'package:auction_shop/product/provider/point_product_provider.dart';
 import 'package:auction_shop/product/provider/product_provider.dart';
 import 'package:auction_shop/product/view/product_loading_screen.dart';
 import 'package:auction_shop/product/view/register/register_product_screen.dart';
@@ -26,18 +28,18 @@ import 'package:skeletonizer/skeletonizer.dart';
 class ProductCategoryScreen extends ConsumerStatefulWidget {
   static String get routeName => 'products';
   final int index;
+  final bool isPointPage;
   const ProductCategoryScreen({
     required this.index,
+    required this.isPointPage,
     super.key,
   });
 
   @override
-  ConsumerState<ProductCategoryScreen> createState() =>
-      _ProductCategoryScreenState();
+  ConsumerState<ProductCategoryScreen> createState() => _ProductCategoryScreenState();
 }
 
-class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
-    with SingleTickerProviderStateMixin {
+class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen> with SingleTickerProviderStateMixin {
   late TabController controller;
   int index = 0;
   List<String> dropDownList = ["최신순", "가격순"];
@@ -64,14 +66,15 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(productProvider);
+    final state = widget.isPointPage ? ref.watch(pointProductProvider) : ref.watch(productProvider);
     final userState = ref.read(userProvider.notifier).getUser();
 
     // 로딩 화면
     if (state is CursorPaginationLoading) {
       return DefaultLayout(
         bgColor: Colors.white,
-        appBar: AppBar(
+        // Point Product 화면인지에 따라 AppBar가 달라지도록
+        appBar: widget.isPointPage ? CustomAppBar().allAppBar(popupList: [], vertFunc: (val){}, title: "포인트 명예의 전당", context: context) : AppBar(
           backgroundColor: Colors.white,
           leading: IconButton(
             onPressed: () {
@@ -95,7 +98,7 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
         child: SingleChildScrollView(
           child: Column(
             children: [
-              tabBar(),
+              widget.isPointPage ? SizedBox(height: 55) : tabBar(),
               SizedBox(
                 height: 75,
               ),
@@ -132,19 +135,23 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
         // 위로 당기면 새로고침됨
         child: RefreshIndicator(
           onRefresh: () async {
+            if(widget.isPointPage){
+              ref.read(pointProductProvider.notifier).refetching();
+              return;
+            }
             ref.read(productProvider.notifier).refetching();
           },
           child: CustomScrollView(
             slivers: [
               // 상단 카테고리 탭바
               // 고정된 채로 스크롤
-              SliverPersistentHeader(
+              widget.isPointPage ? SliverToBoxAdapter(child: SizedBox(height: 130),) : SliverPersistentHeader(
                 delegate: CustomAppBarDelegate(tabBar()),
                 pinned: true,
               ),
 
               // 드롭다운(최신순, 가격순 등)
-              if (data.length != 0) dropDownWidget(),
+              if (data.length != 0 && !widget.isPointPage) dropDownWidget(),
 
               // 경매 상품 리스트
               productList(dataList: data),
@@ -156,7 +163,7 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
   }
 
   // AppBar Widget
-  // 일반 유저 / 관리자에 따라서 달라짐
+  // 일반 유저 / 관리자 / 포인트 화면에 따라서 달라짐
   AppBar AppbarWidget(bool isAdmin) {
     if (isAdmin) {
       return AppBar(
@@ -190,6 +197,9 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen>
           ),
         ],
       );
+    }
+    if(widget.isPointPage){
+      return CustomAppBar().allAppBar(popupList: [], vertFunc: (val){}, title: "포인트 명예의 전당", context: context);
     }
     return AppBar(
       backgroundColor: Colors.white,

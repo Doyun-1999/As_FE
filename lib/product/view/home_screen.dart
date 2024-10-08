@@ -40,15 +40,9 @@ class HomeScreen extends ConsumerWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          context.pushNamed(AdminHomeScreen.routeName);
-                          ref.read(userProvider.notifier).testAdmin();
-                        },
-                        child: Image.asset(
-                          'assets/logo/main_logo.png',
-                          height: ratio.height * 40,
-                        ),
+                      Image.asset(
+                        'assets/logo/main_logo.png',
+                        height: ratio.height * 40,
                       ),
                       GestureDetector(
                         onTap: () {
@@ -64,7 +58,7 @@ class HomeScreen extends ConsumerWidget {
                   ),
                 ),
                 Container(
-                  height: MediaQuery.of(context).size.width / 2.06,
+                  height: MediaQuery.of(context).size.width / 2.00,
                   child: Swiper(
                     loop: true,
                     itemCount: bannerPath.length,
@@ -80,14 +74,14 @@ class HomeScreen extends ConsumerWidget {
                           ),
                           padding: const EdgeInsets.only(left: 16, bottom: 9),
                           alignment: Alignment.bottomLeft,
-                          height: MediaQuery.of(context).size.width / 2,
+                          height: MediaQuery.of(context).size.width / 2.00,
                           width: double.infinity,
                           decoration: BoxDecoration(
                             image: DecorationImage(
                               image: AssetImage(
                                 bannerPath[index],
                               ),
-                              fit: BoxFit.fill,
+                              fit: BoxFit.cover,
                             ),
                           ),
                           // child: Text("아늑한 가구로\n가을 맞이 집 새단장!", style: tsNotoSansKR(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white,),),
@@ -304,6 +298,10 @@ class HomeScreen extends ConsumerWidget {
   void bannerRouting(int index, BuildContext context) {
     int categoryIndex = -1;
     //13, 2, 15;
+    if(index == 0){
+      context.pushNamed(ProductCategoryScreen.routeName, pathParameters: {"cid": "-1"}, queryParameters: {"isPointPage" : "true"});
+      return;
+    }
     if (index == 1) {
       categoryIndex = 12;
     }
@@ -313,7 +311,6 @@ class HomeScreen extends ConsumerWidget {
     if (index == 3) {
       categoryIndex = 14;
     }
-    context.pushNamed(ProductCategoryScreen.routeName,
-        pathParameters: {"cid": "$categoryIndex"});
+    context.pushNamed(ProductCategoryScreen.routeName, pathParameters: {"cid": "$categoryIndex"});
   }
 }

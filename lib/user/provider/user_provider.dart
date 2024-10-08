@@ -346,8 +346,14 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
 
       // 첫 사용자가 아니라면
       // 유저 정보 얻어오기
+      // 만약 괸리자라면 관리자 데이터로 변환하여
+      // state를 변경
       if (baseTokenModel.available) {
         final userData = await userRepository.getMe();
+        if(userData.role == "ADMIN"){
+          state = AdminUser(id: userData.id, username: userData.username, name: userData.name, nickname: userData.nickname, email: userData.email, address: userData.address, phone: userData.phone, point: userData.point, available: userData.available, role: userData.role);
+          return;
+        }
         state = userData;
         if(!(state is UserModel)){
           state = null;

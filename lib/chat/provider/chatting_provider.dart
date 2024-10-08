@@ -20,4 +20,9 @@ class ChatNotifier extends StateNotifier<ChatDetails> {
   void enterChat(MakeRoom data) async {
     final resp = await repo.enterChatting(data);
   }
+
+  void addMessage(Chatting chat){
+    state.data.add(chat);
+    print("state.data : ${state.data}");
+  }
 }

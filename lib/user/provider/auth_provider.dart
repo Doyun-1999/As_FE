@@ -1,49 +1,12 @@
 import 'dart:convert';
-import 'package:auction_shop/admin/QandA/view/consumer_answer_info_screen.dart';
-import 'package:auction_shop/admin/QandA/view/consumer_answer_screen.dart';
-import 'package:auction_shop/admin/QandA/view/reply_answer_screen.dart';
-import 'package:auction_shop/admin/common/view/admin_category_screen.dart';
-import 'package:auction_shop/admin/common/view/admin_home_screen.dart';
-import 'package:auction_shop/chat/model/chat_model.dart';
 import 'package:auction_shop/chat/provider/sse_provider.dart';
-import 'package:auction_shop/chat/view/chat_info_screen.dart';
-import 'package:auction_shop/chat/view/chat_list_screen.dart';
-import 'package:auction_shop/common/view/error_screen.dart';
-import 'package:auction_shop/common/view/splash_screen.dart';
-import 'package:auction_shop/notification/view/notification_screen.dart';
-import 'package:auction_shop/payment/view/payment_complete_screen.dart';
 import 'package:auction_shop/product/model/product_model.dart';
-import 'package:auction_shop/product/provider/recommend_product_provider.dart';
-import 'package:auction_shop/product/view/search_screen.dart';
-import 'package:auction_shop/product/view/searched_product_screen.dart';
-import 'package:auction_shop/product/view/select_category_screen.dart';
-import 'package:auction_shop/product/view/product_category_screen.dart';
-import 'package:auction_shop/product/view/product_info_screen.dart';
-import 'package:auction_shop/product/view/product_revise_screen.dart';
-import 'package:auction_shop/product/view/register/register_product_screen.dart';
-import 'package:auction_shop/product/view/register/register_product_screen2.dart';
 import 'package:auction_shop/user/model/Q&A_model.dart';
 import 'package:auction_shop/user/model/address_model.dart';
 import 'package:auction_shop/user/model/user_model.dart';
-import 'package:auction_shop/user/provider/user_provider.dart';
-import 'package:auction_shop/user/view/mypage_inner/manage_address_screen.dart';
-import 'package:auction_shop/user/view/mypage_inner/address_screen.dart';
-import 'package:auction_shop/user/view/mypage_inner/block_screen.dart';
-import 'package:auction_shop/user/view/mypage_inner/answer_screen.dart';
-import 'package:auction_shop/user/view/mypage_inner/my_bidding_screen.dart';
-import 'package:auction_shop/user/view/mypage_inner/my_buy_screen.dart';
-import 'package:auction_shop/user/view/mypage_inner/my_like_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/mybid_screen.dart';
-import 'package:auction_shop/user/view/mypage_inner/question_screen.dart';
-import 'package:auction_shop/user/view/mypage_inner/revise_user_screen.dart';
-import 'package:auction_shop/user/view/mypage_screen.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:auction_shop/common/view/root_tab.dart';
-import 'package:auction_shop/user/view/login_screen.dart';
-import 'package:auction_shop/user/view/signup_screen.dart';
+import 'package:auction_shop/common/export/route_export.dart';
 
 final authProvider = ChangeNotifierProvider<AuthNotifier>((ref) {
   return AuthNotifier(ref: ref);
@@ -93,9 +56,17 @@ class AuthNotifier extends ChangeNotifier {
             GoRoute(
               path: 'products/:cid',
               name: ProductCategoryScreen.routeName,
-              builder: (_, __) => ProductCategoryScreen(
-                index: int.parse(__.pathParameters['cid']!),
-              ),
+              builder: (_, __) {
+                bool isPointPage = false;
+                final queryData = __.uri.queryParameters["isPointPage"];
+                if(queryData == "true"){
+                  isPointPage = true;
+                }
+                return ProductCategoryScreen(
+                  index: int.parse(__.pathParameters['cid']!),
+                  isPointPage: isPointPage,
+                );
+              },
             ),
             GoRoute(
               path: 'info/:pid',
@@ -377,6 +348,13 @@ class AuthNotifier extends ChangeNotifier {
     // 회원가입 화면으로 이동
     if (user is UserModelSignup) {
       return isCategory ? null : '/signup';
+    }
+
+    // 괸라지가 로그인했을 경우,
+    // Admin 홈 화면으로 보내고
+    // 그 외의 상황은 그대로 이동하도록 설정
+    if (user is AdminUser){
+      return isSplash ? '/admin_home' : null;
     }
 
     // 유저 정보가 존재한 상태에서

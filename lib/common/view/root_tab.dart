@@ -35,10 +35,6 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
   }
 
   void tabListener(){
-    if(index == 2){
-      context.goNamed(RegisterProductScreen.routeName);
-      return;
-    }
     setState(() {
       index = controller.index;
     });
@@ -66,6 +62,10 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
         unselectedLabelStyle: TextStyle(fontSize: 12, color: auctionColor.subGreyColor9E,),
         type: BottomNavigationBarType.fixed,
         onTap: (int index){
+          if(index == 2){
+            context.goNamed(RegisterProductScreen.routeName);
+            return;
+          }
           controller.animateTo(index);
         },
         currentIndex: index,

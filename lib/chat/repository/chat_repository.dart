@@ -25,13 +25,20 @@ class ChatRepository {
     required this.baseUrl,
   });
 
+  // 채팅방 처음 들어가기 / 만들기
   Future enterChatting(MakeRoom data) async {
-    final url = baseUrl + '/chatroom/enter';
-    print("url : ${url}");
-    print("data.toJson() : ${data.toJson()}");
-    final resp = await dio.get(url, data: data.toJson());
-    print("resp.statusCode : ${resp.statusCode}");
-    print("resp.data : ${resp.data}");
+    try{
+      final url = baseUrl + '/chatroom/enter/${data.userId}/${data.yourId}/${data.postId}';
+      print("url : ${url}");
+      final resp = await dio.get(url, data: data.toJson());
+      print("resp.statusCode : ${resp.statusCode}");
+      print("resp.data : ${resp.data}");
+    } on DioException catch(e){
+      print("e.error : ${e.error}");
+      print("e.message : ${e.message}");
+      print("e.requestOptions : ${e.requestOptions}");
+      print("e.response : ${e.response}");
+    }
     // return
   }
 

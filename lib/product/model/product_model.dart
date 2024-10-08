@@ -337,7 +337,7 @@ class RecommendProduct{
   factory RecommendProduct.fromJson(Map<String, dynamic> json) => _$RecommendProductFromJson(json);
 }
 
-
+// 메인 화면 추천 경매 물품 목록들 모델
 class MainProducts extends ProductBase{
   final List<RecommendProduct>? hotData;
   final List<RecommendProduct>? newData;
@@ -360,4 +360,44 @@ class MainProducts extends ProductBase{
       recommendData: recommendData ?? this.recommendData,
     );
   }
+}
+// 경매 물품 등록 모델
+@JsonSerializable()
+class ReviseProductModel extends FormDataBase{
+  
+  // 등록 데이터
+  final String title;
+  final String details;
+  final List<String> categories;
+  final String? tradeLocation;
+  final String conditions;
+  final List<String> imageUrlsToKeep;
+  //final List<String> tradeTypes;
+  // final String productType;
+  // final String trade;
+  // final int initial_price;
+  // final int? minimum_price;
+  // final String startTime;
+  // final String endTime;
+  
+
+  ReviseProductModel({
+    required this.title,
+    required this.details,
+    required this.categories,
+    required this.conditions,
+    required this.imageUrlsToKeep,
+    this.tradeLocation,
+    // required this.productType,
+    // required this.tradeTypes,
+    // required this.trade,
+    // required this.initial_price,
+    // this.minimum_price,
+    // required this.startTime,
+    // required this.endTime,
+  });
+
+  factory ReviseProductModel.fromJson(Map<String, dynamic> json) => _$ReviseProductModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ReviseProductModelToJson(this);
 }

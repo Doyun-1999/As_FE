@@ -87,14 +87,13 @@ class ProductDetailNotifier extends StateNotifier<List<ProductDetailModel>> {
   }
 
   // 경매 물품 수정(미완)
-  void reviseProduct({
+  Future<void> reviseProduct({
     required List<String>? images,
-    required RegisterProductModel data,
+    required ReviseProductModel data,
     required int productId,
   }) async {
     // formData 만들어주고 반환
-    FormData formData =
-        await makeFormData(images: images, data: data, key: "product");
+    FormData formData = await makeFormData(images: images, data: data, key: "product");
 
     // 요청
     final resp = await repo.reviseProduct(formData, productId);
