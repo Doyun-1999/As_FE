@@ -76,7 +76,7 @@ class ProductCard extends ConsumerWidget {
     final Debouncer debounce = Debouncer(seconds: 2);
     return InkWell(
       onTap: () {
-        context.pushNamed(ProductInfoScreen.routeName,
+context.pushNamed(ProductInfoScreen.routeName,
             pathParameters: {'pid': (product_id).toString()});
       },
       child: Row(
@@ -167,6 +167,7 @@ class ProductCard extends ConsumerWidget {
                   ref,
                   debounce: debounce,
                   memberId: user.id,
+                  isAdmin: (user is AdminUser)
                 ),
               ],
             ),
@@ -180,6 +181,7 @@ class ProductCard extends ConsumerWidget {
     WidgetRef ref, {
     required Debouncer debounce,
     required int memberId,
+    required bool isAdmin,
   }) {
     // Skeleton일 때는 하나의 Container처럼 보이기
     if (isSkeletion)
@@ -225,15 +227,14 @@ class ProductCard extends ConsumerWidget {
         ),
         GestureDetector(
           onTap: () {
+            // 관리자는 좋아요 기능 통제
+            // 개수만 알 수 있도록
+            if(isAdmin){
+              return;
+            }
             final isPlus = !liked;
-              final likeData = Like(productId: product_id, memberId: memberId);
-              ref.read(productProvider.notifier).liked(likeData: likeData, isPlus: isPlus);
-            // debounce.run(() {
-            //   // 실행할 함수 및 변수 정의
-            //   final isPlus = !liked;
-            //   final likeData = Like(productId: product_id, memberId: memberId);
-            //   ref.read(productProvider.notifier).liked(likeData: likeData, isPlus: isPlus);
-            // });
+            final likeData = Like(productId: product_id, memberId: memberId);
+            ref.read(productProvider.notifier).liked(likeData: likeData, isPlus: isPlus);
           },
           child: liked
               ? Icon(

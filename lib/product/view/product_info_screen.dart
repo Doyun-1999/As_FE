@@ -384,6 +384,9 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                     padding: const EdgeInsets.only(top: 4, left: 4),
                     child: IconButton(
                       onPressed: () {
+                        if(isAdmin){
+                          context.pop();
+                        }
                         context.goNamed(
                           ProductCategoryScreen.routeName,
                           pathParameters: {
