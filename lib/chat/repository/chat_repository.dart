@@ -34,10 +34,10 @@ class ChatRepository {
       print("resp.statusCode : ${resp.statusCode}");
       print("resp.data : ${resp.data}");
     } on DioException catch(e){
-        print("e.error : ${e.error}");
-        print("e.message : ${e.message}");
-        print("e.requestOptions : ${e.requestOptions}");
-        print("e.response : ${e.response}");
+      print("e.error : ${e.error}");
+      print("e.message : ${e.message}");
+      print("e.requestOptions : ${e.requestOptions}");
+      print("e.response : ${e.response}");
     }
     // return
   }

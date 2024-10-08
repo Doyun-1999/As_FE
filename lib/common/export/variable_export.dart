@@ -9,3 +9,4 @@ export 'package:auction_shop/common/variable/validator.dart';
 export 'package:flutter/material.dart';
 export 'package:flutter_riverpod/flutter_riverpod.dart';
 export 'package:go_router/go_router.dart';
+export 'package:auction_shop/common/component/dialog.dart';

@@ -69,7 +69,10 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
       destination: '/sub/chatroom/${widget.data.roomId}', // 구독할 토픽의 경로
       callback: (frame) {
         print('Received message: ${frame.body}');
-        final data = Chatting.fromJson((frame.body as Map<String, dynamic>));
+        if(frame.body == null){
+          return;
+        }
+        final data = Chatting.fromJson((jsonDecode(frame.body!) as Map<String, dynamic>));
         ref.read(chatProvider.notifier).addMessage(data);
         print("frame : ${frame}");
         print("frame.command : ${frame.command}");
@@ -148,10 +151,12 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
               child: ListView.builder(
                 itemCount: messages.length,
                 itemBuilder: (context, index) {
+                  final data = messages[index];
+                  final myId = ref.read(userProvider.notifier).getMemberId();
                   return ChatBox(
                     context,
-                    msg: messages[index].message,
-                    isMe: index % 2 == 0 ? false : true,
+                    msg: data.message,
+                    isOther: data.userId != myId,
                   );
                 },
               ),
@@ -264,10 +269,10 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
   Align ChatBox(
     BuildContext context, {
     required String msg,
-    required bool isMe,
+    required bool isOther,
   }) {
     return Align(
-      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+      alignment: isOther ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width * 0.65,
@@ -275,7 +280,7 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
         margin: const EdgeInsets.only(bottom: 13),
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 11),
         decoration: BoxDecoration(
-          color: isMe ? auctionColor.mainColor : auctionColor.subGreyColorDB,
+          color: isOther ? auctionColor.mainColor : auctionColor.subGreyColorDB,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Text(
@@ -283,7 +288,7 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
           style: tsNotoSansKR(
             fontSize: 16,
             fontWeight: FontWeight.w400,
-            color: isMe ? Colors.white : auctionColor.subBlackColor49,
+            color: isOther ? Colors.white : auctionColor.subBlackColor49,
           ),
         ),
       ),

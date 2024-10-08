@@ -9,6 +9,7 @@ import 'package:auction_shop/product/component/bid_card.dart';
 import 'package:auction_shop/product/view/product_info_screen.dart';
 import 'package:auction_shop/user/model/mybid_model.dart';
 import 'package:auction_shop/user/provider/my_bid_provider.dart';
+import 'package:auction_shop/user/view/bidding_loading_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,6 +27,7 @@ class MyBiddingScreen extends ConsumerStatefulWidget {
 class _MyBiddingScreenState extends ConsumerState<MyBiddingScreen> {
   final dropDownList = ["유력순", "최신순", "가격순"];
   String dropDownValue = "유력순";
+  final appBarTitle = "입찰 중 목록";
 
   @override
   Widget build(BuildContext context) {
@@ -33,38 +35,13 @@ class _MyBiddingScreenState extends ConsumerState<MyBiddingScreen> {
 
     // 데이터 받아오는 로딩 상태일 때
     if (state is CursorPaginationLoading) {
-      final fakeData = [
-        MyBidModel(productId: 0, title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), bidStatus: "FAILED"),
-        MyBidModel(productId: 0, title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), bidStatus: "FAILED"),
-        MyBidModel(productId: 0, title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), bidStatus: "FAILED"),
-        MyBidModel(productId: 0, title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), bidStatus: "FAILED"),
-        MyBidModel(productId: 0, title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), bidStatus: "FAILED"),
-      ];
-      return RefreshIndicator(
-        onRefresh: () async {
-            ref.read(MyBidProvider.notifier).refetching();
-          },
-        child: DefaultLayout(
-          appBar: CustomAppBar().noActionAppBar(title: "입찰 중 목록", context: context),
-          child: Skeletonizer(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: CustomScrollView(
-                slivers: [
-                  productDropdownButton(),
-                  productSliverList(fakeData),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
+      return BiddingLoadingScreen(title: appBarTitle);
     }
 
     // 에러 발생했을 때
     if (state is CursorPaginationError) {
       return DefaultLayout(
-        appBar: CustomAppBar().noActionAppBar(title: "입찰 중 목록", context: context),
+        appBar: CustomAppBar().noActionAppBar(title: appBarTitle, context: context),
         child: Center(
           child: Text("에러가 발생했습니다."),
         ),
@@ -78,7 +55,7 @@ class _MyBiddingScreenState extends ConsumerState<MyBiddingScreen> {
         ref.read(MyBidProvider.notifier).refetching();
       },
       child: DefaultLayout(
-        appBar: CustomAppBar().noActionAppBar(title: "입찰 중 목록", context: context),
+        appBar: CustomAppBar().noActionAppBar(title: appBarTitle, context: context),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: CustomScrollView(
@@ -129,8 +106,7 @@ class _MyBiddingScreenState extends ConsumerState<MyBiddingScreen> {
       itemCount: data.length,
       itemBuilder: (context, index) {
         final model = data[index];
-        final date =
-            "${model.bidTime.year}.${model.bidTime.month}.${model.bidTime.day}";
+        final date = "${model.bidTime.year}.${model.bidTime.month}.${model.bidTime.day}";
         return Column(
           children: [
             // Product의 데이터를 담은 Row

@@ -7,7 +7,6 @@ import 'package:auction_shop/common/component/image_widget.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
-import 'package:auction_shop/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +40,9 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
         child: CustomScrollView(
           slivers: [
             // 간격
-            SliverToBoxAdapter(child: SizedBox(height: 45),),
+            SliverToBoxAdapter(
+              child: SizedBox(height: 45),
+            ),
             //topBar(),
             // 채팅방 데이터가 없으면
             // 아무것도 UI 표시하지 않는다.
@@ -55,23 +56,24 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
                   return ChatListBox(
                     nickname: data.nickname,
                     latestChatLog: data.latestChatLog,
+                    // 첫 채팅 시간이 없으면 '-'을 반환
                     latestChatTime: data.latestChatTime == null ? '-' : data.latestChatTime.toString(),
                     productImageUrl: data.imageUrl,
                     userImageUrl: data.profileUrl,
                     func: () async {
                       final extra = state[index];
                       final enterData = MakeRoom(
-                          userId: extra.userId,
-                          postId: extra.postId,
-                          yourId: extra.yourId,);
+                        userId: extra.userId,
+                        postId: extra.postId,
+                        yourId: extra.yourId,
+                      );
                       ref.read(chatProvider.notifier).enterChat(enterData);
-                  
-                      context.pushNamed(ChatInfoScreen.routeName,
-                          extra: extra);
+
+                      context.pushNamed(ChatInfoScreen.routeName, extra: extra);
                     },
                   );
                 },
-                separatorBuilder: (context, index){
+                separatorBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 15),
                     child: Divider(color: auctionColor.subGreyColorE2),
@@ -102,10 +104,13 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
                 right: 15,
               ),
               decoration: BoxDecoration(
-                color: productImageUrl == null ? auctionColor.subGreyColorCC : null,
-                borderRadius: BorderRadius.circular(5),
-                image: productImageUrl == null ? null : DecorationImage(image: NetworkImage(productImageUrl))
-              ),
+                  color: productImageUrl == null
+                      ? auctionColor.subGreyColorCC
+                      : null,
+                  borderRadius: BorderRadius.circular(5),
+                  image: productImageUrl == null
+                      ? null
+                      : DecorationImage(image: NetworkImage(productImageUrl))),
               width: 56,
               height: 56,
             ),
@@ -115,7 +120,10 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
                 children: [
                   Row(
                     children: [
-                      UserImage(size: 25, imgPath: userImageUrl,),
+                      UserImage(
+                        size: 25,
+                        imgPath: userImageUrl,
+                      ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 6, vertical: 3),

@@ -25,6 +25,7 @@ class PaymentScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    
     final address = ref.read(userProvider.notifier).getDefaultAddress();
     final data = PaymentData(
       pg: 'html5_inicis', // PG사

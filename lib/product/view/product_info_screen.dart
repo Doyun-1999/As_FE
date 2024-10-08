@@ -1,20 +1,11 @@
 import 'package:auction_shop/chat/model/chat_model.dart';
 import 'package:auction_shop/chat/provider/chatting_provider.dart';
-import 'package:auction_shop/common/component/appbar.dart';
-import 'package:auction_shop/common/component/button.dart';
-import 'package:auction_shop/common/component/dialog.dart';
-import 'package:auction_shop/common/component/textformfield.dart';
-import 'package:auction_shop/common/component/image_widget.dart';
-import 'package:auction_shop/common/layout/default_layout.dart';
-import 'package:auction_shop/common/variable/color.dart';
-import 'package:auction_shop/common/variable/function.dart';
-import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/view/error_screen.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/payment/model/payment_model.dart';
 import 'package:auction_shop/payment/view/payment_screen.dart';
 import 'package:auction_shop/product/component/bid_card.dart';
-import 'package:auction_shop/product/component/toggle_button.dart';
+import 'package:auction_shop/common/export/variable_export.dart';
 import 'package:auction_shop/product/model/bid_model.dart';
 import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/product/provider/product_detail_provider.dart';
@@ -26,13 +17,6 @@ import 'package:auction_shop/user/model/user_model.dart';
 import 'package:auction_shop/user/provider/block_provider.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:card_swiper/card_swiper.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class ProductInfoScreen extends ConsumerStatefulWidget {
   static String get routeName => 'productInfo';
@@ -75,9 +59,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
     controller.addListener(tabListener);
     // 데이터 얻기
     if (!widget.isSkeleton) {
-      ref
-          .read(productDetailProvider.notifier)
-          .getProductDetail(productId: int.parse(widget.id));
+      ref.read(productDetailProvider.notifier).getProductDetail(productId: int.parse(widget.id));
     }
     super.initState();
   }
@@ -139,9 +121,9 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                         height: 18,
                       ),
                       productInfo(
-                        yourId: user.id,
+                        yourId: data.memberId,
                         owner: data.owner,
-                        userId: data.memberId,
+                        userId: user.id,
                         product_id: data.product_id,
                         categories: data.categories,
                         createdBy: data.createdBy,
@@ -316,7 +298,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                       context: context,
                       isScrollControlled: true,
                       builder: (BuildContext context) {
-                        return customBottomSheet();
+                        return customBottomSheet(data.current_price);
                       },
                     );
                   },
@@ -669,6 +651,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                               yourId: yourId,
                             );
                             ref.read(chatProvider.notifier).enterChat(data);
+                            //final extra = ChattingRoom(userId: userId, yourId: yourId, postId: product_id, roomId: roomId, nickname: nickname)
                           },
                           child: Container(
                             padding: const EdgeInsets.symmetric(
@@ -870,7 +853,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
   }
 
   // 올라오는 바텀 시트 내부 위젯
-  Container customBottomSheet() {
+  Container customBottomSheet(int price) {
     return Container(
       // 고정 크기 => 텍스트, 버튼 전부 고정 크기이므로
       height: 420,
@@ -934,12 +917,16 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
           CustomButton(
             text: '입찰하기',
             func: () {
-              final user = ref.read(userProvider.notifier).getUser();
+              if(int.parse(_priceController.text) <= price){
+                CustomDialog(context: context, title: "현재 입찰가보다\n높은 가격을 제시해주세요.", OkText: "확인", func: (){context.pop();});
+                return;
+              }
+              final userData = ref.read(userProvider.notifier).getUser();
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 final model = PurchaseData(
                   productId: int.parse(widget.id),
                   price: int.parse(_priceController.text),
-                  user: user,
+                  user: userData,
                   isDESCENDING: false,
                 );
                 return PaymentScreen(model: model);

@@ -72,7 +72,9 @@ class MakeRoom{
 // 채팅 룸 데이터 모델
 @JsonSerializable()
 class ChattingRoom {
+  // 현재 접속중인 유저의 아이디
   final int userId;
+  // 상대방의 아이디
   final int yourId;
   final int postId;
   final int roomId;

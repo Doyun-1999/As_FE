@@ -56,9 +56,17 @@ class AuthNotifier extends ChangeNotifier {
             GoRoute(
               path: 'products/:cid',
               name: ProductCategoryScreen.routeName,
-              builder: (_, __) => ProductCategoryScreen(
-                index: int.parse(__.pathParameters['cid']!),
-              ),
+              builder: (_, __) {
+                bool isPointPage = false;
+                final queryData = __.uri.queryParameters["isPointPage"];
+                if(queryData == "true"){
+                  isPointPage = true;
+                }
+                return ProductCategoryScreen(
+                  index: int.parse(__.pathParameters['cid']!),
+                  isPointPage: isPointPage,
+                );
+              },
             ),
             GoRoute(
               path: 'info/:pid',
@@ -340,6 +348,13 @@ class AuthNotifier extends ChangeNotifier {
     // 회원가입 화면으로 이동
     if (user is UserModelSignup) {
       return isCategory ? null : '/signup';
+    }
+
+    // 괸라지가 로그인했을 경우,
+    // Admin 홈 화면으로 보내고
+    // 그 외의 상황은 그대로 이동하도록 설정
+    if (user is AdminUser){
+      return isSplash ? '/admin_home' : null;
     }
 
     // 유저 정보가 존재한 상태에서
