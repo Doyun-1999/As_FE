@@ -8,7 +8,7 @@ class CustomAppBar {
   AppBar noLeadingAppBar({
     required List<PopupMenuEntry<String>> popupList,
     required String? Function(String?) vertFunc,
-    required String title,
+    required String title, required Null Function(dynamic value) onPopupItemSelected,
   }) {
     return AppBar(
       backgroundColor: Colors.white,
