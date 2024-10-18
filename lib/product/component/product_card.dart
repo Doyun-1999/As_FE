@@ -346,6 +346,7 @@ context.pushNamed(ProductInfoScreen.routeName,
               CancelText: "취소",
               func: () {
                 ref.read(productDetailProvider.notifier).deleteData(productId);
+                context.pop();
               });
         },
         child: Container(

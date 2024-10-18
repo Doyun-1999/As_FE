@@ -4,13 +4,16 @@ import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/component/button.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/main.dart';
+import 'package:auction_shop/user/model/Q&A_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class ConsumerAnswerInfoScreen extends StatefulWidget {
   static String get routeName => "consumer_answer_info";
+  final AnswerModel data;
   const ConsumerAnswerInfoScreen({
+    required this.data,
     super.key,
   });
 
@@ -34,10 +37,11 @@ class _ConsumerAnswerInfoScreenState extends State<ConsumerAnswerInfoScreen> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: UserQandAInfo(
-                username: "룰루랄",
+                username: widget.data.title,
                 date: "2024.09.01",
-                title: "등록 관련해서 문의 드립니다!",
-                content: "시간 설정 최대 이틀밖에 안되나요? 더 길게 하고 싶은데...",
+                title: widget.data.title,
+                content: widget.data.content,
+                imgPaths: widget.data.imageUrl,
               ),
             ),
           ),
@@ -52,7 +56,7 @@ class _ConsumerAnswerInfoScreenState extends State<ConsumerAnswerInfoScreen> {
                   child: CustomButton(
                     text: "답변 하기",
                     func: () {
-                      context.pushNamed(ReplyAnswerScreen.routeName);
+                      context.pushNamed(ReplyAnswerScreen.routeName, extra: widget.data);
                     },
                   ),
                 ),

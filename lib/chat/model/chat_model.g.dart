@@ -6,26 +6,40 @@ part of 'chat_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+ChatModel _$ChatModelFromJson(Map<String, dynamic> json) => ChatModel(
+      list: (json['list'] as List<dynamic>)
+          .map((e) => ChatDetails.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$ChatModelToJson(ChatModel instance) => <String, dynamic>{
+      'list': instance.list,
+    };
+
 ChatDetails _$ChatDetailsFromJson(Map<String, dynamic> json) => ChatDetails(
-      data: (json['data'] as List<dynamic>)
+      chatLog: (json['chatLog'] as List<dynamic>)
           .map((e) => Chatting.fromJson(e as Map<String, dynamic>))
           .toList(),
+      roomId: (json['roomId'] as num).toInt(),
+      title: json['title'] as String,
+      currentPrice: (json['currentPrice'] as num).toInt(),
     );
 
 Map<String, dynamic> _$ChatDetailsToJson(ChatDetails instance) =>
     <String, dynamic>{
-      'data': instance.data,
+      'roomId': instance.roomId,
+      'chatLog': instance.chatLog,
+      'currentPrice': instance.currentPrice,
+      'title': instance.title,
     };
 
 Chatting _$ChattingFromJson(Map<String, dynamic> json) => Chatting(
-      roomId: (json['roomId'] as num).toInt(),
-      userId: json['userId'] as String,
+      userId: (json['userId'] as num).toInt(),
       message: json['message'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
     );
 
 Map<String, dynamic> _$ChattingToJson(Chatting instance) => <String, dynamic>{
-      'roomId': instance.roomId,
       'userId': instance.userId,
       'message': instance.message,
       'createdAt': instance.createdAt.toIso8601String(),
@@ -94,14 +108,4 @@ Map<String, dynamic> _$EnterChattingRoomToJson(EnterChattingRoom instance) =>
       'userId': instance.userId,
       'yourId': instance.yourId,
       'postId': instance.postId,
-    };
-
-FirstChat _$FirstChatFromJson(Map<String, dynamic> json) => FirstChat(
-      id: json['id'] as String,
-      roomId: (json['roomId'] as num).toInt(),
-    );
-
-Map<String, dynamic> _$FirstChatToJson(FirstChat instance) => <String, dynamic>{
-      'id': instance.id,
-      'roomId': instance.roomId,
     };

@@ -45,7 +45,7 @@ class _MyBuyScreenState extends ConsumerState<MyBuyScreen> {
     }
 
     // 데이터를 성공적으로 받아왔을 때
-    final data = state as CursorPagination<MyBidModel>;
+    final data = state as CursorPagination<MyBuyModel>;
     return RefreshIndicator(
       onRefresh: () async {
         ref.read(MyBuyProvider.notifier).refetching();
@@ -97,12 +97,12 @@ class _MyBuyScreenState extends ConsumerState<MyBuyScreen> {
   }
 
   // 입찰 카드 데이터들
-  SliverList productSliverList(List<MyBidModel> data) {
+  SliverList productSliverList(List<MyBuyModel> data) {
     return SliverList.separated(
       itemCount: data.length,
       itemBuilder: (context, index) {
         final model = data[index];
-        return UserBidCard.fromModel(model: model);
+        return UserBidCard.fromOtherModel(model: model);
       },
       // 구분선 Widget
       separatorBuilder: (context, index) {

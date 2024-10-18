@@ -41,25 +41,21 @@ final MyBuyProvider = StateNotifierProvider<MyBuyNotifier, CursorPaginationBase>
   return MyBuyNotifier(repo: repo);
 });
 
-class MyBuyNotifier extends PaginationProvider<MyBidModel, MyBuyRepository>{
+class MyBuyNotifier extends PaginationProvider<MyBuyModel, MyBuyRepository>{
   MyBuyNotifier({
     required super.repo,
   });
 
   void sortState(int index){
-    final pState = state as CursorPagination<MyBidModel>;
+    final pState = state as CursorPagination<MyBuyModel>;
     final sortedData = pState.data;
-    // 유력순으로 나열
-    if(index == 0){
-      sortedData.sort((a, b) => (b.bidStatus == "FAILED" ? 1 : 0) - (b.bidStatus != "FAILED" ? 1 : 0));
-    }
     // 최신순으로 나열
     if(index == 1){
       sortedData.sort((b, a) => a.productId.compareTo(b.productId));
     }
     // 가격순으로 나열
     if(index == 2){
-      sortedData.sort((a, b) => a.amount.compareTo(b.amount));
+      sortedData.sort((a, b) => a.current_price.compareTo(b.current_price));
     }
     final newState = pState.copyWith(data: sortedData);
     state = newState;

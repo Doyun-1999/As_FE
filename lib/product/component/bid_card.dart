@@ -15,6 +15,8 @@ class BidCard extends StatelessWidget {
   final double bottomMargin;
   final String rightSideText;
   final bool isImage;
+  final String? productType;
+
   const BidCard({
     required this.date,
     required this.price,
@@ -25,6 +27,7 @@ class BidCard extends StatelessWidget {
     this.isNow = false,
     this.isFirst = false,
     this.bottomMargin = 10,
+    this.productType,
     super.key,
   });
 
@@ -32,12 +35,7 @@ class BidCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(bottom: bottomMargin),
-      padding: const EdgeInsets.only(
-        left: 10,
-        right: 8.5,
-        bottom: 5.5,
-        top: 9,
-      ),
+      padding: const EdgeInsets.all(9),
       decoration: BoxDecoration(
         border: isFirst ? Border.all(color: auctionColor.subGreyColorE2) : null,
         color: isNow
@@ -111,11 +109,37 @@ class BidCard extends StatelessWidget {
             // 1. 유저 이미지가 필요 없을 때
             // (1) 내 입찰중인 목록 데이터를 가져올 때
             // (2) 변수 isImage가 false일 때(기본으로 true를 반환함)
-            if(!isImage)
-            Container(
-              width: ratio.width * 70,
+            if(!isImage && productType != null)
+            Align(
+              alignment: Alignment.bottomRight,
+              child: Container(
+                width: 60 + ratio.width * 10,
+                padding: const EdgeInsets.symmetric(vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: Text("${getProductType(productType!)} 경매", textAlign: TextAlign.center, style: tsNotoSansKR(fontSize: 10, fontWeight: FontWeight.bold, color: auctionColor.mainColor,),),
+              ),
             ),
-            // 2. 유저 이미지가 필요할 때
+
+            // 경매 방식
+            // 2. 경매 방식이 UI 상으로 나와야할 때
+            // (1) 내 입찰중인 목록 데이터를 가져올 때
+            // (2) 변수 productType가 null이 아닐 때
+            // if(productType != null)
+            // Container(
+            //   width: ratio.width * 70,
+            //   margin: const EdgeInsets.all(10),
+            //   padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 6),
+            //   decoration: BoxDecoration(
+            //     color: Colors.white,
+            //     borderRadius: BorderRadius.circular(100),
+            //   ),
+            //   child: Text("${getProductType(productType!)} 경매", style: tsNotoSansKR(fontSize: 10, fontWeight: FontWeight.bold, color: auctionColor.mainColor,),),
+            // ),
+            
+            // 3. 유저 이미지가 필요할 때
             // (1) 상향식 경매 물품의 경매방일 때
             // (2) 맨 처음 시작 가격 데이터가 아니고
             if (!isFirst && reducedPrice == null && isImage)
@@ -127,7 +151,7 @@ class BidCard extends StatelessWidget {
                   imgPath: imgPath,
                 ),
               ),
-            // 3. 유저 이미지가 필요없을 때
+            // 4. 유저 이미지가 필요없을 때
             // (1) 맨 처음 시작 데이터가 아니고
             // (2) 하향식 경매일 때
             if (!isFirst && reducedPrice != null && isImage)

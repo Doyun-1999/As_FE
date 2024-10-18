@@ -3,35 +3,90 @@ import 'package:json_annotation/json_annotation.dart';
 part 'chat_model.g.dart';
 
 @JsonSerializable()
-class ChatDetails{
-  final List<Chatting> data;
+class ChatModel {
+  final List<ChatDetails> list;
 
-  ChatDetails({
-    required this.data,
+  ChatModel({
+    required this.list,
   });
 
+  factory ChatModel.fromJson(Map<String, dynamic> json) => _$ChatModelFromJson(json);
+
+  // copyWith 함수
+  ChatModel copyWith({
+    List<ChatDetails>? list,
+  }) {
+    return ChatModel(
+      list: list ?? this.list,
+    );
+  }
+}
+
+
+@JsonSerializable()
+class ChatDetails {
+  final int roomId;
+  final List<Chatting> chatLog;
+  final int currentPrice;
+  final String title;
+
+  ChatDetails({
+    required this.chatLog,
+    required this.roomId,
+    required this.title,
+    required this.currentPrice,
+  });
+  
+  // copyWith 함수
+  ChatDetails copyWith({
+    int? roomId,
+    List<Chatting>? chatLog,
+    int? currentPrice,
+    String? title,
+  }) {
+    return ChatDetails(
+      roomId: roomId ?? this.roomId,
+      chatLog: chatLog ?? this.chatLog,
+      currentPrice: currentPrice ?? this.currentPrice,
+      title: title ?? this.title,
+    );
+  }
+
+  Map<String, dynamic> toJson() => _$ChatDetailsToJson(this);
+
   factory ChatDetails.fromJson(Map<String, dynamic> json) => _$ChatDetailsFromJson(json);
+
 }
 
 // 하나의 채팅 모델
 @JsonSerializable()
-class Chatting{
-  // final String id;
-  final int roomId;
-  final String userId;
+class Chatting {
+  final int userId;
   final String message;
   final DateTime createdAt;
 
   Chatting({
-    // required this.id,
-    required this.roomId,
     required this.userId,
     required this.message,
-    required this.createdAt
+    required this.createdAt,
   });
+  
+  // copyWith 함수
+  Chatting copyWith({
+    int? userId,
+    String? message,
+    DateTime? createdAt,
+  }) {
+    return Chatting(
+      userId: userId ?? this.userId,
+      message: message ?? this.message,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
 
   factory Chatting.fromJson(Map<String, dynamic> json) => _$ChattingFromJson(json);
 }
+
 
 // 메시지
 @JsonSerializable()
@@ -117,21 +172,4 @@ class EnterChattingRoom {
   factory EnterChattingRoom.fromJson(Map<String, dynamic> json) => _$EnterChattingRoomFromJson(json);
 
   Map<String, dynamic> toJson() => _$EnterChattingRoomToJson(this);
-}
-
-// 채팅방이 처음 만들어졌을 때
-// 서버로부터 받는 roomid과 pk인 id
-@JsonSerializable()
-class FirstChat{
-  final String id;
-  final int roomId;
-
-  FirstChat({
-    required this.id,
-    required this.roomId,
-  });
-
-  factory FirstChat.fromJson(Map<String, dynamic> json) => _$FirstChatFromJson(json);
-
-  Map<String, dynamic> toJson() => _$FirstChatToJson(this);
 }

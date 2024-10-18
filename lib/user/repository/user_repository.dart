@@ -73,8 +73,8 @@ class UserRepository extends BasePaginationRepository<ProductModel> {
   // 이름 중복 검사
   Future<bool> checkNickName(String nickname) async {
     print("nickname : $nickname");
-    final resp = await dio.get(baseUrl + '/member/name',
-        queryParameters: {"nickname": nickname});
+    final resp = await dio
+        .get(baseUrl + '/member/name', queryParameters: {"nickname": nickname});
 
     print(resp.statusCode);
     print(resp.data);
@@ -90,7 +90,8 @@ class UserRepository extends BasePaginationRepository<ProductModel> {
     print(resp.statusCode);
     print(resp.data);
     final data = {"data": resp.data};
-    final dataList = CursorPagination.fromJson(data, (json) => ProductModel.fromJson(json as Map<String, dynamic>));
+    final dataList = CursorPagination.fromJson(
+        data, (json) => ProductModel.fromJson(json as Map<String, dynamic>));
     return dataList;
   }
 
@@ -106,8 +107,9 @@ class UserRepository extends BasePaginationRepository<ProductModel> {
   // 해당 유저의 문의 전체 조회
   Future<AnswerListModel> allAnswerData() async {
     final resp = await dio.get(
-        baseUrl + '/inquiry/member',
-        options: Options(headers: {'accessToken': 'true'},
+      baseUrl + '/inquiry/member',
+      options: Options(
+        headers: {'accessToken': 'true'},
       ),
     );
     print("문의 요청에 대한 StatusCode : ${resp.statusCode}");
@@ -116,7 +118,10 @@ class UserRepository extends BasePaginationRepository<ProductModel> {
     if (resp.statusCode == 204) {
       return AnswerListModel(list: []);
     }
-    final dataList = AnswerListModel(list: (resp.data as List<dynamic>).map((e) => AnswerModel.fromJson(e)).toList());
+    final dataList = AnswerListModel(
+        list: (resp.data as List<dynamic>)
+            .map((e) => AnswerModel.fromJson(e))
+            .toList());
     return dataList;
   }
 
@@ -192,11 +197,17 @@ class UserRepository extends BasePaginationRepository<ProductModel> {
         data: formdata,
         options: Options(
           contentType: 'multipart/form-data',
+          headers: {"refreshToken" : "true"}
         ),
       );
 
       print(resp.data);
       print(resp.statusCode);
+      final userState = UserModel.fromJson(resp.data);
+      if(userState.role == "ADMIN"){
+        final admin = AdminUser(id: userState.id, username: userState.username, name: userState.name, nickname: userState.nickname, email: userState.email, address: userState.address, phone: userState.phone, point: userState.point, available: userState.available, role: userState.role,);
+        return admin;
+      }
       return UserModel.fromJson(resp.data);
     } on DioException catch (e) {
       print(e);
@@ -259,35 +270,56 @@ class UserRepository extends BasePaginationRepository<ProductModel> {
     print("resp.statusCode : ${resp.statusCode}");
   }
 
+  // 배송지 삭제
   Future<bool> deleteAddress({
     required List<int> deleteList,
   }) async {
-    final resp = await dio.delete(baseUrl + '/address',
-        data: deleteList,
-        options: Options(
-          contentType: 'application/json',
-          headers: {'accessToken': 'true'},),);
+    final resp = await dio.delete(
+      baseUrl + '/address',
+      data: deleteList,
+      options: Options(
+        contentType: 'application/json',
+        headers: {'accessToken': 'true'},
+      ),
+    );
     print("resp.statusCode : ${resp.statusCode}");
-    if(resp.statusCode != 204){
+    if (resp.statusCode != 204) {
       return false;
     }
     return true;
-    
   }
 
+  // 기본 배송지 변경
   Future<bool> changeDefaultAddress({
     required int addressId,
   }) async {
-    final resp = await dio.patch(baseUrl + '/address/${addressId}/default',
-        options: Options(
-          contentType: 'application/json',
-          headers: {'accessToken': 'true'},),);
+    final resp = await dio.patch(
+      baseUrl + '/address/${addressId}/default',
+      options: Options(
+        contentType: 'application/json',
+        headers: {'accessToken': 'true'},
+      ),
+    );
     print("resp.statusCode : ${resp.statusCode}");
     print("resp.data : ${resp.data}");
-    if(resp.statusCode != 200){
+    if (resp.statusCode != 200) {
       return false;
     }
     return true;
-    
+  }
+
+  // 회원 탙퇴
+  Future<bool> deleteUser() async {
+    final resp = await dio.delete(
+      baseUrl + '/member',
+      options: Options(
+        headers: {'accessToken': 'true'},
+      ),
+    );
+    print("resp.statusCode : ${resp.statusCode}");
+    if (resp.statusCode != 204) {
+      return false;
+    }
+    return true;
   }
 }

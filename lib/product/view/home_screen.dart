@@ -1,4 +1,3 @@
-import 'package:auction_shop/admin/common/view/admin_home_screen.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/data.dart';
 import 'package:auction_shop/common/variable/function.dart';
@@ -11,7 +10,6 @@ import 'package:auction_shop/product/provider/recommend_product_provider.dart';
 import 'package:auction_shop/product/view/product_category_screen.dart';
 import 'package:auction_shop/product/view/product_info_screen.dart';
 import 'package:auction_shop/product/view/search_screen.dart';
-import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';

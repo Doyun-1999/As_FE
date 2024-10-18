@@ -10,11 +10,13 @@ class UserQandAInfo extends StatelessWidget {
   final String date;
   final String title;
   final String content;
+  final List<String>? imgPaths;
   const UserQandAInfo({
     required this.username,
     required this.date,
     required this.title,
     required this.content,
+    this.imgPaths,
     super.key,
   });
 
@@ -50,30 +52,33 @@ class UserQandAInfo extends StatelessWidget {
           ],
         ),
         SizedBox(height: 28),
-        
+
         // ImageRow
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              ...List.generate(8, (index) {
-                return Container(
-                  width: 85,
-                  height: 85,
-                  margin: const EdgeInsets.only(right: 10),
-                  decoration: BoxDecoration(
+        if (imgPaths != null)
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                ...List.generate(imgPaths!.length, (index) {
+                  return Container(
+                    width: 85,
+                    height: 85,
+                    margin: const EdgeInsets.only(right: 10),
+                    decoration: BoxDecoration(
                       border: Border.all(color: auctionColor.subGreyColorB6),
                       image: DecorationImage(
                           image: NetworkImage(
-                              "https://m.betanews.net/imagedb/orig/2022/0531/9758db48.jpg"),
+                            imgPaths![index],
+                          ),
                           fit: BoxFit.fill),
-                      borderRadius: BorderRadius.circular(8)),
-                );
-              }),
-            ],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  );
+                }),
+              ],
+            ),
           ),
-        ),
-        
+
         TextLable(text: "제목"),
         Container(
           width: double.infinity,

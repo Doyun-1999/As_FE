@@ -1,17 +1,8 @@
 import 'dart:convert';
-import 'package:auction_shop/chat/model/chat_model.dart';
-import 'package:auction_shop/common/component/appbar.dart';
-import 'package:auction_shop/common/component/textformfield.dart';
 import 'package:auction_shop/common/export/route_export.dart';
-import 'package:auction_shop/common/variable/color.dart';
-import 'package:auction_shop/common/variable/textstyle.dart';
-import 'package:auction_shop/common/layout/default_layout.dart';
+import 'package:auction_shop/common/export/variable_export.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/user/provider/block_provider.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auction_shop/chat/provider/chatting_provider.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 
@@ -30,19 +21,22 @@ class ChatInfoScreen extends ConsumerStatefulWidget {
 class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
   TextEditingController _textController = TextEditingController();
 
+  late int myId;
+
   late StompClient client = StompClient(
     config: StompConfig(
       url: 'ws://heybid.shop/ws',
       onConnect: onConnect,
-      onDisconnect: onDisconnect,
+      // onDisconnect: onDisconnect,
       onWebSocketError: (error) => print('WebSocket error: $error'),
     ),
   );
 
   @override
   void initState() {
-    super.initState();
     client.activate();
+    myId = ref.read(userProvider.notifier).getMemberId();
+    super.initState();
   }
 
   // 연결 성공 시 호출되는 콜백 함수
@@ -63,17 +57,22 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
 
   // 구독을 통한 메시지 데이터 받아오기
   void subscribeToTopic() {
+    final roomId = widget.data.roomId;
     // STOMP 클라이언트의 subscribe 메서드를 사용하여 토픽을 구독합니다.
     client.subscribe(
       headers: {'content-type': 'application/json'},
-      destination: '/sub/chatroom/${widget.data.roomId}', // 구독할 토픽의 경로
+      destination: '/sub/chatroom/${roomId}', // 구독할 토픽의 경로
       callback: (frame) {
         print('Received message: ${frame.body}');
         if(frame.body == null){
           return;
         }
+        if (!mounted) {
+          print("끊겼다는데");
+          return;
+        }
         final data = Chatting.fromJson((jsonDecode(frame.body!) as Map<String, dynamic>));
-        ref.read(chatProvider.notifier).addMessage(data);
+        ref.read(chatProvider.notifier).addMessage(chat: data, roomId: roomId);
         print("frame : ${frame}");
         print("frame.command : ${frame.command}");
         print("frame.binaryBody : ${frame.binaryBody}");
@@ -82,59 +81,61 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
     );
   }
 
-  // 메시지 데이터 보내기
-  void publishMessage() async {
-    if (_textController.text.isNotEmpty) {
-      // 변수 설정
-      // userId, createdAt
-      final userId = ref.read(userProvider.notifier).getMemberId();
-      final createdAt = DateTime.now();
-      final msg = Message(
-        roomId: widget.data.roomId,
-        userId: userId,
-        message: _textController.text,
-      );
-      final chat = Chatting(
-        roomId: widget.data.roomId,
-        userId: userId.toString(),
-        message: _textController.text,
-        createdAt: createdAt,
-      );
-      // STOMP 클라이언트의 send 메서드를 사용하여 메시지를 발행합니다.
-      client.send(
-        destination: '/pub/chatroom/${widget.data.roomId}', // 발행할 경로
-        body: jsonEncode(msg),
-        headers: {'content-type': 'application/json'},
-      );
-
-      ref.read(chatProvider.notifier).addMessage(chat);
-    }
-  }
-
   // @override
   // void dispose() {
-  //   onDisconnect;
+  //   print("Widget ${this.runtimeType} is disposed");
   //   super.dispose();
   // }
 
+  // 메시지 데이터 보내기
+  void publishMessage() async {
+    final roomId = widget.data.roomId;
+    if (_textController.text.isNotEmpty) {
+      final msg = Message(
+        roomId: roomId,
+        userId: myId,
+        message: _textController.text,
+      );
+      // STOMP 클라이언트의 send 메서드를 사용하여 메시지를 발행합니다.
+      client.send(
+        destination: '/pub/chatroom/${roomId}', // 발행할 경로
+        body: jsonEncode(msg),
+        headers: {'content-type': 'application/json'},
+      );
+      _textController.text = '';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final messages = ref.watch(chatProvider).data;
+    final chatInfo = ref.watch(chatInfoProvider(widget.data.roomId));
+    if(chatInfo == null){
+      return DefaultLayout(
+        appBar: CustomAppBar().noActionAppBar(title: widget.data.nickname, context: context),
+        child: Center(
+          child: Text("에러가 발생했습니다."),
+        ),
+      );
+    }
     return DefaultLayout(
       resizeToAvoidBottomInset: true,
       appBar: CustomAppBar().allAppBar(popupList: [
         popupItem(text: "채팅방 나가기"),
         PopupMenuDivider(),
         popupItem(text: "계정 차단하기"),
+        PopupMenuDivider(),
+        popupItem(text: "계정 신고하기"),
       ], vertFunc: (val){
-        if(val == "채팅방 나가기"){
+        switch(val){
+          case "채팅방 나가기":
           return;
-        }
-        if(val == "계정 차단하기"){
+          case "계정 차단하기":
           ref.read(blockProvider.notifier).blockUser(widget.data.userId);
           return;
+          case "계정 신고하기":
+          return;
         }
-      }, title: widget.data.nickname, context: context),
+      }, title: widget.data.nickname, context: context,),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
@@ -143,20 +144,19 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
               height: 20,
             ),
             auctionInfoRow(
-              title: "입찰중 서류 가방",
-              startPrice: "5만원 시작",
+              title: chatInfo.title,
+              startPrice: "${formatToManwon(chatInfo.currentPrice)}",
               imgPath: widget.data.imageUrl
             ),
             Expanded(
               child: ListView.builder(
-                itemCount: messages.length,
+                itemCount: chatInfo.chatLog.length,
                 itemBuilder: (context, index) {
-                  final data = messages[index];
-                  final myId = ref.read(userProvider.notifier).getMemberId();
+                  final data = chatInfo.chatLog[index];
                   return ChatBox(
                     context,
                     msg: data.message,
-                    isOther: data.userId != myId,
+                    isEqual: data.userId == myId,
                   );
                 },
               ),
@@ -184,6 +184,13 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
                 ),
                 GestureDetector(
                   onTap: () {
+                    final createdAt = DateTime.now();
+                    final chat = Chatting(
+                      userId: myId,
+                      message: _textController.text,
+                      createdAt: createdAt,
+                    );
+                    //ref.read(chatProvider.notifier).addMessage(chat: chat, roomId: widget.data.roomId);
                     publishMessage();
                   },
                   child: Transform.rotate(
@@ -206,6 +213,8 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
     );
   }
 
+  // 경매 물품의 정보를 담고 있는 위젯
+  // 제목, 현재 가격, 이미지
   IntrinsicHeight auctionInfoRow({
     required String title,
     required String startPrice,
@@ -266,13 +275,14 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
     );
   }
 
+  // 하나의 채팅 박스
   Align ChatBox(
     BuildContext context, {
     required String msg,
-    required bool isOther,
+    required bool isEqual,
   }) {
     return Align(
-      alignment: isOther ? Alignment.centerRight : Alignment.centerLeft,
+      alignment: isEqual ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width * 0.65,
@@ -280,7 +290,7 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
         margin: const EdgeInsets.only(bottom: 13),
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 11),
         decoration: BoxDecoration(
-          color: isOther ? auctionColor.mainColor : auctionColor.subGreyColorDB,
+          color: isEqual ? auctionColor.mainColor : auctionColor.subGreyColorDB,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Text(
@@ -288,13 +298,14 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
           style: tsNotoSansKR(
             fontSize: 16,
             fontWeight: FontWeight.w400,
-            color: isOther ? Colors.white : auctionColor.subBlackColor49,
+            color: isEqual ? Colors.white : auctionColor.subBlackColor49,
           ),
         ),
       ),
     );
   }
 
+  // 첫 번째 채팅 박스
   Align isFirstChatBox(
     BuildContext context, {
     required String msg,
