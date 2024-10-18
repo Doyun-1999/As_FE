@@ -351,6 +351,7 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
       if (baseTokenModel.available) {
         final userData = await userRepository.getMe();
         if(userData.role == "ADMIN"){
+          print("관리자로 로그인하겠습니다.");
           state = AdminUser(id: userData.id, username: userData.username, name: userData.name, nickname: userData.nickname, email: userData.email, address: userData.address, phone: userData.phone, point: userData.point, available: userData.available, role: userData.role);
           return;
         }
@@ -362,8 +363,13 @@ class UserStateNotifier extends StateNotifier<UserModelBase?> {
       }
   }
 
-  void testAdmin(){
-    state = AdminUser(id: 0, username: 'username', name: 'name', nickname: 'nickname', email: 'email', address: [], phone: 'phone', point: 0, available: true, role: 'role');
-    print("now user state : ${state}");
+  void deleteUser() async {
+    final resp = await userRepository.deleteUser();
+    if(resp){
+      logout();
+    }
+    if(!resp){
+      state = UserModelError(msg: "에러가 발생했습니다.");
+    }
   }
 }

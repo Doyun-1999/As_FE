@@ -1,5 +1,6 @@
 import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/component/dropdown.dart';
+import 'package:auction_shop/common/export/route_export.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/model/cursor_pagination_model.dart';
 import 'package:auction_shop/common/variable/color.dart';
@@ -178,7 +179,7 @@ class _ProductCategoryScreenState extends ConsumerState<ProductCategoryScreen> w
         backgroundColor: Colors.white,
         leading: IconButton(
           onPressed: () {
-            context.pop();
+            context.goNamed(AdminCategoryScreen.routeName);
           },
           icon: Icon(
             Icons.arrow_back_ios,

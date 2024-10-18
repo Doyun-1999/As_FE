@@ -7,6 +7,7 @@ import 'package:auction_shop/common/variable/function.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/product/component/bid_card.dart';
 import 'package:auction_shop/product/view/product_info_screen.dart';
+import 'package:auction_shop/user/component/user_bid_card.dart';
 import 'package:auction_shop/user/model/mybid_model.dart';
 import 'package:auction_shop/user/provider/my_bid_provider.dart';
 import 'package:auction_shop/user/view/bidding_loading_screen.dart';
@@ -106,29 +107,7 @@ class _MyBiddingScreenState extends ConsumerState<MyBiddingScreen> {
       itemCount: data.length,
       itemBuilder: (context, index) {
         final model = data[index];
-        final date = "${model.bidTime.year}.${model.bidTime.month}.${model.bidTime.day}";
-        return Column(
-          children: [
-            // Product의 데이터를 담은 Row
-            ProductInfo(
-              productId: model.productId,
-              title: model.title,
-              initial_price: model.initial_price,
-              current_price: model.current_price,
-              imageUrl: model.imageUrl,
-            ),
-            SizedBox(height: 12),
-            // 경매 이력 Box
-            BidCard(
-              rightSideText: (model.bidStatus != "FAILED") ? "유력" : "",
-              bottomMargin: 0,
-              isNow: (model.bidStatus != "FAILED"),
-              date: date,
-              price: model.amount,
-              isImage: false,
-            ),
-          ],
-        );
+        return UserBidCard.fromModel(model: model);
       },
       // 구분선 Widget
       separatorBuilder: (context, index) {

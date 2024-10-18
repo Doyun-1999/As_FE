@@ -48,7 +48,7 @@ final MyBuyRepositoryProvider = Provider<MyBuyRepository>((ref) {
   return MyBuyRepository(dio: dio, baseUrl: baseUrl);
 });
 
-class MyBuyRepository extends BasePaginationRepository<MyBidModel> {
+class MyBuyRepository extends BasePaginationRepository<MyBuyModel> {
   final Dio dio;
   final String baseUrl;
 
@@ -59,7 +59,7 @@ class MyBuyRepository extends BasePaginationRepository<MyBidModel> {
     print("MyBuyRepository가 호출되었음.");
   }
 
-  Future<CursorPagination<MyBidModel>> paginate() async {
+  Future<CursorPagination<MyBuyModel>> paginate() async {
     print("MyBuyRepository의 paginate가 실행되었움.");
     final resp = await dio.get(baseUrl + '/buy',
     options: Options(headers: {'accessToken': 'true'}),);
@@ -69,7 +69,7 @@ class MyBuyRepository extends BasePaginationRepository<MyBidModel> {
     }
     print("MyBuyData : ${resp.data}");
     final data = {"data": resp.data};
-    final dataList = CursorPagination.fromJson(data, (json) => MyBidModel.fromJson(json as Map<String, dynamic>));
+    final dataList = CursorPagination.fromJson(data, (json) => MyBuyModel.fromJson(json as Map<String, dynamic>));
     return dataList;
   }
 }

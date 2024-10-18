@@ -1,27 +1,39 @@
 import 'dart:io';
-
 import 'package:auction_shop/admin/QandA/component/user_QandA_info.dart';
+import 'package:auction_shop/admin/QandA/provider/admin_QandA_provider.dart';
 import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/component/button.dart';
 import 'package:auction_shop/common/component/pick_image_row.dart';
 import 'package:auction_shop/common/component/textformfield.dart';
+import 'package:auction_shop/common/export/route_export.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/main.dart';
+import 'package:auction_shop/user/model/Q&A_model.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ReplyAnswerScreen extends StatefulWidget {
+class ReplyAnswerScreen extends ConsumerStatefulWidget {
   static String get routeName => "reply";
-  const ReplyAnswerScreen({super.key});
+  final AnswerModel data;
+  const ReplyAnswerScreen({
+    required this.data,
+    super.key,});
 
   @override
-  State<ReplyAnswerScreen> createState() => _ReplyAnswerScreenState();
+  ConsumerState<ReplyAnswerScreen> createState() => _ReplyAnswerScreenState();
 }
 
-class _ReplyAnswerScreenState extends State<ReplyAnswerScreen> {
+class _ReplyAnswerScreenState extends ConsumerState<ReplyAnswerScreen> {
   // 관리자가 새로 첨부하는 이미지 데이터
   List<File> _newImages = [];
 
   TextEditingController _description = TextEditingController();
+
+  @override
+  void initState() {
+    _description = TextEditingController(text: widget.data.answer);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,16 +55,17 @@ class _ReplyAnswerScreenState extends State<ReplyAnswerScreen> {
                   UserQandAInfo(
                     username: "룰루랄",
                     date: "2024.09.01",
-                    title: "등록 관련해서 문의 드립니다!",
-                    content: "시간 설정 최대 이틀밖에 안되나요? 더 길게 하고 싶은데...",
+                    title: widget.data.title,
+                    content: widget.data.content,
+                    imgPaths: widget.data.imageUrl,
                   ),
-                  PickImageRow(
-                    onImagesChanged: (images) {
-                      setState(() {
-                        _newImages = images;
-                      });
-                    },
-                  ),
+                  // PickImageRow(
+                  //   onImagesChanged: (images) {
+                  //     setState(() {
+                  //       _newImages = images;
+                  //     });
+                  //   },
+                  // ),
                   TextLable(text: "설명"),
                   Container(
                     height: ratio.height * 120,
@@ -77,7 +90,11 @@ class _ReplyAnswerScreenState extends State<ReplyAnswerScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: CustomButton(
                     text: "답변 등록",
-                    func: () {},
+                    func: () async {
+                      await ref.read(adminQandAProvider.notifier).answerInquiry(content: _description.text, id: widget.data.id);
+                      context.pop();
+                      context.pop();
+                    },
                   ),
                 ),
                 SizedBox(height: ratio.height * 60)

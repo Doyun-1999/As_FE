@@ -297,12 +297,20 @@ class AuthNotifier extends ChangeNotifier {
                 GoRoute(
                   path: 'info',
                   name: ConsumerAnswerInfoScreen.routeName,
-                  builder: (_, __) => ConsumerAnswerInfoScreen(),
-                ),
-                GoRoute(
-                  path: 'reply',
-                  name: ReplyAnswerScreen.routeName,
-                  builder: (_, __) => ReplyAnswerScreen(),
+                  builder: (_, __) {
+                    final extra = __.extra as AnswerModel;
+                    return ConsumerAnswerInfoScreen(data: extra);
+                  },
+                  routes: [
+                    GoRoute(
+                      path: 'reply',
+                      name: ReplyAnswerScreen.routeName,
+                      builder: (_, __) {
+                        final extra = __.extra as AnswerModel;
+                        return ReplyAnswerScreen(data: extra);
+                      },
+                    ),
+                  ]
                 ),
               ]
             ),
@@ -372,6 +380,10 @@ class AuthNotifier extends ChangeNotifier {
         ref.read(mainProductProvider.notifier).getHotData();
         ref.read(mainProductProvider.notifier).recommendProducts();
 
+        if(user is AdminUser){
+          print("Admin입니다.");
+          return '/admin_home';
+        }
         // 로그인시 SSE 연결
         ref.read(SSEProvider.notifier).connect(memberId);
         return '/';
@@ -384,7 +396,7 @@ class AuthNotifier extends ChangeNotifier {
     // 로그인 화면으로 이동
     if (user is UserModelError) {
       print('에러');
-      return '/login';
+      return '/error';
     }
 
     // 그 이외의 상황시에는 전부 null => 기존 경로로 이동

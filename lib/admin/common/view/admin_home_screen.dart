@@ -1,5 +1,7 @@
 import 'package:auction_shop/admin/QandA/view/consumer_answer_screen.dart';
 import 'package:auction_shop/admin/common/view/admin_category_screen.dart';
+import 'package:auction_shop/common/export/route_export.dart';
+import 'package:auction_shop/common/export/variable_export.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
@@ -9,12 +11,12 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
-class AdminHomeScreen extends StatelessWidget {
+class AdminHomeScreen extends ConsumerWidget {
   static String get routeName => "admin_home";
   const AdminHomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return DefaultLayout(
       child: Column(
         children: [
@@ -62,6 +64,12 @@ class AdminHomeScreen extends StatelessWidget {
               context.pushNamed(AdminCategoryScreen.routeName);
             },
           ),
+          Spacer(),
+          GestureDetector(
+            onTap: (){
+              ref.read(userProvider.notifier).logout();
+            },
+            child: Text("로그아웃"))
         ],
       ),
     );

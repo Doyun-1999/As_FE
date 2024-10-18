@@ -12,8 +12,7 @@ import 'package:collection/collection.dart';
 
 // 실제 상세 조회할 때 Provider.family를 이용하여
 // productId를 비교하여 필요한 데이터만 가져온다.
-final getProductDetailProvider =
-    Provider.family<ProductDetailModel?, int>((ref, id) {
+final getProductDetailProvider = Provider.family<ProductDetailModel?, int>((ref, id) {
   print("getprovider 호출");
   final data = ref.watch(productDetailProvider);
   return data.firstWhereOrNull((e) => e.product_id == id);

@@ -133,8 +133,15 @@ class CustomInterceptor extends Interceptor {
           // 요청한 옵션 가져온 후 토큰값 변경
           final options = err.requestOptions;
           options.headers.addAll({'Authorization': 'Bearer $accessToken'});
-          final response = await dio.fetch(options);
-          return handler.resolve(response);
+          try{
+            final response = await dio.fetch(options);
+            return handler.resolve(response);
+          } catch(e){
+            ref.read(routerProvider).pushNamed(ErrorScreen.routeName);
+            print("실패했어요 최종 실패");
+            print(e);
+          }
+          
         });
         return;
       } catch (e) {
@@ -147,12 +154,12 @@ class CustomInterceptor extends Interceptor {
         // A => B => A => B 무한 반복
         // 이므로 provider 자체를 부르는게 아니라 read를 이용하여 함수만 호출
         print("에러 화면으로 이동하겠습니다.");
-
-        // 예상치 못한 에러 발생시 로그아웃
+        
+        // 예상치 못한 에러 발생시 로그아웃 후 로그인 화면으로
         if (err.response?.statusCode == 500) {
-          print('600에러입니다.');
+          print('500에러입니다.');
           ref.read(userProvider.notifier).logout();
-          //ref.read(routerProvider).pushNamed(ErrorScreen.routeName, queryParameters: {'route': LoginScreen.routeName});
+          ref.read(routerProvider).pushNamed(ErrorScreen.routeName, queryParameters: {'route': LoginScreen.routeName});
         }
 
         print(e);

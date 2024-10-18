@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:intl/date_symbol_data_local.dart';  // locale 데이터를 위한 패키지
+import 'package:intl/intl.dart';
 
 late Size ratio;
 
@@ -26,6 +28,10 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  await initializeDateFormatting('ko', null);
+
+  Intl.defaultLocale = 'ko';
 
   runApp(ProviderScope(child: const MyApp()));
 }

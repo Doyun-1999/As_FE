@@ -57,7 +57,9 @@ class MyPageScreen extends ConsumerWidget {
                 return;
               }
               if (val == "회원 탈퇴") {
-                CustomDialog(context: context, title: "정말 회원 탈퇴를 진행하시겠어요?", OkText: "회원 탈퇴", func: (){context.pop();}, CancelText: "취소");
+                CustomDialog(context: context, title: "정말 회원 탈퇴를 진행하시겠어요?\n\n회원탈퇴시에는 등록된 물품이\n없어야합니다.", OkText: "회원 탈퇴", func: (){
+                  ref.read(userProvider.notifier).deleteUser();
+                }, CancelText: "취소");
                 return;
               }
             },
