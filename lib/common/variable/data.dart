@@ -83,3 +83,11 @@ const IconData chattingIcon = IconData(
   0xe804,
   fontFamily: 'Chatting',
 );
+
+List<String> bannerPath = [
+  "assets/banner/banner1.png",
+  "assets/banner/banner2.png",
+  "assets/banner/banner3.png",
+  "assets/banner/banner4.png",
+  "assets/banner/banner5.png",
+];

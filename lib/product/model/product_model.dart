@@ -1,5 +1,6 @@
 
 import 'package:auction_shop/common/model/formdata_model.dart';
+import 'package:auction_shop/product/model/bid_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'product_model.g.dart';
@@ -38,12 +39,13 @@ class ProductModel{
   final String? tradeLocation;
   final int initial_price;
   final int current_price;
+  final String productType;
   final String? imageUrl;
-  // final String createdBy;
+  final String createdBy;
   final int likeCount;
   final bool liked;
   final bool sold;
-  // final int bidNum;
+  final int bidCount;
   
   ProductModel({
     required this.product_id,
@@ -55,10 +57,12 @@ class ProductModel{
     this.tradeLocation,
     required this.initial_price,
     required this.current_price,
-    // required this.createdBy,
+    required this.productType,
+    required this.createdBy,
     required this.likeCount,
     required this.liked,
     required this.sold,
+    required this.bidCount,
   });
 
   ProductModel copyWith({
@@ -72,9 +76,11 @@ class ProductModel{
     int? initial_price,
     int? current_price,
     String? createdBy,
+    String? productType,
     int? likeCount,
     bool? liked,
     bool? sold,
+    int? bidCount,
   }) {
     return ProductModel(
       product_id: product_id ?? this.product_id,
@@ -86,10 +92,12 @@ class ProductModel{
       tradeLocation: tradeLocation ?? this.tradeLocation,
       initial_price: initial_price ?? this.initial_price,
       current_price: current_price ?? this.current_price,
-      // createdBy: createdBy ?? this.createdBy,
+      productType: productType ?? this.productType,
+      createdBy: createdBy ?? this.createdBy,
       likeCount: likeCount ?? this.likeCount,
       liked: liked ?? this.liked,
       sold: sold ?? this.sold,
+      bidCount: bidCount ?? this.bidCount,
     );
   }
 
@@ -107,10 +115,11 @@ class RegisterProductModel extends FormDataBase{
   final List<String> tradeTypes;
   final List<String> categories;
   final String conditions;
+  final String productType;
   final String? tradeLocation;
   final String trade;
   final int initial_price;
-  final int minimum_price;
+  final int? minimum_price;
   final String startTime;
   final String endTime;
   
@@ -121,10 +130,11 @@ class RegisterProductModel extends FormDataBase{
     required this.details,
     required this.categories,
     required this.conditions,
+    required this.productType,
     this.tradeLocation,
     required this.trade,
     required this.initial_price,
-    required this.minimum_price,
+    this.minimum_price,
     required this.startTime,
     required this.endTime,
   });
@@ -140,7 +150,7 @@ class ProductDetailModel{
   final int memberId;
   final int product_id;
   final String title;
-  //final String trade;
+  final String productType;
   final String conditions;
   final List<String> categories;
   final List<String> tradeTypes;
@@ -157,12 +167,14 @@ class ProductDetailModel{
   final bool owner;
   final bool sold;
   final bool liked;
+  final int bidCount;
+  final List<BidBase>? bidData;
   
   ProductDetailModel({
     required this.memberId,
     required this.product_id,
     required this.title,
-    //required this.trade,
+    required this.productType,
     required this.conditions,
     required this.categories,
     required this.tradeTypes,
@@ -179,6 +191,8 @@ class ProductDetailModel{
     required this.owner,
     required this.sold,
     required this.liked,
+    required this.bidCount,
+    this.bidData,
   });
 
   ProductDetailModel copyWith({
@@ -186,10 +200,12 @@ class ProductDetailModel{
     int? product_id,
     String? title,
     String? conditions,
+    String? productType,
     List<String>? categories,
     List<String>? tradeTypes,
     String? tradeLocation,
     int? likeCount,
+    int? bidCount,
     int? initial_price,
     int? minimum_price,
     int? current_price,
@@ -201,11 +217,13 @@ class ProductDetailModel{
     bool? owner,
     bool? sold,
     bool? liked,
+    List<BidBase>? bidData,
   }) {
     return ProductDetailModel(
       memberId: memberId ?? this.memberId,
       product_id: product_id ?? this.product_id,
       title: title ?? this.title,
+      productType: productType ?? this.productType,
       conditions: conditions ?? this.conditions,
       categories: categories ?? this.categories,
       tradeTypes: tradeTypes ?? this.tradeTypes,
@@ -222,6 +240,8 @@ class ProductDetailModel{
       owner: owner ?? this.owner,
       sold: sold ?? this.sold,
       liked: liked ?? this.liked,
+      bidCount: bidCount ?? this.bidCount,
+      bidData: bidData ?? this.bidData,
     );
   }
 
@@ -280,6 +300,7 @@ class RecommendProduct{
   final String title;
   final List<String> tradeTypes;
   final int initial_price;
+  final String productType;
   final int current_price;
   final String? imageUrl;
   
@@ -287,6 +308,7 @@ class RecommendProduct{
     required this.product_id,
     this.imageUrl,
     required this.title,
+    required this.productType,
     required this.tradeTypes,
     required this.initial_price,
     required this.current_price,
@@ -296,6 +318,7 @@ class RecommendProduct{
     int? product_id,
     String? imageUrl,
     String? title,
+    String? productType,
     List<String>? tradeTypes,
     int? initial_price,
     int? current_price,
@@ -304,6 +327,7 @@ class RecommendProduct{
       product_id: product_id ?? this.product_id,
       imageUrl: imageUrl ?? this.imageUrl,
       title: title ?? this.title,
+      productType: productType ?? this.productType,
       tradeTypes: tradeTypes ?? this.tradeTypes,
       initial_price: initial_price ?? this.initial_price,
       current_price: current_price ?? this.current_price,
@@ -313,7 +337,7 @@ class RecommendProduct{
   factory RecommendProduct.fromJson(Map<String, dynamic> json) => _$RecommendProductFromJson(json);
 }
 
-
+// 메인 화면 추천 경매 물품 목록들 모델
 class MainProducts extends ProductBase{
   final List<RecommendProduct>? hotData;
   final List<RecommendProduct>? newData;
@@ -336,4 +360,44 @@ class MainProducts extends ProductBase{
       recommendData: recommendData ?? this.recommendData,
     );
   }
+}
+// 경매 물품 등록 모델
+@JsonSerializable()
+class ReviseProductModel extends FormDataBase{
+  
+  // 등록 데이터
+  final String title;
+  final String details;
+  final List<String> categories;
+  final String? tradeLocation;
+  final String conditions;
+  final List<String> imageUrlsToKeep;
+  //final List<String> tradeTypes;
+  // final String productType;
+  // final String trade;
+  // final int initial_price;
+  // final int? minimum_price;
+  // final String startTime;
+  // final String endTime;
+  
+
+  ReviseProductModel({
+    required this.title,
+    required this.details,
+    required this.categories,
+    required this.conditions,
+    required this.imageUrlsToKeep,
+    this.tradeLocation,
+    // required this.productType,
+    // required this.tradeTypes,
+    // required this.trade,
+    // required this.initial_price,
+    // this.minimum_price,
+    // required this.startTime,
+    // required this.endTime,
+  });
+
+  factory ReviseProductModel.fromJson(Map<String, dynamic> json) => _$ReviseProductModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ReviseProductModelToJson(this);
 }

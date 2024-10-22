@@ -16,6 +16,7 @@ class auctionColor{
   // GreyColor
   static const Color subGreyColorD9 = Color(0xFFD9D9D9);
   static const Color subGreyColorAC = Color(0xFFACACAC);
+  static const Color subGreyColorAA = Color(0xFFAAAAAA);
   static const Color subGreyColorBF = Color(0xFFBFBFBF);
   static const Color subGreyColor9E = Color(0xFF9E9E9E);
   static const Color subGreyColorDB = Color(0xFFDBDBDB);

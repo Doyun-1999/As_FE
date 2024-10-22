@@ -1,39 +1,22 @@
 import 'package:auction_shop/chat/model/chat_model.dart';
-import 'package:auction_shop/chat/provider/chatroom_provider.dart';
 import 'package:auction_shop/chat/provider/chatting_provider.dart';
-import 'package:auction_shop/chat/repository/chat_repository.dart';
-import 'package:auction_shop/common/component/appbar.dart';
-import 'package:auction_shop/common/component/button.dart';
-import 'package:auction_shop/common/component/dialog.dart';
-import 'package:auction_shop/common/component/textformfield.dart';
-import 'package:auction_shop/common/component/image_widget.dart';
-import 'package:auction_shop/common/dio/dio.dart';
-import 'package:auction_shop/common/layout/default_layout.dart';
-import 'package:auction_shop/common/variable/color.dart';
-import 'package:auction_shop/common/variable/function.dart';
-import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/view/error_screen.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/payment/model/payment_model.dart';
-import 'package:auction_shop/payment/view/payment.dart';
-import 'package:auction_shop/product/component/toggle_button.dart';
+import 'package:auction_shop/payment/view/payment_screen.dart';
+import 'package:auction_shop/product/component/bid_card.dart';
+import 'package:auction_shop/common/export/variable_export.dart';
+import 'package:auction_shop/product/model/bid_model.dart';
 import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/product/provider/product_detail_provider.dart';
 import 'package:auction_shop/product/provider/product_provider.dart';
 import 'package:auction_shop/product/view/product_category_screen.dart';
 import 'package:auction_shop/product/view/product_loading_screen.dart';
 import 'package:auction_shop/product/view/product_revise_screen.dart';
+import 'package:auction_shop/user/model/user_model.dart';
 import 'package:auction_shop/user/provider/block_provider.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:card_swiper/card_swiper.dart';
-import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class ProductInfoScreen extends ConsumerStatefulWidget {
   static String get routeName => 'productInfo';
@@ -49,7 +32,8 @@ class ProductInfoScreen extends ConsumerStatefulWidget {
   ConsumerState<ProductInfoScreen> createState() => _ProductInfoScreenState();
 }
 
-class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen> with SingleTickerProviderStateMixin {
+class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
+    with SingleTickerProviderStateMixin {
   late TabController controller;
   int index = 0;
   ValueNotifier<int> swiperIndex = ValueNotifier<int>(0);
@@ -132,16 +116,14 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen> with Sing
                 SliverToBoxAdapter(
                   child: Column(
                     children: [
-                      imageWidget(
-                        data: data,
-                        memberId: user.id
-                      ),
+                      imageWidget(data: data, memberId: user.id, isAdmin: (user is AdminUser)),
                       SizedBox(
                         height: 18,
                       ),
                       productInfo(
-                        yourId: user.id,
-                        userId : data.memberId,
+                        yourId: data.memberId,
+                        owner: data.owner,
+                        userId: user.id,
                         product_id: data.product_id,
                         categories: data.categories,
                         createdBy: data.createdBy,
@@ -150,6 +132,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen> with Sing
                         initial_price: data.initial_price,
                         tradeTypes: data.tradeTypes,
                         conditions: data.conditions,
+                        productType: data.productType,
                       ),
                       Divider(
                         thickness: 8,
@@ -199,14 +182,57 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen> with Sing
                                     height: 6,
                                   ),
                                   ...List.generate(
-                                    5,
+                                    data.bidData == null
+                                        ? 0
+                                        : data.bidData!.length,
                                     (index) {
-                                      return bidBox(
-                                        date: '2024.02.03',
-                                        price: 40000,
-                                        isFirst: index == 0 ? true : false,
-                                      );
+                                      // 하향식일 때
+                                      if (data.productType == "DESCENDING") {
+                                        final bidData = data.bidData![index]
+                                            as DownBidModel;
+                                        final date =
+                                            "${bidData.changeDate.year}-${bidData.changeDate.month.toString().padLeft(2, '0')}-${bidData.changeDate.day.toString().padLeft(2, '0')}";
+                                        return BidCard(
+                                          rightSideText:
+                                              "${bidData.changeOrder}회 입찰",
+                                          reducedPrice: bidData.reducedPrice,
+                                          bottomMargin: 10,
+                                          isNow: index == 0 ? true : false,
+                                          date: date,
+                                          price: bidData.newPrice,
+                                        );
+                                        // 상향식일 때
+                                      } else {
+                                        final bidData =
+                                            data.bidData![index] as UpBidModel;
+                                        final date =
+                                            "${bidData.bidTime.year}-${bidData.bidTime.month.toString().padLeft(2, '0')}-${bidData.bidTime.day.toString().padLeft(2, '0')}";
+                                        return BidCard(
+                                          date: date,
+                                          rightSideText:
+                                              "${bidData.bidCount}회 입찰",
+                                          imgPath: bidData.profileImageUrl,
+                                          price: bidData.amount,
+                                          isNow: index == 0 ? true : false,
+                                          bottomMargin: 10,
+                                        );
+                                        // bidBox(
+                                        //   date: date,
+                                        //   bidCount: bidData.bidCount,
+                                        //   imgpath: bidData.profileImageUrl,
+                                        //   price: bidData.amount,
+                                        //   isNow: index == 0 ? true : false,
+                                        // );
+                                      }
                                     },
+                                  ),
+                                  BidCard(
+                                    date: data.startTime.substring(0, 10),
+                                    isFirst: true,
+                                    price: data.initial_price,
+                                    isNow: false,
+                                    rightSideText: "시작가격",
+                                    bottomMargin: 10,
                                   ),
                                 ],
                               ),
@@ -229,22 +255,52 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen> with Sing
               children: [
                 Spacer(),
                 CustomButton(
-                  text: '현재 가격에 거래하기',
+                  text: '입찰하기',
                   // 바텀 시트 올라오는 함수
                   func: () async {
+                    // 이미 판매된 경우에는 입찰 금지 팝업창
+                    if (data.sold) {
+                      CustomDialog(
+                          context: context,
+                          title: "판매된 상품입니다.",
+                          OkText: "확인",
+                          func: () {
+                            context.pop();
+                          });
+                      return;
+                    }
+                    // 자신의 경매 물품일 경우에는 입찰 금지 팝업창
+                    if (data.owner) {
+                      CustomDialog(
+                          context: context,
+                          title: "자신의 경매 물품에는\n입찰하실 수 없습니다.",
+                          OkText: "확인",
+                          func: () {
+                            context.pop();
+                          });
+                      return;
+                    }
+                    if (data.productType == "DESCENDING") {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        final model = PurchaseData(
+                          productId: int.parse(widget.id),
+                          price: data.current_price,
+                          user: user,
+                          isDESCENDING: true,
+                        );
+                        return PaymentScreen(model: model);
+                      }));
+                      return;
+                    }
 
-                    Navigator.push(context, MaterialPageRoute(builder: (context) {
-                      
-                      final model = PurchaseData(productId: int.parse(widget.id), price: data.current_price, user: user);
-                      return Payment(model: model,);
-                    }));
-                    // showModalBottomSheet(
-                    //   context: context,
-                    //   isScrollControlled: true,
-                    //   builder: (BuildContext context) {
-                    //     return customBottomSheet();
-                    //   },
-                    // );
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (BuildContext context) {
+                        return customBottomSheet(data.current_price);
+                      },
+                    );
                   },
                 ),
                 SizedBox(
@@ -261,6 +317,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen> with Sing
   IntrinsicHeight imageWidget({
     required ProductDetailModel data,
     required int memberId,
+    bool isAdmin = false,
   }) {
     final productId = data.product_id;
     return IntrinsicHeight(
@@ -291,7 +348,6 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen> with Sing
                             index: value,
                             onIndexChanged: (val) {
                               swiperIndex.value = val;
-                              print("swiperIndex : ${swiperIndex}");
                             },
                             itemCount: data.imageUrls.length,
                             itemBuilder: (BuildContext context, int index) {
@@ -325,10 +381,15 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen> with Sing
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(top: 4,left: 4),
+                    padding: const EdgeInsets.only(top: 4, left: 4),
                     child: IconButton(
                       onPressed: () {
-                        context.pop();
+                        context.goNamed(
+                          ProductCategoryScreen.routeName,
+                          pathParameters: {
+                            'cid': 0.toString(),
+                          },
+                        );
                       },
                       icon: Icon(
                         Icons.arrow_back_ios,
@@ -337,53 +398,56 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen> with Sing
                     ),
                   ),
                   // 팝업 위젯
+                  if(!isAdmin)
                   Padding(
                     padding: const EdgeInsets.only(top: 4, left: 4),
                     child: PopupMenuButton<String>(
-                            color: Colors.white,
-                            onSelected: (String? val) async {
-                              if (val == "수정하기") {
-                                context.pushNamed(ProductReviseScreen.routeName, extra: data);
+                      color: Colors.white,
+                      onSelected: (String? val) async {
+                        if (val == "수정하기") {
+                          context.pushNamed(ProductReviseScreen.routeName,extra: data);
+                        }
+                        if (val == "삭제하기") {
+                          CustomDialog(
+                            context: context,
+                            title: "정말 게시글을 삭제하시겠어요?",
+                            CancelText: "삭제 취소",
+                            OkText: "삭제",
+                            func: () async {
+                              final resp = await ref.read(productDetailProvider.notifier).deleteData(productId);
+                              // 삭제에 성공하면 경매 물품 목록 화면으로 이동
+                              if (resp) {
+                                context.goNamed(
+                                  ProductCategoryScreen.routeName,
+                                  pathParameters: {
+                                    'cid': '0',
+                                  },
+                                );
+                                return;
                               }
-                              if (val == "삭제하기") {
-                                CustomDialog(
-                                    context: context,
-                                    title: "정말 게시글을 삭제하시겠어요?",
-                                    CancelText: "삭제 취소",
-                                    OkText: "삭제",
-                                    func: () async {
-                                      final resp = await ref.read(productDetailProvider.notifier).deleteData(productId);
-                                      // 삭제에 성공하면 경매 물품 목록 화면으로 이동
-                                      if (resp) {
-                                        context.goNamed(
-                                          ProductCategoryScreen.routeName,
-                                          pathParameters: {
-                                            'cid': '0',
-                                          },
-                                        );
-                                        return;
-                                      }
-                                      // 실패하면 에러 화면으로
-                                      if (!resp) {
-                                        context.goNamed(ErrorScreen.routeName);
-                                        return;
-                                      }
-                                    },);
-                              }
-                              if(val == "차단하기"){
-                                CustomDialog(
-                                    context: context,
-                                    title: "해당 게시글 생성자를 차단하시겠습니까?",
-                                    CancelText: "취소",
-                                    OkText: "확인",
-                                    func: () async {
-                                      await ref.read(blockProvider.notifier).blockUser(data.memberId);
-                                      context.pop();
-                                    },);
+                              // 실패하면 에러 화면으로
+                              if (!resp) {
+                                context.goNamed(ErrorScreen.routeName);
+                                return;
                               }
                             },
-                            itemBuilder: (BuildContext context) => 
-                            data.owner ? [
+                          );
+                        }
+                        if (val == "차단하기") {
+                          CustomDialog(
+                            context: context,
+                            title: "해당 게시글 생성자를 차단하시겠습니까?",
+                            CancelText: "취소",
+                            OkText: "확인",
+                            func: () async {
+                              await ref.read(blockProvider.notifier).blockUser(data.memberId);
+                              context.pop();
+                            },
+                          );
+                        }
+                      },
+                      itemBuilder: (BuildContext context) => data.owner
+                          ? [
                               popupItem(
                                 text: "수정하기",
                               ),
@@ -391,16 +455,17 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen> with Sing
                               popupItem(
                                 text: "삭제하기",
                               ),
-                            ] : [
+                            ]
+                          : [
                               popupItem(
                                 text: "차단하기",
                               ),
                             ],
-                            icon: Icon(
-                              Icons.more_vert,
-                              color: Colors.white,
-                            ),
-                          ),
+                      icon: Icon(
+                        Icons.more_vert,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -435,8 +500,11 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen> with Sing
                       onTap: () async {
                         final productId = int.parse(widget.id);
                         final isPlus = !data.liked;
-                        final likeData = Like(productId: productId, memberId: memberId);
-                        ref.read(productProvider.notifier).liked(likeData: likeData, isPlus: isPlus);
+                        final likeData =
+                            Like(productId: productId, memberId: memberId);
+                        ref
+                            .read(productProvider.notifier)
+                            .liked(likeData: likeData, isPlus: isPlus);
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
@@ -476,6 +544,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen> with Sing
   Padding productInfo({
     required int userId,
     required int yourId,
+    required bool owner,
     required int product_id,
     required List<String> categories,
     required String createdBy,
@@ -484,6 +553,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen> with Sing
     required int initial_price,
     required List<String> tradeTypes,
     required String conditions,
+    required String productType,
     String? tradeLocation,
   }) {
     return Padding(
@@ -566,16 +636,22 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen> with Sing
                           color: auctionColor.subGreyColorD9,
                         ),
                       ),
+                      // 내 경매 물품일 경우 채팅 못하도록 설정
+                      if(!owner)
                       Positioned(
                         top: -15,
                         left: -10,
                         right: -10,
                         child: GestureDetector(
-                          onTap: (){
-                            print("눌림");
-                            final data = MakeRoom(userId: (userId).toString(), postId: (product_id).toString(), yourId: (yourId).toString(),);
-                            
+                          onTap: () {
+                            print("채팅 걸기");
+                            final data = MakeRoom(
+                              userId: userId,
+                              postId: product_id,
+                              yourId: yourId,
+                            );
                             ref.read(chatProvider.notifier).enterChat(data);
+                            //final extra = ChattingRoom(userId: userId, yourId: yourId, postId: product_id, roomId: roomId, nickname: nickname)
                           },
                           child: Container(
                             padding: const EdgeInsets.symmetric(
@@ -642,7 +718,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen> with Sing
             ),
           ),
           Text(
-            "시작가격 ${formatToManwon(initial_price)}",
+            "${getProductType(productType)} - 시작가격 ${formatToManwon(initial_price)}",
             style: tsNotoSansKR(
               fontSize: 14,
               fontWeight: FontWeight.w400,
@@ -722,49 +798,18 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen> with Sing
               widget.isSkeleton
                   ? SizedBox()
                   : StreamBuilder<DateTime>(
-                      stream: Stream.periodic(
-                          Duration(seconds: 1), (_) => DateTime.now()),
+                      stream: Stream.periodic(Duration(seconds: 1), (_) => DateTime.now()),
                       builder: (context, snapshot) {
                         // snapshot 데이터가 로딩중이거나, 에러가 있거나, 데이터가 없거나 제한 시간 데이터가 아직 들어오지 않았을 때,
                         // 로딩 화면 출력
-                        if ((limitTime == null) ||
-                            (snapshot.connectionState ==
-                                ConnectionState.waiting) ||
-                            (snapshot.hasError) ||
-                            (!snapshot.hasData)) {
-                          return Center(
-                            child: Text('-'),
-                          );
+                        if ((limitTime == null) || (snapshot.connectionState == ConnectionState.waiting) || (snapshot.hasError) || (!snapshot.hasData)) {
+                          return remainedTime('남은 시간 00:00:00');
                         }
                         currentTime = snapshot.data!;
                         final limitedTime = DateTime.parse(limitTime);
-                        Duration timeDifference =
-                            limitedTime.difference(currentTime);
-
-                        return Positioned(
-                          top: -10,
-                          right: 25,
-                          left: 25,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: auctionColor.mainColorE2,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 5,
-                              vertical: 3,
-                            ),
-                            child: Text(
-                              '남은 시간 ${timeDifference.inHours}:${timeDifference.inMinutes % 60}:${timeDifference.inSeconds % 60}',
-                              style: tsInter(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: auctionColor.mainColor,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        );
+                        Duration timeDifference = limitedTime.difference(currentTime);
+                        
+                        return remainedTime('남은 시간 ${timeDifference.inHours}:${timeDifference.inMinutes % 60}:${timeDifference.inSeconds % 60}');
                       },
                     ),
               Align(
@@ -780,111 +825,38 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen> with Sing
     );
   }
 
-  // 경매에 필요한 하나의 박스
-  Container bidBox({
-    required String date,
-    required int price,
-    String? imgpath,
-    bool isFirst = false,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(
-        bottom: 10,
-      ),
-      padding: const EdgeInsets.only(
-        left: 10,
-        right: 8.5,
-        bottom: 5.5,
-        top: 9,
-      ),
-      decoration: BoxDecoration(
-        color: isFirst ? auctionColor.mainColorE2 : auctionColor.subGreyColorEF,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: IntrinsicHeight(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // 채팅걸기 + 날짜
-            Container(
-              width: 70,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  isFirst
-                      ? Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 4,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: auctionColor.mainColor,
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: Text(
-                            '채팅걸기',
-                            style: tsInter(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+  Positioned remainedTime(String time){
+    return Positioned(
+                          top: -10,
+                          right: 25,
+                          left: 25,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: auctionColor.mainColorE2,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 5,
+                              vertical: 3,
+                            ),
+                            child: Text(
+                              time,
+                              style: tsInter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: auctionColor.mainColor,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
                           ),
-                        )
-                      : SizedBox(
-                          height: 15,
-                        ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Text(
-                    date,
-                    style: tsNotoSansKR(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                      color: auctionColor.mainColor,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // 가격
-            Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    '$price원',
-                    style: tsInter(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // 유저 이미지
-            Container(
-              width: 70,
-              alignment: Alignment.bottomRight,
-              child: UserImage(
-                size: 30,
-                imgPath: imgpath,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+                        );
   }
 
   // 올라오는 바텀 시트 내부 위젯
-  Container customBottomSheet() {
+  Container customBottomSheet(int price) {
     return Container(
       // 고정 크기 => 텍스트, 버튼 전부 고정 크기이므로
-      height: 600,
+      height: 420,
       padding: const EdgeInsets.symmetric(
         horizontal: 16,
       ),
@@ -898,31 +870,31 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen> with Sing
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            height: 50,
-          ),
-          TextLable(text: '희망 거래 방식'),
-          Row(
-            children: [
-              ToggleBox(
-                isSelected: isSelected[0],
-                func: () {
-                  toggleSelect(0);
-                },
-                text: '비대면',
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              ToggleBox(
-                isSelected: isSelected[1],
-                func: () {
-                  toggleSelect(1);
-                },
-                text: '직거래',
-              ),
-            ],
-          ),
+          // SizedBox(
+          //   height: 50,
+          // ),
+          // TextLable(text: '희망 거래 방식'),
+          // Row(
+          //   children: [
+          //     ToggleBox(
+          //       isSelected: isSelected[0],
+          //       func: () {
+          //         toggleSelect(0);
+          //       },
+          //       text: '비대면',
+          //     ),
+          //     SizedBox(
+          //       width: 10,
+          //     ),
+          //     ToggleBox(
+          //       isSelected: isSelected[1],
+          //       func: () {
+          //         toggleSelect(1);
+          //       },
+          //       text: '직거래',
+          //     ),
+          //   ],
+          // ),
           SizedBox(
             height: 30,
           ),
@@ -943,9 +915,23 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen> with Sing
             height: 50,
           ),
           CustomButton(
-            text: '입찰 완료',
+            text: '입찰하기',
             func: () {
-              
+              if(int.parse(_priceController.text) <= price){
+                CustomDialog(context: context, title: "현재 입찰가보다\n높은 가격을 제시해주세요.", OkText: "확인", func: (){context.pop();});
+                return;
+              }
+              final userData = ref.read(userProvider.notifier).getUser();
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                final model = PurchaseData(
+                  productId: int.parse(widget.id),
+                  price: int.parse(_priceController.text),
+                  user: userData,
+                  isDESCENDING: false,
+                );
+                return PaymentScreen(model: model);
+              }));
+              return;
             },
           ),
         ],

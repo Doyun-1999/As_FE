@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:auction_shop/chat/model/chat_model.dart';
 import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/component/textformfield.dart';
+import 'package:auction_shop/common/export/route_export.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
@@ -11,7 +12,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:auction_shop/chat/provider/chatting_provider.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 
 class ChatInfoScreen extends ConsumerStatefulWidget {
@@ -60,26 +61,44 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
     print('STOMP 연결 해제됨');
   }
 
+  // 구독을 통한 메시지 데이터 받아오기
   void subscribeToTopic() {
     // STOMP 클라이언트의 subscribe 메서드를 사용하여 토픽을 구독합니다.
     client.subscribe(
       headers: {'content-type': 'application/json'},
       destination: '/sub/chatroom/${widget.data.roomId}', // 구독할 토픽의 경로
       callback: (frame) {
+        print('Received message: ${frame.body}');
+        if(frame.body == null){
+          return;
+        }
+        final data = Chatting.fromJson((jsonDecode(frame.body!) as Map<String, dynamic>));
+        ref.read(chatProvider.notifier).addMessage(data);
         print("frame : ${frame}");
         print("frame.command : ${frame.command}");
         print("frame.binaryBody : ${frame.binaryBody}");
-        print('Received message: ${frame.body}');
+        
       },
     );
   }
 
-  void publishMessage() {
+  // 메시지 데이터 보내기
+  void publishMessage() async {
     if (_textController.text.isNotEmpty) {
+      // 변수 설정
+      // userId, createdAt
+      final userId = ref.read(userProvider.notifier).getMemberId();
+      final createdAt = DateTime.now();
       final msg = Message(
         roomId: widget.data.roomId,
-        userId: widget.data.userId,
+        userId: userId,
         message: _textController.text,
+      );
+      final chat = Chatting(
+        roomId: widget.data.roomId,
+        userId: userId.toString(),
+        message: _textController.text,
+        createdAt: createdAt,
       );
       // STOMP 클라이언트의 send 메서드를 사용하여 메시지를 발행합니다.
       client.send(
@@ -87,6 +106,8 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
         body: jsonEncode(msg),
         headers: {'content-type': 'application/json'},
       );
+
+      ref.read(chatProvider.notifier).addMessage(chat);
     }
   }
 
@@ -98,16 +119,7 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> messages = [
-      // "Hello!",
-      // "Hi, how are you?",
-      // "I'm good, thanks! How about you?",
-      // "I'm doing well too.",
-      // "Great to hear!",
-      // "What's up?",
-      // "Not much, just working on a project.Not much, just working on a project.Not much, just working on a project.",
-      // "Cool! Tell me more about it."
-    ];
+    final messages = ref.watch(chatProvider).data;
     return DefaultLayout(
       resizeToAvoidBottomInset: true,
       appBar: CustomAppBar().allAppBar(popupList: [
@@ -119,10 +131,10 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
           return;
         }
         if(val == "계정 차단하기"){
-          ref.read(blockProvider.notifier).blockUser(int.parse(widget.data.userId));
+          ref.read(blockProvider.notifier).blockUser(widget.data.userId);
           return;
         }
-      }, title: widget.data.userId, context: context),
+      }, title: widget.data.nickname, context: context),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
@@ -133,15 +145,18 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
             auctionInfoRow(
               title: "입찰중 서류 가방",
               startPrice: "5만원 시작",
+              imgPath: widget.data.imageUrl
             ),
             Expanded(
               child: ListView.builder(
                 itemCount: messages.length,
                 itemBuilder: (context, index) {
+                  final data = messages[index];
+                  final myId = ref.read(userProvider.notifier).getMemberId();
                   return ChatBox(
                     context,
-                    msg: messages[index],
-                    isMe: index % 2 == 0 ? false : true,
+                    msg: data.message,
+                    isOther: data.userId != myId,
                   );
                 },
               ),
@@ -194,6 +209,7 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
   IntrinsicHeight auctionInfoRow({
     required String title,
     required String startPrice,
+    String? imgPath,
   }) {
     return IntrinsicHeight(
       child: Row(
@@ -204,8 +220,9 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
               right: 15,
             ),
             decoration: BoxDecoration(
-              color: auctionColor.subGreyColorCC,
+              color: imgPath  == null ? auctionColor.subGreyColorCC : null,
               borderRadius: BorderRadius.circular(5),
+              image: imgPath  == null ? null : DecorationImage(image: NetworkImage(imgPath))
             ),
             width: ratio.width * 56,
             height: ratio.height * 56,
@@ -252,10 +269,10 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
   Align ChatBox(
     BuildContext context, {
     required String msg,
-    required bool isMe,
+    required bool isOther,
   }) {
     return Align(
-      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+      alignment: isOther ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width * 0.65,
@@ -263,7 +280,7 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
         margin: const EdgeInsets.only(bottom: 13),
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 11),
         decoration: BoxDecoration(
-          color: isMe ? auctionColor.mainColor : auctionColor.subGreyColorDB,
+          color: isOther ? auctionColor.mainColor : auctionColor.subGreyColorDB,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Text(
@@ -271,7 +288,7 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
           style: tsNotoSansKR(
             fontSize: 16,
             fontWeight: FontWeight.w400,
-            color: isMe ? Colors.white : auctionColor.subBlackColor49,
+            color: isOther ? Colors.white : auctionColor.subBlackColor49,
           ),
         ),
       ),

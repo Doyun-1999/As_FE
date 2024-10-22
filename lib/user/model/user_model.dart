@@ -82,6 +82,7 @@ class UserModel extends UserModelBase{
 
   factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
 
+  Map<String, dynamic> toJson() => _$UserModelToJson(this);
 }
 
 @JsonSerializable()
@@ -94,6 +95,7 @@ class SignupUser{
   final String? zipcode;
   final String? detailAddress;
   final List<String>? categories;
+  final bool changeImage;
   
 
   SignupUser({
@@ -105,9 +107,43 @@ class SignupUser{
     this.zipcode,
     this.detailAddress,
     this.categories,
+    this.changeImage = true,
   });
 
   Map<String, dynamic> toJson() => _$SignupUserToJson(this);
 
   factory SignupUser.fromJson(Map<String, dynamic> json) => _$SignupUserFromJson(json);
+}
+
+@JsonSerializable()
+class AdminUser extends UserModel {
+  AdminUser({
+    required int id,
+    required String username,
+    required String name,
+    required String nickname,
+    required String email,
+    required List<AddressModel> address,
+    required String phone,
+    required int point,
+    required bool available,
+    required String role,
+    String? profileImageUrl,
+  }) : super(
+          id: id,
+          username: username,
+          name: name,
+          nickname: nickname,
+          email: email,
+          address: address,
+          phone: phone,
+          point: point,
+          available: available,
+          role: role,
+          profileImageUrl: profileImageUrl,
+        );
+
+  factory AdminUser.fromJson(Map<String, dynamic> json) => _$AdminUserFromJson(json);
+
+  Map<String, dynamic> toJson() => _$AdminUserToJson(this);
 }

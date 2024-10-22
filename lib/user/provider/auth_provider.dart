@@ -1,41 +1,12 @@
 import 'dart:convert';
-import 'package:auction_shop/chat/model/chat_model.dart';
 import 'package:auction_shop/chat/provider/sse_provider.dart';
-import 'package:auction_shop/chat/view/chat_info_screen.dart';
-import 'package:auction_shop/chat/view/chat_list_screen.dart';
-import 'package:auction_shop/common/view/error_screen.dart';
-import 'package:auction_shop/common/view/splash_screen.dart';
-import 'package:auction_shop/notification/view/notification_screen.dart';
 import 'package:auction_shop/product/model/product_model.dart';
-import 'package:auction_shop/product/provider/recommend_product_provider.dart';
-import 'package:auction_shop/product/view/search_screen.dart';
-import 'package:auction_shop/product/view/searched_product_screen.dart';
-import 'package:auction_shop/product/view/select_category_screen.dart';
-import 'package:auction_shop/product/view/product_category_screen.dart';
-import 'package:auction_shop/product/view/product_info_screen.dart';
-import 'package:auction_shop/product/view/product_revise_screen.dart';
-import 'package:auction_shop/product/view/register/register_product_screen.dart';
-import 'package:auction_shop/product/view/register/register_product_screen2.dart';
 import 'package:auction_shop/user/model/Q&A_model.dart';
 import 'package:auction_shop/user/model/address_model.dart';
 import 'package:auction_shop/user/model/user_model.dart';
-import 'package:auction_shop/user/provider/user_provider.dart';
-import 'package:auction_shop/user/view/mypage_inner/manage_address_screen.dart';
-import 'package:auction_shop/user/view/mypage_inner/address_screen.dart';
-import 'package:auction_shop/user/view/mypage_inner/block_screen.dart';
-import 'package:auction_shop/user/view/mypage_inner/answer_screen.dart';
-import 'package:auction_shop/user/view/mypage_inner/my_like_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/mybid_screen.dart';
-import 'package:auction_shop/user/view/mypage_inner/question_screen.dart';
-import 'package:auction_shop/user/view/mypage_inner/revise_user_screen.dart';
-import 'package:auction_shop/user/view/mypage_screen.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:auction_shop/common/view/root_tab.dart';
-import 'package:auction_shop/user/view/login_screen.dart';
-import 'package:auction_shop/user/view/signup_screen.dart';
+import 'package:auction_shop/common/export/route_export.dart';
 
 final authProvider = ChangeNotifierProvider<AuthNotifier>((ref) {
   return AuthNotifier(ref: ref);
@@ -85,9 +56,17 @@ class AuthNotifier extends ChangeNotifier {
             GoRoute(
               path: 'products/:cid',
               name: ProductCategoryScreen.routeName,
-              builder: (_, __) => ProductCategoryScreen(
-                index: int.parse(__.pathParameters['cid']!),
-              ),
+              builder: (_, __) {
+                bool isPointPage = false;
+                final queryData = __.uri.queryParameters["isPointPage"];
+                if(queryData == "true"){
+                  isPointPage = true;
+                }
+                return ProductCategoryScreen(
+                  index: int.parse(__.pathParameters['cid']!),
+                  isPointPage: isPointPage,
+                );
+              },
             ),
             GoRoute(
               path: 'info/:pid',
@@ -130,11 +109,28 @@ class AuthNotifier extends ChangeNotifier {
               builder: (_, __) => MyPageScreen(),
               // 마이페이지 내부에서 이동하는 화면들
               routes: [
+                // ------------------------------------------
                 GoRoute(
                   path: 'mybid',
                   name: MyBidScreen.routeName,
                   builder: (_, __) => MyBidScreen(),
                 ),
+                GoRoute(
+                  path: 'mybuy',
+                  name: MyBuyScreen.routeName,
+                  builder: (_, __) => MyBuyScreen(),
+                ),
+                GoRoute(
+                  path: 'mybidding',
+                  name: MyBiddingScreen.routeName,
+                  builder: (_, __) => MyBiddingScreen(),
+                ),
+                GoRoute(
+                  path: 'mylike',
+                  name: MyLikeScreen.routeName,
+                  builder: (_, __) => MyLikeScreen(),
+                ),
+                // ------------------------------------------
                 GoRoute(
                   path: 'block',
                   name: BlockScreen.routeName,
@@ -162,11 +158,6 @@ class AuthNotifier extends ChangeNotifier {
                       },
                     ),
                   ],
-                ),
-                GoRoute(
-                  path: 'mylike',
-                  name: MyLikeScreen.routeName,
-                  builder: (_, __) => MyLikeScreen(),
                 ),
                 GoRoute(
                   path: 'revise_user',
@@ -281,6 +272,47 @@ class AuthNotifier extends ChangeNotifier {
           name: SearchedProductScreen.routeName,
           builder: (_, __) => SearchedProductScreen(),
         ),
+        
+        // 결제 완료
+        GoRoute(
+          path: '/payment_complete/:pid',
+          name: PaymentCompleteScreen.routeName,
+          builder: (_, __) {
+            final productId = __.pathParameters["pid"]!;
+            return PaymentCompleteScreen(productId: productId,);
+          },
+        ),
+
+        // Admin 관련 페이지
+        GoRoute(
+          path: '/admin_home',
+          name: AdminHomeScreen.routeName,
+          builder: (_, __) => AdminHomeScreen(),
+          routes: [
+            GoRoute(
+              path: 'consumer_answer',
+              name: ConsumerAnswerScreen.routeName,
+              builder: (_, __) => ConsumerAnswerScreen(),
+              routes: [
+                GoRoute(
+                  path: 'info',
+                  name: ConsumerAnswerInfoScreen.routeName,
+                  builder: (_, __) => ConsumerAnswerInfoScreen(),
+                ),
+                GoRoute(
+                  path: 'reply',
+                  name: ReplyAnswerScreen.routeName,
+                  builder: (_, __) => ReplyAnswerScreen(),
+                ),
+              ]
+            ),
+            GoRoute(
+              path: 'admin_category',
+              name: AdminCategoryScreen.routeName,
+              builder: (_, __) => AdminCategoryScreen(),
+            ),
+          ],
+        ),
       ];
 
   // 앱을 처음 시작했을 때
@@ -318,6 +350,13 @@ class AuthNotifier extends ChangeNotifier {
       return isCategory ? null : '/signup';
     }
 
+    // 괸라지가 로그인했을 경우,
+    // Admin 홈 화면으로 보내고
+    // 그 외의 상황은 그대로 이동하도록 설정
+    if (user is AdminUser){
+      return isSplash ? '/admin_home' : null;
+    }
+
     // 유저 정보가 존재한 상태에서
     // 로그인/회원가입/스플래쉬 화면이라면, 홈화면으로 이동
     // 그 외는 기존에 이동하려던 경로로 정상 이동
@@ -328,9 +367,12 @@ class AuthNotifier extends ChangeNotifier {
       // SSE 연결 시도
       if ((isLoggin || isSignup || isSplash)) {
         final memberId = ref.read(userProvider.notifier).getMemberId();
+        // 로그인시 추천 경매 물품 데이터 받아오기
         ref.read(mainProductProvider.notifier).getNewData();
         ref.read(mainProductProvider.notifier).getHotData();
         ref.read(mainProductProvider.notifier).recommendProducts();
+
+        // 로그인시 SSE 연결
         ref.read(SSEProvider.notifier).connect(memberId);
         return '/';
       }

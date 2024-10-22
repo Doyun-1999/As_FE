@@ -4,7 +4,9 @@ import 'package:auction_shop/common/variable/function.dart';
 import 'package:auction_shop/common/view/error_screen.dart';
 import 'package:auction_shop/common/view/root_tab.dart';
 import 'package:auction_shop/user/model/token_model.dart';
+import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:auction_shop/user/secure_storage/secure_storage.dart';
+import 'package:auction_shop/user/view/login_screen.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -57,6 +59,7 @@ class CustomInterceptor extends Interceptor {
     // => formdata는 한 번 사용되면 재사용이 불가능해서 에러로 넘어가서
     //    재요청을 보내면 반드시 에러가 난다.
     if (options.headers['refreshToken'] == 'true') {
+      print("리프레쉬 토큰을 이용한 어세스 토큰 재발급");
       options.headers.remove('refreshToken');
 
       final refreshToken = await storage.read(key: REFRESH_TOKEN);
@@ -78,7 +81,7 @@ class CustomInterceptor extends Interceptor {
       await storage.write(key: REFRESH_TOKEN, value: rToken);
       await storage.write(key: ACCESS_TOKEN, value: accessToken);
       final token = await storage.read(key: ACCESS_TOKEN);
-       print("토큰 새로 저장 완료");
+      print("토큰 새로 저장 완료");
       // 실제 토큰 대체
       options.headers.addAll({'Authorization': 'Bearer $token'});
     }
@@ -89,7 +92,8 @@ class CustomInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     print("에러 발생");
-    print("Error : ${err.requestOptions.method}, ${err.requestOptions.uri}");
+    print("Error1 : ${err.requestOptions.method}, ${err.requestOptions.uri}");
+    print("Error2 : ${err.message}, ${err.response}");
 
     final refreshToken = await storage.read(key: REFRESH_TOKEN);
     // refreshToken이 없으면 에러
@@ -129,11 +133,7 @@ class CustomInterceptor extends Interceptor {
           // 요청한 옵션 가져온 후 토큰값 변경
           final options = err.requestOptions;
           options.headers.addAll({'Authorization': 'Bearer $accessToken'});
-          print("요청 보내겠습니다. options : ${options}");
           final response = await dio.fetch(options);
-          print("response.statusCode : ${response.statusCode}");
-          print("response.data : ${response.data}");
-          print("재요청 완료하였습니다.");
           return handler.resolve(response);
         });
         return;
@@ -148,12 +148,13 @@ class CustomInterceptor extends Interceptor {
         // 이므로 provider 자체를 부르는게 아니라 read를 이용하여 함수만 호출
         print("에러 화면으로 이동하겠습니다.");
 
-        if (err.response?.statusCode == 600) {
+        // 예상치 못한 에러 발생시 로그아웃
+        if (err.response?.statusCode == 500) {
           print('600에러입니다.');
-          ref.read(routerProvider).pushNamed(ErrorScreen.routeName, queryParameters: {'route': RootTab.routeName});
+          ref.read(userProvider.notifier).logout();
+          //ref.read(routerProvider).pushNamed(ErrorScreen.routeName, queryParameters: {'route': LoginScreen.routeName});
         }
 
-        //ref.read(userProvider.notifier).logout();
         print(e);
       }
     }

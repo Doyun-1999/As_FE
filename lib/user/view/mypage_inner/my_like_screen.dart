@@ -26,7 +26,7 @@ class _MyLikeScreenState extends ConsumerState<MyLikeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print("화면 들어감");
+    
     final state = ref.watch(MyLikeProvider);
 
     // 로딩 화면 with Skeleton
@@ -154,28 +154,3 @@ class _MyLikeScreenState extends ConsumerState<MyLikeScreen> {
     );
   }
 }
-
-// import 'package:auction_shop/common/layout/default_layout.dart';
-// import 'package:auction_shop/user/provider/my_like_provider.dart';
-// import 'package:flutter/cupertino.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-// class MyLikeScreen extends ConsumerWidget {
-//   static String get routeName => 'eafa';
-//   const MyLikeScreen({super.key});
-
-//   @override
-//   Widget build(BuildContext context, WidgetRef ref) {
-//     final state = ref.watch(MyLikeProvider);
-//     print("mylikeprovider state : ${state}");
-//     return DefaultLayout(
-//       child: Column(
-//         children: [
-//           SizedBox(
-//             height: 100,
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }

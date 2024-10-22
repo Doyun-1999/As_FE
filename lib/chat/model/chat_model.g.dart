@@ -18,7 +18,6 @@ Map<String, dynamic> _$ChatDetailsToJson(ChatDetails instance) =>
     };
 
 Chatting _$ChattingFromJson(Map<String, dynamic> json) => Chatting(
-      id: json['id'] as String,
       roomId: (json['roomId'] as num).toInt(),
       userId: json['userId'] as String,
       message: json['message'] as String,
@@ -26,7 +25,6 @@ Chatting _$ChattingFromJson(Map<String, dynamic> json) => Chatting(
     );
 
 Map<String, dynamic> _$ChattingToJson(Chatting instance) => <String, dynamic>{
-      'id': instance.id,
       'roomId': instance.roomId,
       'userId': instance.userId,
       'message': instance.message,
@@ -35,7 +33,7 @@ Map<String, dynamic> _$ChattingToJson(Chatting instance) => <String, dynamic>{
 
 Message _$MessageFromJson(Map<String, dynamic> json) => Message(
       roomId: (json['roomId'] as num).toInt(),
-      userId: json['userId'] as String,
+      userId: (json['userId'] as num).toInt(),
       message: json['message'] as String,
     );
 
@@ -46,9 +44,9 @@ Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
     };
 
 MakeRoom _$MakeRoomFromJson(Map<String, dynamic> json) => MakeRoom(
-      userId: json['userId'] as String,
-      postId: json['postId'] as String,
-      yourId: json['yourId'] as String,
+      userId: (json['userId'] as num).toInt(),
+      postId: (json['postId'] as num).toInt(),
+      yourId: (json['yourId'] as num).toInt(),
     );
 
 Map<String, dynamic> _$MakeRoomToJson(MakeRoom instance) => <String, dynamic>{
@@ -58,10 +56,17 @@ Map<String, dynamic> _$MakeRoomToJson(MakeRoom instance) => <String, dynamic>{
     };
 
 ChattingRoom _$ChattingRoomFromJson(Map<String, dynamic> json) => ChattingRoom(
-      userId: json['userId'] as String,
-      yourId: json['yourId'] as String,
-      postId: json['postId'] as String,
+      userId: (json['userId'] as num).toInt(),
+      yourId: (json['yourId'] as num).toInt(),
+      postId: (json['postId'] as num).toInt(),
       roomId: (json['roomId'] as num).toInt(),
+      nickname: json['nickname'] as String,
+      imageUrl: json['imageUrl'] as String?,
+      latestChatTime: json['latestChatTime'] == null
+          ? null
+          : DateTime.parse(json['latestChatTime'] as String),
+      latestChatLog: json['latestChatLog'] as String?,
+      profileUrl: json['profileUrl'] as String?,
     );
 
 Map<String, dynamic> _$ChattingRoomToJson(ChattingRoom instance) =>
@@ -70,6 +75,11 @@ Map<String, dynamic> _$ChattingRoomToJson(ChattingRoom instance) =>
       'yourId': instance.yourId,
       'postId': instance.postId,
       'roomId': instance.roomId,
+      'nickname': instance.nickname,
+      'imageUrl': instance.imageUrl,
+      'latestChatTime': instance.latestChatTime?.toIso8601String(),
+      'latestChatLog': instance.latestChatLog,
+      'profileUrl': instance.profileUrl,
     };
 
 EnterChattingRoom _$EnterChattingRoomFromJson(Map<String, dynamic> json) =>

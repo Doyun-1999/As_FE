@@ -74,18 +74,18 @@ Future<void> CustomDialog({
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
+                      
+                      onPressed: func,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 11),
                         child: Text(
-                          CancelText!,
+                          OkText,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                             color: auctionColor.mainColor,
                           ),
+                          
                         ),
                       ),
                     ),
@@ -99,11 +99,13 @@ Future<void> CustomDialog({
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      onPressed: func,
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 11),
                         child: Text(
-                          OkText,
+                          CancelText!,
                           style: tsNotoSansKR(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -113,6 +115,8 @@ Future<void> CustomDialog({
                       ),
                     ),
                   ),
+                  
+                  
                 ],
               ),
             ],

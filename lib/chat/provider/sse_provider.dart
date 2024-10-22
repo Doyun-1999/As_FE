@@ -36,16 +36,18 @@ class SSENotifier extends StateNotifier<SSEConnectionStatus>{
         return;
     }
     try {
-      if(state == SSEConnectionStatus.connected){
-        print("이미 연결됨");
-        return;
-      }
       final stream = repo.connectToSSE(memberId);
       // SSE 연동시 자동으로 채팅방 리스트 재요청
       
 
       stream.listen((data) {
-        ref.read(chatRoomProvider.notifier).paginate();
+        // 처음 데이터 수신 시에 연결 상태를 업데이트
+        if (state != SSEConnectionStatus.connected) {
+          state = SSEConnectionStatus.connected;
+          print("연결 완료");
+          print("state : ${state}");
+        }
+        ref.read(chatRoomProvider.notifier).getChattingRoomList();
       }, onError: (error) {
         state = SSEConnectionStatus.error;
         print("연결 에러");

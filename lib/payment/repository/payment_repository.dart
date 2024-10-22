@@ -25,13 +25,19 @@ class PaymentRepository {
   }) async {
     final url = baseUrl + '/${productId}/${impUid}';
     print("url : $url");
-    final resp = await dio.post(url, data: {"fake": "dfdss"},
-    options: Options(headers: {"accessToken": "true"}));
+    final resp = await dio.post(
+      url,
+      options: Options(
+        headers: {"accessToken": "true"},
+      ),
+    );
     print('---------------------');
     print("결제 요청 보냈음, 결과 : ${resp.data}, StatusCode : ${resp.statusCode}");
     if (resp.statusCode != 200) {
+      print("결제 실패");
       return false;
     }
+    print("결제 성공");
     return true;
   }
 }

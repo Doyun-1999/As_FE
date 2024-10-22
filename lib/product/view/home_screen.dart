@@ -1,19 +1,23 @@
+import 'package:auction_shop/admin/common/view/admin_home_screen.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/data.dart';
 import 'package:auction_shop/common/variable/function.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/main.dart';
+import 'package:auction_shop/product/component/category_card.dart';
 import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/product/provider/recommend_product_provider.dart';
 import 'package:auction_shop/product/view/product_category_screen.dart';
 import 'package:auction_shop/product/view/product_info_screen.dart';
 import 'package:auction_shop/product/view/search_screen.dart';
+import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:card_swiper/card_swiper.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -54,19 +58,36 @@ class HomeScreen extends ConsumerWidget {
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.only(
-                    bottom: 24,
-                    top: 20,
-                  ),
-                  height: ratio.height * 200,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: NetworkImage(
-                        "https://www.meconomynews.com/news/photo/201903/21505_22590_442.jpg",
-                      ),
-                      fit: BoxFit.fill,
-                    ),
+                  height: MediaQuery.of(context).size.width / 2.00,
+                  child: Swiper(
+                    loop: true,
+                    itemCount: bannerPath.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () {
+                          bannerRouting(index, context);
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(
+                            bottom: 24,
+                            top: 20,
+                          ),
+                          padding: const EdgeInsets.only(left: 16, bottom: 9),
+                          alignment: Alignment.bottomLeft,
+                          height: MediaQuery.of(context).size.width / 2.00,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage(
+                                bannerPath[index],
+                              ),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          // child: Text("아늑한 가구로\n가을 맞이 집 새단장!", style: tsNotoSansKR(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white,),),
+                        ),
+                      );
+                    },
                   ),
                 ),
                 Padding(
@@ -95,44 +116,12 @@ class HomeScreen extends ConsumerWidget {
                 mainAxisSpacing: 8.49,
               ),
               itemBuilder: (context, index) {
-                return Column(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        context.pushNamed(
-                          ProductCategoryScreen.routeName,
-                          pathParameters: {
-                            'cid': index.toString(),
-                          },
-                        );
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: auctionColor.mainColorEF,
-                        ),
-                        width: ratio.width * 85,
-                        height: ratio.height * 85,
-                        child: Image.asset(
-                          images[index],
-                          width: ratio.width * 65,
-                          height: ratio.height * 65,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      category[index + 1],
-                      style: tsNotoSansKR(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                );
+                return CategoryCard(index: index);
               },
             ),
           ),
-          if (state is MainProducts && (state as MainProducts).recommendData != null)
+          if (state is MainProducts &&
+              (state as MainProducts).recommendData != null)
             auctionRowBox(
               context,
               typeText: '추천경매',
@@ -156,6 +145,7 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
+  // recommendBox를 가로로 나열
   SliverPadding auctionRowBox(
     BuildContext context, {
     double height = 0,
@@ -166,6 +156,7 @@ class HomeScreen extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       sliver: SliverToBoxAdapter(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
               padding: const EdgeInsets.only(top: 30, bottom: 12),
@@ -182,130 +173,29 @@ class HomeScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            Container(
-              height: 280,
-              child: ListView.builder(
-                itemCount: data.length,
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (context, index){
-                final model = data[index];
-                        return GestureDetector(
-                          onTap: () {
-                            context.pushNamed(ProductInfoScreen.routeName,
-                                pathParameters: {
-                                  "pid": (model.product_id).toString()
-                                });
+            if (data.length == 0) Text("해당되는 경매 물품이 없습니다."),
+            if (data.length != 0)
+              Container(
+                height: 280,
+                child: ListView.builder(
+                  itemCount: data.length,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) {
+                    final model = data[index];
+                    return GestureDetector(
+                      onTap: () {
+                        context.pushNamed(
+                          ProductInfoScreen.routeName,
+                          pathParameters: {
+                            "pid": (model.product_id).toString(),
                           },
-                          child: Container(
-                            width: 155,
-                            margin: const EdgeInsets.only(right: 8),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  margin: const EdgeInsets.only(bottom: 14),
-                                  height: 220,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey,
-                                    image: DecorationImage(
-                                      fit: BoxFit.fill,
-                                      image: (model.imageUrl == null)
-                                      ? AssetImage(
-                                          'assets/img/no_image.png',
-                                        ) as ImageProvider
-                                      : NetworkImage(
-                                          model.imageUrl!,
-                                        ),
-                                    ),
-                                  ),
-                                ),
-                                Text(
-                                  "${formatToManwon(model.initial_price)} 시작",
-                                  style: tsNotoSansKR(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: auctionColor.subBlackColor49,
-                                  ),
-                                ),
-                                Text(
-                                  model.title,
-                                  style: tsNotoSansKR(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.normal,
-                                    color: auctionColor.subBlackColor49,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ),
-                          ),
                         );
-              }),
-            ),
-            // SingleChildScrollView(
-            //   scrollDirection: Axis.horizontal,
-            //   child: Row(
-            //     children: [
-            //       ...List.generate(
-            //         data.length,
-            //         (index) {
-            //           final model = data[index];
-            //           return GestureDetector(
-            //             onTap: () {
-            //               context.pushNamed(ProductInfoScreen.routeName,
-            //                   pathParameters: {
-            //                     "pid": (model.product_id).toString()
-            //                   });
-            //             },
-            //             child: Container(
-            //               width: 155,
-            //               margin: const EdgeInsets.only(right: 8),
-            //               child: Column(
-            //                 crossAxisAlignment: CrossAxisAlignment.start,
-            //                 children: [
-            //                   Container(
-            //                     margin: const EdgeInsets.only(bottom: 14),
-            //                     height: 220,
-            //                     decoration: BoxDecoration(
-            //                       color: Colors.grey,
-            //                       image: DecorationImage(
-            //                         fit: BoxFit.fill,
-            //                         image: (model.imageUrl == null)
-            //                         ? AssetImage(
-            //                             'assets/img/no_image.png',
-            //                           ) as ImageProvider
-            //                         : NetworkImage(
-            //                             model.imageUrl!,
-            //                           ),
-            //                       ),
-            //                     ),
-            //                   ),
-            //                   Text(
-            //                     "${formatToManwon(model.initial_price)} 시작",
-            //                     style: tsNotoSansKR(
-            //                       fontSize: 16,
-            //                       fontWeight: FontWeight.bold,
-            //                       color: auctionColor.subBlackColor49,
-            //                     ),
-            //                   ),
-            //                   Text(
-            //                     model.title,
-            //                     style: tsNotoSansKR(
-            //                       fontSize: 16,
-            //                       fontWeight: FontWeight.normal,
-            //                       color: auctionColor.subBlackColor49,
-            //                     ),
-            //                     overflow: TextOverflow.ellipsis,
-            //                   ),
-            //                 ],
-            //               ),
-            //             ),
-            //           );
-            //         },
-            //       ),
-            //     ],
-            //   ),
-            // ),
+                      },
+                      child: recommendBox(model),
+                    );
+                  },
+                ),
+              ),
             SizedBox(
               height: height,
             )
@@ -313,5 +203,114 @@ class HomeScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  // 경매 추천해주는 하나의 Box
+  Container recommendBox(RecommendProduct model) {
+    return Container(
+      width: 155,
+      margin: const EdgeInsets.only(right: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 경매 방식이 어떤 사진에서든 보이기 위해서
+          // Stack을 이용하여 Container에 Gradient 추가
+          Stack(
+            children: [
+              Container(
+                margin: const EdgeInsets.only(bottom: 14),
+                height: 220,
+                alignment: Alignment.topLeft,
+                decoration: BoxDecoration(
+                  color: Colors.grey,
+                  image: DecorationImage(
+                    fit: BoxFit.fill,
+                    image: (model.imageUrl == null)
+                        ? AssetImage(
+                            'assets/img/no_image.png',
+                          ) as ImageProvider
+                        : NetworkImage(
+                            model.imageUrl!,
+                          ),
+                  ),
+                ),
+              ),
+              Container(
+                height: 45,
+                width: 155,
+                padding: const EdgeInsets.only(left: 8, top: 8),
+                alignment: Alignment.topLeft,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.black.withOpacity(0.6),
+                      Colors.black.withOpacity(0),
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+                child: FittedBox(
+                  child: Container(
+                    padding:
+                        const EdgeInsets.only(bottom: 3, left: 6, right: 6),
+                    decoration: BoxDecoration(
+                      color: auctionColor.mainColorEF,
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "${getProductType(model.productType)} 경매",
+                        style: tsNotoSansKR(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Text(
+            "${formatToManwon(model.initial_price)} 시작",
+            style: tsNotoSansKR(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: auctionColor.subBlackColor49,
+            ),
+          ),
+          Text(
+            model.title,
+            style: tsNotoSansKR(
+              fontSize: 16,
+              fontWeight: FontWeight.normal,
+              color: auctionColor.subBlackColor49,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 배너 눌렀을 때 라우팅 설정 함수
+  void bannerRouting(int index, BuildContext context) {
+    int categoryIndex = -1;
+    //13, 2, 15;
+    if(index == 0){
+      context.pushNamed(ProductCategoryScreen.routeName, pathParameters: {"cid": "-1"}, queryParameters: {"isPointPage" : "true"});
+      return;
+    }
+    if (index == 1) {
+      categoryIndex = 12;
+    }
+    if (index == 2) {
+      categoryIndex = 1;
+    }
+    if (index == 3) {
+      categoryIndex = 14;
+    }
+    context.pushNamed(ProductCategoryScreen.routeName, pathParameters: {"cid": "$categoryIndex"});
   }
 }
