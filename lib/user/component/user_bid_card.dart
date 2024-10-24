@@ -10,9 +10,10 @@ class UserBidCard extends StatelessWidget {
   final String title;
   final int initial_price;
   final int current_price;
-  final int amount;
+  final int? amount;
   final DateTime bidTime;
-  final String bidStatus;
+  final String? bidStatus;
+  final String productType;
 
   const UserBidCard({
     required this.productId,
@@ -20,9 +21,11 @@ class UserBidCard extends StatelessWidget {
     required this.title,
     required this.initial_price,
     required this.current_price,
-    required this.amount,
+    this.amount,
+    required this.productType,
     required this.bidTime,
-    required this.bidStatus,
+    this.bidStatus,
+
     super.key,
   });
 
@@ -38,6 +41,21 @@ class UserBidCard extends StatelessWidget {
       amount: model.amount,
       bidTime: model.bidTime,
       bidStatus: model.bidStatus,
+      productType: model.productType,
+    );
+  }
+
+  factory UserBidCard.fromOtherModel({
+    required MyBuyModel model,
+  }) {
+    return UserBidCard(
+      productId: model.productId,
+      imageUrl: model.imageUrl,
+      title: model.title,
+      initial_price: model.initial_price,
+      current_price: model.current_price,
+      bidTime: model.bidTime,
+      productType: model.productType,
     );
   }
 
@@ -63,8 +81,9 @@ class UserBidCard extends StatelessWidget {
           bottomMargin: 0,
           isNow: (bidStatus != "FAILED"),
           date: date,
-          price: amount,
+          price: amount ?? current_price,
           isImage: false,
+          productType: productType,
         ),
       ],
     );

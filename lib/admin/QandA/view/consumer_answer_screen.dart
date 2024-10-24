@@ -1,31 +1,38 @@
+import 'package:auction_shop/admin/QandA/provider/admin_QandA_provider.dart';
 import 'package:auction_shop/admin/QandA/view/consumer_answer_info_screen.dart';
 import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/component/dialog.dart';
+import 'package:auction_shop/common/export/variable_export.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/user/component/info_box.dart';
 import 'package:auction_shop/user/component/textcolumn.dart';
+import 'package:auction_shop/user/model/Q&A_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class ConsumerAnswerScreen extends StatefulWidget {
+class ConsumerAnswerScreen extends ConsumerStatefulWidget {
   static String get routeName => "consumer_answer";
   const ConsumerAnswerScreen({super.key});
 
   @override
-  State<ConsumerAnswerScreen> createState() => _ConsumerAnswerScreenState();
+  ConsumerState<ConsumerAnswerScreen> createState() => _ConsumerAnswerScreenState();
 }
 
-class _ConsumerAnswerScreenState extends State<ConsumerAnswerScreen> with SingleTickerProviderStateMixin {
+class _ConsumerAnswerScreenState extends ConsumerState<ConsumerAnswerScreen> with SingleTickerProviderStateMixin {
   late TabController _controller;
   int index = 0;
+  bool status = false;
 
   @override
   void initState() {
     _controller = TabController(length: 2, vsync: this);
     _controller.addListener(tabListener);
+    // 화면 첫 진입시 답변 되지 않은 QandA 데이터 불러오기
+    ref.read(adminQandAProvider.notifier).getAnswerdInquiry(false);
     super.initState();
   }
 
@@ -37,12 +44,22 @@ class _ConsumerAnswerScreenState extends State<ConsumerAnswerScreen> with Single
 
   void tabListener() {
     setState(() {
-      index = _controller.index;
+      if(index == 0){
+        status = false;
+        index = _controller.index;
+        ref.read(adminQandAProvider.notifier).getAnswerdInquiry(status);
+      }
+      else if(index == 1){
+        status = true;
+        index = _controller.index;
+        ref.read(adminQandAProvider.notifier).getAnswerdInquiry(status);
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final state = ref.watch(adminQandAStateProvider(status));
     return DefaultLayout(
       bgColor: auctionColor.subGreyColorF6,
       appBar: CustomAppBar().noActionAppBar(
@@ -59,23 +76,26 @@ class _ConsumerAnswerScreenState extends State<ConsumerAnswerScreen> with Single
             child: TabBarView(
               controller: _controller,
               children: [
+                if(state.isEmpty)
+                noDataUI(),
+                if(state.isNotEmpty)
                 ListView.builder(
-                  itemCount: 4,
+                  itemCount: state.length,
                   itemBuilder: (context, index) {
                     return noAnswerBox(
-                      title: "title${index}",
-                      content: "content${index}",
+                      data: state[index],
                       bottomPadding: index == 3 ? 30 : 0,
                     );
                   },
                 ),
+                if(state.isEmpty)
+                noDataUI(),
+                if(state.isNotEmpty)
                 ListView.builder(
-                  itemCount: 4,
+                  itemCount: state.length,
                   itemBuilder: (context, index) {
                     return answerBox(
-                      title: "title${index}",
-                      content: "content${index}",
-                      answer: "answer${index}",
+                      data: state[index],
                       bottomPadding: index == 3 ? 30 : 0,
                     );
                   },
@@ -86,6 +106,10 @@ class _ConsumerAnswerScreenState extends State<ConsumerAnswerScreen> with Single
         ],
       ),
     );
+  }
+
+  Widget noDataUI(){
+    return Center(child: Text("문의 데이터가 없습니다.",),);
   }
 
   // TabBar Widget
@@ -124,15 +148,13 @@ class _ConsumerAnswerScreenState extends State<ConsumerAnswerScreen> with Single
   // 답변이 된 Q&A
   Padding answerBox({
     double bottomPadding = 0,
-    required String title,
-    required String content,
-    required String answer,
+    required AnswerModel data,
   }) {
     return Padding(
       padding: EdgeInsets.only(bottom: bottomPadding),
       child: GestureDetector(
         onTap: () {
-          context.pushNamed(ConsumerAnswerInfoScreen.routeName);
+          context.pushNamed(ConsumerAnswerInfoScreen.routeName, extra: data);
         },
         child: InfoBox(
           sideFunc: () {
@@ -154,18 +176,18 @@ class _ConsumerAnswerScreenState extends State<ConsumerAnswerScreen> with Single
               children: [
                 TextColumn(
                   title: "제목",
-                  content: title,
+                  content: data.title,
                 ),
                 TextColumn(
                   title: "내용",
-                  content: content,
+                  content: data.content,
                   bottomPadding: 16,
                 ),
                 TextColumn(
                   bottomPadding: 16,
                   color: auctionColor.mainColorEF,
                   title: "답변",
-                  content: answer,
+                  content: data.answer ?? '',
                 ),
               ],
             ),
@@ -178,14 +200,13 @@ class _ConsumerAnswerScreenState extends State<ConsumerAnswerScreen> with Single
   // 답변이 안된 Q&A
   Padding noAnswerBox({
     double bottomPadding = 0,
-    required String title,
-    required String content,
+    required AnswerModel data,
   }) {
     return Padding(
       padding: EdgeInsets.only(bottom: bottomPadding),
       child: GestureDetector(
         onTap: () {
-          context.pushNamed(ConsumerAnswerInfoScreen.routeName);
+          context.pushNamed(ConsumerAnswerInfoScreen.routeName, extra: data);
         },
         child: InfoBox(
           sideFunc: () {
@@ -198,7 +219,7 @@ class _ConsumerAnswerScreenState extends State<ConsumerAnswerScreen> with Single
             );
           },
           sideText: "삭제",
-          firstBoxText: '답변 완료',
+          firstBoxText: '답변 대기',
           widget: Padding(
             padding: const EdgeInsets.only(top: 41),
             child: ListView(
@@ -207,11 +228,11 @@ class _ConsumerAnswerScreenState extends State<ConsumerAnswerScreen> with Single
               children: [
                 TextColumn(
                   title: "제목",
-                  content: title,
+                  content: data.title,
                 ),
                 TextColumn(
                   title: "내용",
-                  content: content,
+                  content: data.content,
                   bottomPadding: 16,
                 ),
               ],

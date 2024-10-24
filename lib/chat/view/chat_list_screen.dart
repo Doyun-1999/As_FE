@@ -5,6 +5,7 @@ import 'package:auction_shop/chat/view/chat_info_screen.dart';
 import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/component/image_widget.dart';
 import 'package:auction_shop/common/variable/color.dart';
+import 'package:auction_shop/common/variable/date.dart';
 import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:flutter/cupertino.dart';
@@ -57,7 +58,7 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
                     nickname: data.nickname,
                     latestChatLog: data.latestChatLog,
                     // 첫 채팅 시간이 없으면 '-'을 반환
-                    latestChatTime: data.latestChatTime == null ? '-' : data.latestChatTime.toString(),
+                    latestChatTime: data.latestChatTime,
                     productImageUrl: data.imageUrl,
                     userImageUrl: data.profileUrl,
                     func: () async {
@@ -88,12 +89,13 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
 
   GestureDetector ChatListBox({
     required String nickname,
-    String? latestChatTime,
+    DateTime? latestChatTime,
     String? latestChatLog,
     String? productImageUrl,
     String? userImageUrl,
     required VoidCallback func,
   }) {
+    final formatDate = latestChatTime == null ? '-' : FormatDate.formatTime(latestChatTime);
     return GestureDetector(
       onTap: func,
       child: IntrinsicHeight(
@@ -115,50 +117,53 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
               height: 56,
             ),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      UserImage(
-                        size: 25,
-                        imgPath: userImageUrl,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 3),
-                        child: Text(
-                          nickname,
-                          style: tsNotoSansKR(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: auctionColor.subBlackColor49,
+              child: Container(
+                color: Colors.white,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        UserImage(
+                          size: 25,
+                          imgPath: userImageUrl,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 3),
+                          child: Text(
+                            nickname,
+                            style: tsNotoSansKR(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: auctionColor.subBlackColor49,
+                            ),
                           ),
                         ),
-                      ),
-                      Text(
-                        latestChatTime ?? '없음',
-                        style: tsNotoSansKR(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: auctionColor.subGreyColor94,
+                        Text(
+                          formatDate,
+                          style: tsNotoSansKR(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: auctionColor.subGreyColor94,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  Text(
-                    latestChatLog ?? '-',
-                    style: tsNotoSansKR(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: auctionColor.subGreyColor94,
+                      ],
                     ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  SizedBox(
-                    height: 3,
-                  ),
-                ],
+                    Text(
+                      latestChatLog ?? '-',
+                      style: tsNotoSansKR(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: auctionColor.subGreyColor94,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(
+                      height: 3,
+                    ),
+                  ],
+                ),
               ),
             )
           ],

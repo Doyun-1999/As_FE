@@ -15,11 +15,11 @@ class BiddingLoadingScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final fakeData = [
-        MyBidModel(productId: 0, title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), bidStatus: "FAILED"),
-        MyBidModel(productId: 0, title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), bidStatus: "FAILED"),
-        MyBidModel(productId: 0, title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), bidStatus: "FAILED"),
-        MyBidModel(productId: 0, title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), bidStatus: "FAILED"),
-        MyBidModel(productId: 0, title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), bidStatus: "FAILED"),
+        MyBidModel(productId: 0, title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), bidStatus: "FAILED", productType: "ASCENDING"),
+        MyBidModel(productId: 0, title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), bidStatus: "FAILED", productType: "ASCENDING"),
+        MyBidModel(productId: 0, title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), bidStatus: "FAILED", productType: "ASCENDING"),
+        MyBidModel(productId: 0, title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), bidStatus: "FAILED", productType: "ASCENDING"),
+        MyBidModel(productId: 0, title: 'title', initial_price: 0, current_price: 0, amount: 0, bidTime: DateTime.now(), bidStatus: "FAILED", productType: "ASCENDING"),
       ];
       return DefaultLayout(
         appBar: CustomAppBar().noActionAppBar(title: title, context: context),

@@ -26,20 +26,13 @@ class ChatRepository {
   });
 
   // 채팅방 처음 들어가기 / 만들기
-  Future enterChatting(MakeRoom data) async {
-    try{
-      final url = baseUrl + '/chatroom/enter/${data.userId}/${data.yourId}/${data.postId}';
-      print("url : ${url}");
-      final resp = await dio.get(url, data: data.toJson());
-      print("resp.statusCode : ${resp.statusCode}");
-      print("resp.data : ${resp.data}");
-    } on DioException catch(e){
-      print("e.error : ${e.error}");
-      print("e.message : ${e.message}");
-      print("e.requestOptions : ${e.requestOptions}");
-      print("e.response : ${e.response}");
-    }
-    // return
+  Future<ChatDetails> enterChatting(MakeRoom data) async {
+    final url = baseUrl + '/chatroom/enter/${data.userId}/${data.yourId}/${data.postId}';
+    print("url : ${url}");
+    final resp = await dio.get(url, data: data.toJson());
+    print("채팅 데이터의 resp.statusCode : ${resp.statusCode}");
+    print("채팅 데이터의 resp.data : ${resp.data}");
+    return ChatDetails.fromJson(resp.data);
   }
 
   // 채팅방 데이터 가져오기
@@ -48,13 +41,13 @@ class ChatRepository {
     final resp = await dio.get(
       BASE_URL + '/chatroom/list/${memberId}',
     );
-    print("채팅방 데이터");
-    print("resp.statusCode : ${resp.statusCode}");
-    print("resp.data : ${resp.data}");
+    print("채팅방 데이터의 resp.statusCode : ${resp.statusCode}");
+    print("채팅방 데이터의 resp.data : ${resp.data}");
     if ((resp.data as List).isEmpty) {
       return [];
     }
-    final dataList = (resp.data as List).map((e) => ChattingRoom.fromJson(e)).toList();
+    final dataList =
+        (resp.data as List).map((e) => ChattingRoom.fromJson(e)).toList();
     return dataList;
   }
 

@@ -1,5 +1,6 @@
 import 'package:auction_shop/chat/model/chat_model.dart';
 import 'package:auction_shop/chat/provider/chatting_provider.dart';
+import 'package:auction_shop/chat/view/chat_info_screen.dart';
 import 'package:auction_shop/common/view/error_screen.dart';
 import 'package:auction_shop/main.dart';
 import 'package:auction_shop/payment/model/payment_model.dart';
@@ -13,8 +14,10 @@ import 'package:auction_shop/product/provider/product_provider.dart';
 import 'package:auction_shop/product/view/product_category_screen.dart';
 import 'package:auction_shop/product/view/product_loading_screen.dart';
 import 'package:auction_shop/product/view/product_revise_screen.dart';
+import 'package:auction_shop/user/model/report_model.dart';
 import 'package:auction_shop/user/model/user_model.dart';
 import 'package:auction_shop/user/provider/block_provider.dart';
+import 'package:auction_shop/user/provider/report_provider.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:card_swiper/card_swiper.dart';
 
@@ -36,6 +39,7 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
     with SingleTickerProviderStateMixin {
   late TabController controller;
   int index = 0;
+  String buttonText = "입찰하기";
   ValueNotifier<int> swiperIndex = ValueNotifier<int>(0);
   List<bool> isSelected = [true, false];
   TextEditingController _priceController = TextEditingController();
@@ -57,9 +61,15 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
       vsync: this,
     );
     controller.addListener(tabListener);
+    final user = ref.read(userProvider.notifier).getUser();
+    if (user is AdminUser) {
+      buttonText = "삭제하기";
+    }
     // 데이터 얻기
     if (!widget.isSkeleton) {
-      ref.read(productDetailProvider.notifier).getProductDetail(productId: int.parse(widget.id));
+      ref
+          .read(productDetailProvider.notifier)
+          .getProductDetail(productId: int.parse(widget.id));
     }
     super.initState();
   }
@@ -108,7 +118,9 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
         children: [
           RefreshIndicator(
             onRefresh: () async {
-              ref.read(productDetailProvider.notifier).getProductDetail(productId: data.product_id, isUpdate: true);
+              ref
+                  .read(productDetailProvider.notifier)
+                  .getProductDetail(productId: data.product_id, isUpdate: true);
             },
             child: CustomScrollView(
               slivers: [
@@ -116,7 +128,11 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                 SliverToBoxAdapter(
                   child: Column(
                     children: [
-                      imageWidget(data: data, memberId: user.id, isAdmin: (user is AdminUser)),
+                      imageWidget(
+                        data: data,
+                        memberId: user.id,
+                        isAdmin: (user is AdminUser),
+                      ),
                       SizedBox(
                         height: 18,
                       ),
@@ -255,9 +271,35 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
               children: [
                 Spacer(),
                 CustomButton(
-                  text: '입찰하기',
+                  text: buttonText,
                   // 바텀 시트 올라오는 함수
                   func: () async {
+                    // 관리자일 경우에는 삭제할 수 있도록
+                    if (user is AdminUser) {
+                      CustomDialog(
+                        context: context,
+                        title: "정말 게시글을 삭제하시겠어요?",
+                        CancelText: "삭제 취소",
+                        OkText: "삭제",
+                        func: () async {
+                          final resp = await ref
+                              .read(productDetailProvider.notifier)
+                              .deleteData(data.product_id);
+                          // 삭제에 성공하면 두 번 pop을 이용하여 목록 화면으로 이동
+                          if (resp) {
+                            context.pop();
+                            context.pop();
+                            return;
+                          }
+                          // 실패하면 에러 화면으로
+                          if (!resp) {
+                            context.goNamed(ErrorScreen.routeName);
+                            return;
+                          }
+                        },
+                      );
+                      return;
+                    }
                     // 이미 판매된 경우에는 입찰 금지 팝업창
                     if (data.sold) {
                       CustomDialog(
@@ -384,6 +426,9 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                     padding: const EdgeInsets.only(top: 4, left: 4),
                     child: IconButton(
                       onPressed: () {
+                        if (isAdmin) {
+                          context.pop();
+                        }
                         context.goNamed(
                           ProductCategoryScreen.routeName,
                           pathParameters: {
@@ -398,75 +443,133 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                     ),
                   ),
                   // 팝업 위젯
-                  if(!isAdmin)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4, left: 4),
-                    child: PopupMenuButton<String>(
-                      color: Colors.white,
-                      onSelected: (String? val) async {
-                        if (val == "수정하기") {
-                          context.pushNamed(ProductReviseScreen.routeName,extra: data);
-                        }
-                        if (val == "삭제하기") {
-                          CustomDialog(
-                            context: context,
-                            title: "정말 게시글을 삭제하시겠어요?",
-                            CancelText: "삭제 취소",
-                            OkText: "삭제",
-                            func: () async {
-                              final resp = await ref.read(productDetailProvider.notifier).deleteData(productId);
-                              // 삭제에 성공하면 경매 물품 목록 화면으로 이동
-                              if (resp) {
-                                context.goNamed(
-                                  ProductCategoryScreen.routeName,
-                                  pathParameters: {
-                                    'cid': '0',
-                                  },
-                                );
-                                return;
-                              }
-                              // 실패하면 에러 화면으로
-                              if (!resp) {
-                                context.goNamed(ErrorScreen.routeName);
-                                return;
-                              }
-                            },
-                          );
-                        }
-                        if (val == "차단하기") {
-                          CustomDialog(
-                            context: context,
-                            title: "해당 게시글 생성자를 차단하시겠습니까?",
-                            CancelText: "취소",
-                            OkText: "확인",
-                            func: () async {
-                              await ref.read(blockProvider.notifier).blockUser(data.memberId);
-                              context.pop();
-                            },
-                          );
-                        }
-                      },
-                      itemBuilder: (BuildContext context) => data.owner
-                          ? [
-                              popupItem(
-                                text: "수정하기",
-                              ),
-                              PopupMenuDivider(),
-                              popupItem(
-                                text: "삭제하기",
-                              ),
-                            ]
-                          : [
-                              popupItem(
-                                text: "차단하기",
-                              ),
-                            ],
-                      icon: Icon(
-                        Icons.more_vert,
+                  if (!isAdmin)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4, left: 4),
+                      child: PopupMenuButton<String>(
                         color: Colors.white,
+                        onSelected: (String? val) async {
+                          switch (val) {
+                            case "수정하기":
+                              context.pushNamed(ProductReviseScreen.routeName,
+                                  extra: data);
+                              return;
+                            case "삭제하기":
+                              CustomDialog(
+                                context: context,
+                                title: "정말 게시글을 삭제하시겠어요?",
+                                CancelText: "삭제 취소",
+                                OkText: "삭제",
+                                func: () async {
+                                  final resp = await ref
+                                      .read(productDetailProvider.notifier)
+                                      .deleteData(productId);
+                                  // 삭제에 성공하면 경매 물품 목록 화면으로 이동
+                                  if (resp) {
+                                    context.goNamed(
+                                      ProductCategoryScreen.routeName,
+                                      pathParameters: {
+                                        'cid': '0',
+                                      },
+                                    );
+                                    return;
+                                  }
+                                  // 실패하면 에러 화면으로
+                                  if (!resp) {
+                                    context.goNamed(ErrorScreen.routeName);
+                                    return;
+                                  }
+                                },
+                              );
+                              return;
+                            case "채팅 문의하기":
+                              final makeData = MakeRoom(
+                                userId: memberId,
+                                postId: data.product_id,
+                                yourId: data.memberId,
+                              );
+                              await ref
+                                  .read(chatProvider.notifier)
+                                  .enterChat(makeData);
+                              // final extra = ChattingRoom(userId: memberId, yourId: data.memberId, postId: data.product_id, roomId: roomId, nickname: data.)
+                              // context.goNamed(ChatInfoScreen.routeName, extra: );
+                              return;
+                            case "계정 차단하기":
+                              CustomDialog(
+                                context: context,
+                                title: "해당 게시글 생성자를 차단하시겠습니까?",
+                                CancelText: "취소",
+                                OkText: "확인",
+                                func: () async {
+                                  await ref
+                                      .read(blockProvider.notifier)
+                                      .blockUser(data.memberId);
+                                  context.pop();
+                                },
+                              );
+                              return;
+                            case "계정 신고하기":
+                              CustomDialog(
+                                context: context,
+                                title: "해당 게시글 생성자를 신고하시겠습니까?",
+                                CancelText: "취소",
+                                OkText: "확인",
+                                func: () async {
+                                  final report = Report(
+                                      reportedId: data.memberId,
+                                      content: "임시 신고");
+                                  await ref
+                                      .read(reportProvider.notifier)
+                                      .reportUser(report);
+                                  context.pop();
+                                },
+                              );
+                              return;
+                          }
+                          if (val == "계정 차단하기") {
+                            CustomDialog(
+                              context: context,
+                              title: "해당 게시글 생성자를 차단하시겠습니까?",
+                              CancelText: "취소",
+                              OkText: "확인",
+                              func: () async {
+                                await ref
+                                    .read(blockProvider.notifier)
+                                    .blockUser(data.memberId);
+                                context.pop();
+                              },
+                            );
+                          }
+                        },
+                        itemBuilder: (BuildContext context) => data.owner
+                            ? [
+                                popupItem(
+                                  text: "수정하기",
+                                ),
+                                PopupMenuDivider(),
+                                popupItem(
+                                  text: "삭제하기",
+                                ),
+                              ]
+                            : [
+                                popupItem(
+                                  text: "채팅 문의하기",
+                                ),
+                                PopupMenuDivider(),
+                                popupItem(
+                                  text: "계정 차단하기",
+                                ),
+                                PopupMenuDivider(),
+                                popupItem(
+                                  text: "계정 신고하기",
+                                ),
+                              ],
+                        icon: Icon(
+                          Icons.more_vert,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
               Positioned(
@@ -637,45 +740,45 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                         ),
                       ),
                       // 내 경매 물품일 경우 채팅 못하도록 설정
-                      if(!owner)
-                      Positioned(
-                        top: -15,
-                        left: -10,
-                        right: -10,
-                        child: GestureDetector(
-                          onTap: () {
-                            print("채팅 걸기");
-                            final data = MakeRoom(
-                              userId: userId,
-                              postId: product_id,
-                              yourId: yourId,
-                            );
-                            ref.read(chatProvider.notifier).enterChat(data);
-                            //final extra = ChattingRoom(userId: userId, yourId: yourId, postId: product_id, roomId: roomId, nickname: nickname)
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 4,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: widget.isSkeleton
-                                  ? null
-                                  : auctionColor.mainColor,
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: Text(
-                              "채팅걸기",
-                              style: tsInter(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                      if (!owner)
+                        Positioned(
+                          top: -15,
+                          left: -10,
+                          right: -10,
+                          child: GestureDetector(
+                            onTap: () {
+                              print("채팅 걸기");
+                              final data = MakeRoom(
+                                userId: userId,
+                                postId: product_id,
+                                yourId: yourId,
+                              );
+                              ref.read(chatProvider.notifier).enterChat(data);
+                              //final extra = ChattingRoom(userId: userId, yourId: yourId, postId: product_id, roomId: roomId, nickname: createdBy);
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                                vertical: 2,
                               ),
-                              textAlign: TextAlign.center,
+                              decoration: BoxDecoration(
+                                color: widget.isSkeleton
+                                    ? null
+                                    : auctionColor.mainColor,
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: Text(
+                                "채팅걸기",
+                                style: tsInter(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
                             ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                   SizedBox(
@@ -798,18 +901,25 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
               widget.isSkeleton
                   ? SizedBox()
                   : StreamBuilder<DateTime>(
-                      stream: Stream.periodic(Duration(seconds: 1), (_) => DateTime.now()),
+                      stream: Stream.periodic(
+                          Duration(seconds: 1), (_) => DateTime.now()),
                       builder: (context, snapshot) {
                         // snapshot 데이터가 로딩중이거나, 에러가 있거나, 데이터가 없거나 제한 시간 데이터가 아직 들어오지 않았을 때,
                         // 로딩 화면 출력
-                        if ((limitTime == null) || (snapshot.connectionState == ConnectionState.waiting) || (snapshot.hasError) || (!snapshot.hasData)) {
+                        if ((limitTime == null) ||
+                            (snapshot.connectionState ==
+                                ConnectionState.waiting) ||
+                            (snapshot.hasError) ||
+                            (!snapshot.hasData)) {
                           return remainedTime('남은 시간 00:00:00');
                         }
                         currentTime = snapshot.data!;
                         final limitedTime = DateTime.parse(limitTime);
-                        Duration timeDifference = limitedTime.difference(currentTime);
-                        
-                        return remainedTime('남은 시간 ${timeDifference.inHours}:${timeDifference.inMinutes % 60}:${timeDifference.inSeconds % 60}');
+                        Duration timeDifference =
+                            limitedTime.difference(currentTime);
+
+                        return remainedTime(
+                            '남은 시간 ${timeDifference.inHours}:${timeDifference.inMinutes % 60}:${timeDifference.inSeconds % 60}');
                       },
                     ),
               Align(
@@ -825,31 +935,31 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
     );
   }
 
-  Positioned remainedTime(String time){
+  Positioned remainedTime(String time) {
     return Positioned(
-                          top: -10,
-                          right: 25,
-                          left: 25,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: auctionColor.mainColorE2,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 5,
-                              vertical: 3,
-                            ),
-                            child: Text(
-                              time,
-                              style: tsInter(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: auctionColor.mainColor,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        );
+      top: -10,
+      right: 25,
+      left: 25,
+      child: Container(
+        decoration: BoxDecoration(
+          color: auctionColor.mainColorE2,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 5,
+          vertical: 3,
+        ),
+        child: Text(
+          time,
+          style: tsInter(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            color: auctionColor.mainColor,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
   }
 
   // 올라오는 바텀 시트 내부 위젯
@@ -870,31 +980,6 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // SizedBox(
-          //   height: 50,
-          // ),
-          // TextLable(text: '희망 거래 방식'),
-          // Row(
-          //   children: [
-          //     ToggleBox(
-          //       isSelected: isSelected[0],
-          //       func: () {
-          //         toggleSelect(0);
-          //       },
-          //       text: '비대면',
-          //     ),
-          //     SizedBox(
-          //       width: 10,
-          //     ),
-          //     ToggleBox(
-          //       isSelected: isSelected[1],
-          //       func: () {
-          //         toggleSelect(1);
-          //       },
-          //       text: '직거래',
-          //     ),
-          //   ],
-          // ),
           SizedBox(
             height: 30,
           ),
@@ -917,8 +1002,14 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
           CustomButton(
             text: '입찰하기',
             func: () {
-              if(int.parse(_priceController.text) <= price){
-                CustomDialog(context: context, title: "현재 입찰가보다\n높은 가격을 제시해주세요.", OkText: "확인", func: (){context.pop();});
+              if (int.parse(_priceController.text) <= price) {
+                CustomDialog(
+                    context: context,
+                    title: "현재 입찰가보다\n높은 가격을 제시해주세요.",
+                    OkText: "확인",
+                    func: () {
+                      context.pop();
+                    });
                 return;
               }
               final userData = ref.read(userProvider.notifier).getUser();
