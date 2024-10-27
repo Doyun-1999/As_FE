@@ -66,10 +66,19 @@ class AdminHomeScreen extends ConsumerWidget {
           ),
           Spacer(),
           GestureDetector(
-            onTap: (){
+            onTap: () {
               ref.read(userProvider.notifier).logout();
             },
-            child: Text("로그아웃"))
+            child: Text(
+              "로그아웃",
+              style: tsNotoSansKR(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: auctionColor.mainColor,
+              ),
+            ),
+          ),
+          SizedBox(height: 20),
         ],
       ),
     );
@@ -104,7 +113,7 @@ class AdminHomeScreen extends ConsumerWidget {
               ),
             ),
             Transform.translate(
-              offset: Offset(-90, 0),  // 왼쪽으로 24만큼 이동
+              offset: Offset(-90, 0), // 왼쪽으로 24만큼 이동
               child: Image.asset(
                 'assets/icon/$imgName.png',
               ),

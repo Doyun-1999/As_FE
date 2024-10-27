@@ -1,16 +1,16 @@
+import 'package:auction_shop/admin/QandA/model/admin_QandA_model.dart';
 import 'package:auction_shop/admin/QandA/repository/admin_QandA_repository.dart';
-import 'package:auction_shop/user/model/Q&A_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:collection/collection.dart';
 
-final adminQandAStateProvider = Provider.family<List<AnswerModel>, bool>((ref, status){
+final adminQandAStateProvider = Provider.family<List<AdminAnswerModel>, bool>((ref, status){
   final provider = ref.watch(adminQandAProvider);
 
   final sortedData = provider.list.where((e) => e.status == status).toList();
   return sortedData;
 });
 
-final adminQandAProvider = StateNotifierProvider<AdminQandANotifier, AnswerListModel>((ref) {
+final adminQandAProvider = StateNotifierProvider<AdminQandANotifier, AdminAnswerListModel>((ref) {
 
   final repo = ref.watch(adminQandARepositoryProvider);
   
@@ -18,12 +18,12 @@ final adminQandAProvider = StateNotifierProvider<AdminQandANotifier, AnswerListM
 });
 
 
-class AdminQandANotifier extends StateNotifier<AnswerListModel>{
+class AdminQandANotifier extends StateNotifier<AdminAnswerListModel>{
   final AdminQandARepository repo;
 
   AdminQandANotifier({
     required this.repo
-  }):super(AnswerListModel(list: []));
+  }):super(AdminAnswerListModel(list: []));
 
   // 유저의 QandA 데이터 받기
   void getAnswerdInquiry(bool status) async {

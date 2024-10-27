@@ -67,10 +67,6 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
         if(frame.body == null){
           return;
         }
-        if (!mounted) {
-          print("끊겼다는데");
-          return;
-        }
         final data = Chatting.fromJson((jsonDecode(frame.body!) as Map<String, dynamic>));
         ref.read(chatProvider.notifier).addMessage(chat: data, roomId: roomId);
         print("frame : ${frame}");
@@ -113,7 +109,7 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
       return DefaultLayout(
         appBar: CustomAppBar().noActionAppBar(title: widget.data.nickname, context: context),
         child: Center(
-          child: Text("에러가 발생했습니다."),
+          child: CircularProgressIndicator(color: auctionColor.mainColor,),
         ),
       );
     }
