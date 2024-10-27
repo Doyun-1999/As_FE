@@ -1,27 +1,38 @@
 class Notice {
   final int id;
   final String title;
-  final String date;
   final String content;
+  final String date;
 
-  Notice({required this.id, required this.title, required this.date, required this.content});
+  Notice({
+    required this.id,
+    required this.title,
+    required this.content,
+    required this.date,
+  });
 
-  // 공지사항을 JSON 형태로 변환하거나 서버에서 가져올 때 사용할 수 있는 팩토리 메서드 예시
+  // 서버에서 받은 JSON 데이터를 Notice 객체로 변환하는 메서드
   factory Notice.fromJson(Map<String, dynamic> json) {
     return Notice(
       id: json['id'],
       title: json['title'],
-      date: json['date'],
       content: json['content'],
+      date: json['date'] ?? '', // date가 없을 때 대비
     );
   }
 
-  // 공지사항을 JSON으로 변환하는 메서드
-  Map<String, dynamic> toJson() {
+  // 공지사항 수정 요청에 필요한 title과 content만 포함하는 JSON 변환 메서드
+  Map<String, dynamic> toJsonForUpdate() {
     return {
-      'id': id,
       'title': title,
-      'date': date,
+      'content': content,
+    };
+  }
+
+  // 공지사항 생성 요청 시 필요한 JSON 변환 메서드
+  Map<String, dynamic> toJsonForCreate() {
+    return {
+      'title': title,
       'content': content,
     };
   }
