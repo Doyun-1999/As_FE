@@ -1,18 +1,9 @@
+import 'package:auction_shop/admin/QandA/model/admin_QandA_model.dart';
 import 'package:auction_shop/admin/QandA/provider/admin_QandA_provider.dart';
 import 'package:auction_shop/admin/QandA/view/consumer_answer_info_screen.dart';
-import 'package:auction_shop/common/component/appbar.dart';
-import 'package:auction_shop/common/component/dialog.dart';
 import 'package:auction_shop/common/export/variable_export.dart';
-import 'package:auction_shop/common/layout/default_layout.dart';
-import 'package:auction_shop/common/variable/color.dart';
-import 'package:auction_shop/common/variable/textstyle.dart';
 import 'package:auction_shop/user/component/info_box.dart';
 import 'package:auction_shop/user/component/textcolumn.dart';
-import 'package:auction_shop/user/model/Q&A_model.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class ConsumerAnswerScreen extends ConsumerStatefulWidget {
   static String get routeName => "consumer_answer";
@@ -148,7 +139,7 @@ class _ConsumerAnswerScreenState extends ConsumerState<ConsumerAnswerScreen> wit
   // 답변이 된 Q&A
   Padding answerBox({
     double bottomPadding = 0,
-    required AnswerModel data,
+    required AdminAnswerModel data,
   }) {
     return Padding(
       padding: EdgeInsets.only(bottom: bottomPadding),
@@ -200,7 +191,7 @@ class _ConsumerAnswerScreenState extends ConsumerState<ConsumerAnswerScreen> wit
   // 답변이 안된 Q&A
   Padding noAnswerBox({
     double bottomPadding = 0,
-    required AnswerModel data,
+    required AdminAnswerModel data,
   }) {
     return Padding(
       padding: EdgeInsets.only(bottom: bottomPadding),

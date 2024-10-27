@@ -1,6 +1,6 @@
+import 'package:auction_shop/admin/QandA/model/admin_QandA_model.dart';
 import 'package:auction_shop/common/dio/dio.dart';
 import 'package:auction_shop/common/export/route_export.dart';
-import 'package:auction_shop/user/model/Q&A_model.dart';
 import 'package:dio/dio.dart';
 
 final adminQandARepositoryProvider = Provider((ref) {
@@ -19,15 +19,15 @@ class AdminQandARepository{
   });
 
   // 유저의 QandA 반환
-  Future<AnswerListModel> getAnswerdInquiry(bool status) async {
+  Future<AdminAnswerListModel> getAnswerdInquiry(bool status) async {
     final resp = await dio.get(baseUrl + '/inquiries/${status}');
     final data = {"list" : resp.data};
-
-    return AnswerListModel.fromJson(data);
+    print(resp.data);
+    return AdminAnswerListModel.fromJson(data);
   }
 
   // 유저 문의에 답하기
-  Future<AnswerModel> answerInquiry({
+  Future<AdminAnswerModel> answerInquiry({
     required String content,
     required int id,
   }) async {
@@ -35,6 +35,6 @@ class AdminQandARepository{
       data: {"content" : content},
     );
     print("답변 완료 : ${resp.data}");
-    return AnswerModel.fromJson(resp.data);
+    return AdminAnswerModel.fromJson(resp.data);
   }
 }

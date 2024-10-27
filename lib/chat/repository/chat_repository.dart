@@ -30,8 +30,8 @@ class ChatRepository {
     final url = baseUrl + '/chatroom/enter/${data.userId}/${data.yourId}/${data.postId}';
     print("url : ${url}");
     final resp = await dio.get(url, data: data.toJson());
-    print("채팅 데이터의 resp.statusCode : ${resp.statusCode}");
-    print("채팅 데이터의 resp.data : ${resp.data}");
+    print("채팅방 들어가기의 resp.statusCode : ${resp.statusCode}");
+    print("채팅방 들어가기의 resp.data : ${resp.data}");
     return ChatDetails.fromJson(resp.data);
   }
 
