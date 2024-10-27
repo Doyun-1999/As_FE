@@ -1,4 +1,5 @@
 import 'package:auction_shop/common/dio/dio.dart';
+import 'package:auction_shop/common/fcm/fcm_class.dart';
 import 'package:auction_shop/common/variable/function.dart';
 import 'package:auction_shop/user/model/token_model.dart';
 import 'package:flutter/services.dart';
@@ -31,8 +32,11 @@ class AuthRepository {
   // 서버와 통신하는 로그인 함수
   Future<TokenModel?> login(String pk) async {
     try{
+      // device 토큰값 얻기
+    final FCMToken = await FcmApi.getDeviceToken();
+    print("FCMToken : ${FCMToken}");
     final resp = await dio.post(baseUrl + '/auth/login',
-      data: {'uuid' : pk},
+      data: {'uuid' : pk, "deviceToken" : FCMToken},
     );
     print('성공---------------');
     print(resp.data);

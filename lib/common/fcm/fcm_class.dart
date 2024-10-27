@@ -22,12 +22,6 @@ class FcmApi {
     // 권한 요청
     await _firebaseMessaging.requestPermission();
 
-    // 디바이스의 token 값 저장
-    final FCMToken = await _firebaseMessaging.getToken();
-
-    // 토큰 값 출력
-    print('Device Token: $FCMToken');
-
     // local notification initialize
     initLocalNotification();
     initPushNotifications();
@@ -36,7 +30,7 @@ class FcmApi {
   // local notification initialize
   static Future initLocalNotification() async {
     // android setting
-    const android = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const android = AndroidInitializationSettings('ic_notification');
     
     // ios setting
     // 원래는 true로 해야하지만,
@@ -77,6 +71,14 @@ class FcmApi {
     Future.delayed(const Duration(seconds: 1), (){
       print("data : ${message}");
     });
+  }
+
+  static Future<String?> getDeviceToken() async {
+    // 디바이스의 token 값 저장
+    final FCMToken = await _firebaseMessaging.getToken();
+
+    // 토큰 값 return
+    return FCMToken;
   }
  
   static Future initPushNotifications() async {
