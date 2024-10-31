@@ -207,8 +207,10 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
       return 'new_bid'; // 새로운 입찰에 맞는 이미지 파일명 반환
     } else if (text == '경매 제한 시간') {
       return 'limit_clock'; // 경매 제한 시간에 맞는 이미지 파일명 반환
-    } else {
-      return 'limit_hammer'; // 기타 경우에 대한 이미지 파일명 반환
+    } else if (text == '낙찰'){
+      return 'limit_hammer'; // 낙찰에 대한 이미지 파일명 반환
+    } else{
+      return 'sealed_bid';
     }
   }
 
