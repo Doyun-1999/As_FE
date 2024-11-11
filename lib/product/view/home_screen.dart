@@ -205,6 +205,8 @@ class HomeScreen extends ConsumerWidget {
 
   // 경매 추천해주는 하나의 Box
   Container recommendBox(RecommendProduct model) {
+    final textColor = getProductType(model.productType) == "하향식" ? Colors.white : auctionColor.mainColor;
+    final bgColor = getProductType(model.productType) == "하향식" ? auctionColor.mainColor : Colors.white;
     return Container(
       width: 155,
       margin: const EdgeInsets.only(right: 8),
@@ -250,10 +252,10 @@ class HomeScreen extends ConsumerWidget {
                 ),
                 child: FittedBox(
                   child: Container(
-                    padding:
-                        const EdgeInsets.only(bottom: 3, left: 6, right: 6),
+                    padding: const EdgeInsets.only(bottom: 3, left: 6, right: 6),
                     decoration: BoxDecoration(
-                      color: auctionColor.mainColorEF,
+                      border: Border.all(color: Colors.white),
+                      color: bgColor,
                       borderRadius: BorderRadius.circular(100),
                     ),
                     child: Center(
@@ -262,6 +264,7 @@ class HomeScreen extends ConsumerWidget {
                         style: tsNotoSansKR(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
+                          color: textColor
                         ),
                       ),
                     ),
