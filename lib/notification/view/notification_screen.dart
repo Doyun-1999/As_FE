@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../model/notification_model.dart';
 import 'package:auction_shop/common/provider/notification_provider.dart';
-
+import 'package:go_router/go_router.dart';
+import 'package:auction_shop/chat/view/chat_list_screen.dart';
+import 'package:auction_shop/user/view/mypage_inner/my_bidding_screen.dart';
 
 final notificationProvider = FutureProvider<List<NotificationModel>>((ref) {
   final repository = ref.watch(notificationRepositoryProvider);
@@ -28,7 +30,6 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
   // 더미 데이터를 리스트로 추가
   List<NotificationModel> notifications = [];
   List<String> selectedNotifications = []; // 선택된 알림 ID 목록
-
 
 // 선택된 알림 삭제 기능
   Future<void> _deleteSelectedNotifications() async {
@@ -210,111 +211,112 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
     } else if (text == '낙찰'){
       return 'limit_hammer'; // 낙찰에 대한 이미지 파일명 반환
     } else{
-      return 'sealed_bid';
+      return 'sealed_bid'; //경쟁 입찰에 대한 이미지 파일명 변환
     }
   }
 
-  Container notificationBox({
+  Widget notificationBox({
     required String type,
     required String content,
     required bool selected,
-    required bool isSelectMode, // 선택 삭제 모드인지 여부
-    required Function(bool) onChanged, // 체크박스 상태 변경 함수
+    required bool isSelectMode,
+    required Function(bool) onChanged,
   }) {
-    return Container(
-      width: double.infinity,
-      // 가로 길이를 최대한으로 설정
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      // 상하 마진 추가
-      padding: const EdgeInsets.all(16),
-      // 내부 패딩 설정
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: selected ? auctionColor.mainColor : Colors.transparent,
-          // 선택된 항목은 보라색 테두리
-          width: 2,
-        ),
-        color: selected ? auctionColor.mainColor.withOpacity(0.1) : Colors
-            .white, // 선택된 항목은 보라색 배경
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1), // 그림자 설정
-            blurRadius: 6,
-            offset: Offset(0, 3),
+    return GestureDetector(
+      onTap: () {
+        if (!isSelectMode) {
+          // Navigate based on notification type
+          if (type == '채팅') {
+            context.push(ChatListScreen.routeName);
+          } else if (type == '새로운 입찰' || type == '경매 제한 시간' || type == '낙찰') {
+            context.push(MyBiddingScreen.routeName); // Replace with actual route name for the transaction page
+          }
+        }
+      },
+      child: Container(
+        width: double.infinity,
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: selected ? auctionColor.mainColor : Colors.transparent,
+            width: 2,
           ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Image.asset(
-                    'assets/img/${changeText(text: type)}.png', // 알림 타입에 따른 아이콘
+          color: selected ? auctionColor.mainColor.withOpacity(0.1) : Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              blurRadius: 6,
+              offset: Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Image.asset(
+                      'assets/img/${changeText(text: type)}.png',
+                      width: 24,
+                      height: 24,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Icon(Icons.error);
+                      },
+                    ),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            type,
+                            style: tsNotoSansKR(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: auctionColor.subGreyColorB6,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            content,
+                            style: tsNotoSansKR(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.black,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            if (isSelectMode)
+              Positioned(
+                top: 0,
+                right: 0,
+                child: GestureDetector(
+                  onTap: () {
+                    onChanged(!selected);
+                  },
+                  child: Image.asset(
+                    selected ? 'assets/icon/checkedbox.png' : 'assets/icon/checkbox.png',
                     width: 24,
                     height: 24,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Icon(Icons.error); // 이미지 로딩 실패 시 대체 아이콘
-                    },
                   ),
-                  SizedBox(width: 12), // 아이콘과 텍스트 간의 간격
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          type, // 알림 타입 텍스트
-                          style: tsNotoSansKR(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: auctionColor.subGreyColorB6,
-                          ),
-                        ),
-                        SizedBox(height: 4), // 타입과 콘텐츠 간 간격
-                        Text(
-                          content, // 알림 콘텐츠 텍스트
-                          style: tsNotoSansKR(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.black, // 콘텐츠 텍스트를 검정색으로 변경
-                          ),
-                          maxLines: 2, // 두 줄까지만 표시
-                          overflow: TextOverflow.ellipsis, // 내용이 길 경우 말줄임표 처리
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ],
-          ),
-          // 선택 삭제 모드일 때만 체크박스 표시
-          if (isSelectMode)
-          Positioned(
-            top: 0, // 컨테이너의 상단에 위치
-            right: 0, // 컨테이너의 오른쪽 끝에 위치
-            child: GestureDetector(
-              onTap: () {
-                onChanged(!selected); // 이미지 클릭 시 상태 변경
-              },
-              child: Image.asset(
-                selected
-                    ? 'assets/icon/checkedbox.png'
-                    : 'assets/icon/checkbox.png', // 선택 상태에 따른 이미지 변경
-                width: 24, // 아이콘 너비 설정
-                height: 24, // 아이콘 높이 설정
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
-
-
-
