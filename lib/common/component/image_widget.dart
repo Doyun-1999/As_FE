@@ -67,7 +67,7 @@ class setImage extends StatelessWidget {
                   image: NetworkImage(
                     imgPath,
                   ),
-                  fit: BoxFit.fill),
+                  fit: BoxFit.fill,),
             ),
           ),
           Positioned(
@@ -136,9 +136,12 @@ class UploadImageBox extends StatelessWidget {
           ),
         ),
         child: image != null
-            ? Image.file(
-              File(image!.path),
-              fit: BoxFit.fill,
+            ? ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.file(
+                File(image!.path),
+                fit: BoxFit.fill,
+              ),
             )
             : Column(
                 children: [

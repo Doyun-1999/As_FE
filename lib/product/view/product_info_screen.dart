@@ -488,11 +488,9 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                                 postId: data.product_id,
                                 yourId: data.memberId,
                               );
-                              await ref
-                                  .read(chatProvider.notifier)
-                                  .enterChat(makeData);
-                              // final extra = ChattingRoom(userId: memberId, yourId: data.memberId, postId: data.product_id, roomId: roomId, nickname: data.)
-                              // context.goNamed(ChatInfoScreen.routeName, extra: );
+                              final resp = await ref.read(chatProvider.notifier).enterChat(data: makeData);
+                              // 채팅방 이동
+                              context.pushNamed(ChatInfoScreen.routeName, extra: resp);
                               return;
                             case "계정 차단하기":
                               CustomDialog(
@@ -746,15 +744,16 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                           left: -10,
                           right: -10,
                           child: GestureDetector(
-                            onTap: () {
+                            onTap: () async {
                               print("채팅 걸기");
                               final data = MakeRoom(
                                 userId: userId,
                                 postId: product_id,
                                 yourId: yourId,
                               );
-                              ref.read(chatProvider.notifier).enterChat(data);
-                              //final extra = ChattingRoom(userId: userId, yourId: yourId, postId: product_id, roomId: roomId, nickname: createdBy);
+                              final resp = await ref.read(chatProvider.notifier).enterChat(data: data);
+                              // 채팅방 이동
+                              context.pushNamed(ChatInfoScreen.routeName, extra: resp);
                             },
                             child: Container(
                               padding: const EdgeInsets.symmetric(

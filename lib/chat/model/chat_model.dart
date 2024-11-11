@@ -31,8 +31,8 @@ class ChatDetails {
   final String title;
 
   ChatDetails({
-    required this.chatLog,
     required this.roomId,
+    required this.chatLog,
     required this.title,
     required this.currentPrice,
   });
@@ -172,4 +172,32 @@ class EnterChattingRoom {
   factory EnterChattingRoom.fromJson(Map<String, dynamic> json) => _$EnterChattingRoomFromJson(json);
 
   Map<String, dynamic> toJson() => _$EnterChattingRoomToJson(this);
+}
+
+@JsonSerializable()
+class ChatInfo {
+  final int currentPrice;
+  final String title;
+
+  ChatInfo({
+    required this.title,
+    required this.currentPrice,
+  });
+  
+  // copyWith 함수
+  ChatInfo copyWith({
+    List<Chatting>? chatLog,
+    int? currentPrice,
+    String? title,
+  }) {
+    return ChatInfo(
+      currentPrice: currentPrice ?? this.currentPrice,
+      title: title ?? this.title,
+    );
+  }
+
+  Map<String, dynamic> toJson() => _$ChatInfoToJson(this);
+
+  factory ChatInfo.fromJson(Map<String, dynamic> json) => _$ChatInfoFromJson(json);
+
 }

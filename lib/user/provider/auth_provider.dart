@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:auction_shop/admin/QandA/model/admin_QandA_model.dart';
 import 'package:auction_shop/chat/provider/sse_provider.dart';
 import 'package:auction_shop/product/model/product_model.dart';
 import 'package:auction_shop/user/model/Q&A_model.dart';
@@ -298,7 +299,7 @@ class AuthNotifier extends ChangeNotifier {
                   path: 'info',
                   name: ConsumerAnswerInfoScreen.routeName,
                   builder: (_, __) {
-                    final extra = __.extra as AnswerModel;
+                    final extra = __.extra as AdminAnswerModel;
                     return ConsumerAnswerInfoScreen(data: extra);
                   },
                   routes: [
@@ -306,7 +307,7 @@ class AuthNotifier extends ChangeNotifier {
                       path: 'reply',
                       name: ReplyAnswerScreen.routeName,
                       builder: (_, __) {
-                        final extra = __.extra as AnswerModel;
+                        final extra = __.extra as AdminAnswerModel;
                         return ReplyAnswerScreen(data: extra);
                       },
                     ),

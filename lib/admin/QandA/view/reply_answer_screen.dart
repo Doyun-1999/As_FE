@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:auction_shop/admin/QandA/component/user_QandA_info.dart';
+import 'package:auction_shop/admin/QandA/model/admin_QandA_model.dart';
 import 'package:auction_shop/admin/QandA/provider/admin_QandA_provider.dart';
 import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/component/button.dart';
@@ -8,13 +9,11 @@ import 'package:auction_shop/common/component/textformfield.dart';
 import 'package:auction_shop/common/export/route_export.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/main.dart';
-import 'package:auction_shop/user/model/Q&A_model.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ReplyAnswerScreen extends ConsumerStatefulWidget {
   static String get routeName => "reply";
-  final AnswerModel data;
+  final AdminAnswerModel data;
   const ReplyAnswerScreen({
     required this.data,
     super.key,});
@@ -53,8 +52,8 @@ class _ReplyAnswerScreenState extends ConsumerState<ReplyAnswerScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   UserQandAInfo(
-                    username: "룰루랄",
-                    date: "2024.09.01",
+                    username: widget.data.nickname,
+                    date: widget.data.createAt,
                     title: widget.data.title,
                     content: widget.data.content,
                     imgPaths: widget.data.imageUrl,

@@ -1,5 +1,7 @@
 import 'package:auction_shop/chat/model/chat_model.dart';
+import 'package:auction_shop/chat/provider/chatroom_provider.dart';
 import 'package:auction_shop/chat/repository/chat_repository.dart';
+import 'package:auction_shop/common/export/route_export.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:collection/collection.dart';
 
@@ -17,32 +19,39 @@ final chatInfoProvider = Provider.family<ChatDetails?, int>((ref, id){
 final chatProvider = StateNotifierProvider<ChatNotifier, ChatModel>((ref){
   final repo = ref.watch(chatRepository);
 
-  return ChatNotifier(repo: repo);
+  return ChatNotifier(ref, repo: repo);
   }
 );
 
 class ChatNotifier extends StateNotifier<ChatModel> {
 
   final ChatRepository repo;
+  final Ref ref;
 
-  ChatNotifier({
+  ChatNotifier(
+    this.ref,{
     required this.repo,
   }):super(ChatModel(list: []));
 
   // 채팅방 진입시
   // 1. 기존에 없는 채팅방이면 불러온 데이터를 추가,
   // 2. 기존에 있는 채팅방이라면 업데이트
-  Future<void> enterChat(MakeRoom data) async {
-    final resp = await repo.enterChatting(data);
+  Future<ChattingRoom> enterChat({
+    required MakeRoom data,
+  }) async {
+    final resp = await repo.enterChatting(data: data);
     final roomId = resp.roomId;
     // roomId와 같은 채팅 내역 추출
     final chatData = state.list.firstWhereOrNull((e) => e.roomId == resp.roomId);
 
+    // 채팅방 데이터 업데이트 후 데이터 가져오기
+    await ref.read(chatRoomProvider.notifier).getChattingRoomList();
+    final chatRoomData = ref.read(chatRoomProvider.notifier).getChatRoom(roomId: roomId);
     // 만약 기존에 있던 채팅방이 아니라면,
     // 해당 채팅 내역을 모두 추가
     if(chatData == null){
       state = state.copyWith(list: [...state.list, resp]);
-      return;
+      return chatRoomData;
     }
     
     // 만약 기존에 채팅방이 새로 존재한다면
@@ -58,6 +67,7 @@ class ChatNotifier extends StateNotifier<ChatModel> {
     });
 
     state = state.copyWith(list: [...newstate]);
+    return chatRoomData;
   }
 
   // 채팅 데이터를 provider에 추가하기

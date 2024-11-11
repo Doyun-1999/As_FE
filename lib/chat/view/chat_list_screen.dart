@@ -71,7 +71,7 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
                         postId: extra.postId,
                         yourId: extra.yourId,
                       );
-                      ref.read(chatProvider.notifier).enterChat(enterData);
+                      ref.read(chatProvider.notifier).enterChat(data: enterData);
 
                       context.pushNamed(ChatInfoScreen.routeName, extra: extra);
                     },

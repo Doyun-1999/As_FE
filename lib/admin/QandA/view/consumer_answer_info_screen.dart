@@ -1,17 +1,17 @@
+import 'package:auction_shop/admin/QandA/model/admin_QandA_model.dart';
 import 'package:auction_shop/admin/QandA/view/reply_answer_screen.dart';
 import 'package:auction_shop/admin/QandA/component/user_QandA_info.dart';
 import 'package:auction_shop/common/component/appbar.dart';
 import 'package:auction_shop/common/component/button.dart';
 import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/main.dart';
-import 'package:auction_shop/user/model/Q&A_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class ConsumerAnswerInfoScreen extends StatefulWidget {
   static String get routeName => "consumer_answer_info";
-  final AnswerModel data;
+  final AdminAnswerModel data;
   const ConsumerAnswerInfoScreen({
     required this.data,
     super.key,
@@ -37,8 +37,8 @@ class _ConsumerAnswerInfoScreenState extends State<ConsumerAnswerInfoScreen> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: UserQandAInfo(
-                username: widget.data.title,
-                date: "2024.09.01",
+                username: widget.data.nickname,
+                date: widget.data.createAt,
                 title: widget.data.title,
                 content: widget.data.content,
                 imgPaths: widget.data.imageUrl,
