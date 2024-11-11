@@ -54,8 +54,8 @@ dependencies:
   stomp_dart_client: ^2.0.0
   firebase_messaging: ^15.0.2
   permission_handler: ^11.3.1
-  # googleapis: ^13.2.0
   flutter_local_notifications: ^17.2.4
+  # googleapis: ^13.2.0
   # crypto: ^3.0.3
   # shared_preferences: ^2.2.3
   # platform: ^3.1.5

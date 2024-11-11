@@ -136,7 +136,11 @@ class CustomInterceptor extends Interceptor {
           try{
             final response = await dio.fetch(options);
             return handler.resolve(response);
-          } catch(e){
+          } on DioException catch(e){
+            print("에러 발생--------------------------");
+            print(e.message);
+            print(e.error);
+            print(e.response);
             ref.read(routerProvider).pushNamed(ErrorScreen.routeName);
             print("실패했어요 최종 실패");
             print(e);

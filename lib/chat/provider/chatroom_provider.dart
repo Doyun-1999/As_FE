@@ -19,13 +19,13 @@ class ChatRoomNotifier extends StateNotifier<List<ChattingRoom>> {
   }):super([]);
 
   // 채팅방 데이터 얻기
-  void getChattingRoomList() async {
+  Future<void> getChattingRoomList() async {
     final resp = await repo.getChattingRoomList();
     state = resp;
   }
 
   // 채팅방이 존재하는지 판단하여
-  // 1. 존재한다면 true를,
+  // 1. 존재한다면 해당 데이터를,
   // 2. 존재하지 않는다면 false를 반환한다.
   ChattingRoom? existChatRoom({
     required int productId,
@@ -33,6 +33,15 @@ class ChatRoomNotifier extends StateNotifier<List<ChattingRoom>> {
     required int yourId,
   }){
     final exist = state.firstWhereOrNull((e) => (e.userId == userId && e.yourId == yourId && e.postId == productId));
+    return exist;
+  }
+
+  // roomid를 통해 채팅방이 존재하는지 판단하여
+  // 해당 데이터를 반환한다.
+  ChattingRoom getChatRoom({
+    required int roomId,
+  }){
+    final exist = state.firstWhere((e) => (e.roomId == roomId));
     return exist;
   }
 }

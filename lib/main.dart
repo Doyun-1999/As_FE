@@ -11,7 +11,8 @@ import 'firebase_options.dart';
 late Size ratio;
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print("백그라운드 메시지 처리");
+  print("백그라운드 수신");
+  print(message.data);
 }
 
 void main() async {

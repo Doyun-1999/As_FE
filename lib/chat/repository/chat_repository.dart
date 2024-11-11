@@ -26,12 +26,23 @@ class ChatRepository {
   });
 
   // 채팅방 처음 들어가기 / 만들기
-  Future<ChatDetails> enterChatting(MakeRoom data) async {
+  Future<ChatDetails> enterChatting({
+    required MakeRoom data,
+  }) async {
     final url = baseUrl + '/chatroom/enter/${data.userId}/${data.yourId}/${data.postId}';
     print("url : ${url}");
     final resp = await dio.get(url, data: data.toJson());
     print("채팅방 들어가기의 resp.statusCode : ${resp.statusCode}");
     print("채팅방 들어가기의 resp.data : ${resp.data}");
+    // 만일 경매 물품 화면에서 채팅방으로 처음 들어가는거라면
+    // 다시 요청을 보낸 후 다시 반환되는 데이터를 반환
+    if(resp.data['chatLog'] == null){
+      print("재요청하여 채팅방 데이터 얻기");
+      print("현재는 해당 채팅방이 없음 새로 만들기");
+      final newResp = await dio.get(url, data: data.toJson());
+      return ChatDetails.fromJson(newResp.data);
+    }
+    print("한 번에 채팅방 데이터 얻기");
     return ChatDetails.fromJson(resp.data);
   }
 

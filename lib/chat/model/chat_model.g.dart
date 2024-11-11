@@ -17,10 +17,10 @@ Map<String, dynamic> _$ChatModelToJson(ChatModel instance) => <String, dynamic>{
     };
 
 ChatDetails _$ChatDetailsFromJson(Map<String, dynamic> json) => ChatDetails(
+      roomId: (json['roomId'] as num).toInt(),
       chatLog: (json['chatLog'] as List<dynamic>)
           .map((e) => Chatting.fromJson(e as Map<String, dynamic>))
           .toList(),
-      roomId: (json['roomId'] as num).toInt(),
       title: json['title'] as String,
       currentPrice: (json['currentPrice'] as num).toInt(),
     );
@@ -108,4 +108,14 @@ Map<String, dynamic> _$EnterChattingRoomToJson(EnterChattingRoom instance) =>
       'userId': instance.userId,
       'yourId': instance.yourId,
       'postId': instance.postId,
+    };
+
+ChatInfo _$ChatInfoFromJson(Map<String, dynamic> json) => ChatInfo(
+      title: json['title'] as String,
+      currentPrice: (json['currentPrice'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$ChatInfoToJson(ChatInfo instance) => <String, dynamic>{
+      'currentPrice': instance.currentPrice,
+      'title': instance.title,
     };

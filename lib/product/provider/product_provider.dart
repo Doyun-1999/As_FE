@@ -13,18 +13,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // 전체 상품 불러오는 provider
 final productProvider = StateNotifierProvider<ProductNotifier, CursorPaginationBase>((ref) {
   final repo = ref.watch(productRepositoryProvider);
-  final bidRepo = ref.watch(bidRepositoryProvider);
 
-  return ProductNotifier(repo: repo, ref: ref, bidRepo: bidRepo);
+  return ProductNotifier(repo: repo, ref: ref);
 });
 
 class ProductNotifier extends PaginationProvider<ProductModel, ProductRepository> {
   final Ref ref;
-  final BidRepository bidRepo;
   ProductNotifier({
     required super.repo,
     required this.ref,
-    required this.bidRepo,
   }){
     print("기본 productProvider 호출됨");
   }
