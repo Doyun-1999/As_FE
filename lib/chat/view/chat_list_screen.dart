@@ -35,6 +35,9 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
         ],
         vertFunc: (String? val) {},
         title: "채팅 모음",
+        onPopupItemSelected: (selectedItem) {
+          // Add logic to handle the selected popup item here
+        },
       ),
       child: Padding(
         padding: const EdgeInsets.only(left: 16, right: 34),
