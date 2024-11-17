@@ -6,6 +6,8 @@ import 'package:auction_shop/user/model/Q&A_model.dart';
 import 'package:auction_shop/user/model/address_model.dart';
 import 'package:auction_shop/user/model/user_model.dart';
 import 'package:auction_shop/user/view/mypage_inner/mybid_screen.dart';
+import 'package:auction_shop/user/view/policy/policy_info_screen.dart';
+import 'package:auction_shop/user/view/policy/policy_screen.dart';
 import 'package:flutter/widgets.dart';
 import 'package:auction_shop/common/export/route_export.dart';
 
@@ -248,6 +250,21 @@ class AuthNotifier extends ChangeNotifier {
           builder: (_, __) => SignupScreen(),
         ),
         GoRoute(
+          path: '/policy',
+          name: PolicyScreen.routeName,
+          builder: (_, __) => PolicyScreen(),
+          routes: [
+            GoRoute(
+              path: 'policy_info/:index',
+              name: PolicyInfoScreen.routeName,
+              builder: (_, __) {
+                final index = int.parse(__.pathParameters["index"] as String);
+                return PolicyInfoScreen(index: index);
+              },
+            ),
+          ]
+        ),
+        GoRoute(
           path: '/splash',
           name: SplashScreen.routeName,
           builder: (_, __) => SplashScreen(),
@@ -332,11 +349,12 @@ class AuthNotifier extends ChangeNotifier {
     print('redirect 실행');
     final UserModelBase? user = ref.read(userProvider);
     // 현재 넘어가는 화면에 따른 변수 설정
-    // 로그인 / 회원가입 / 스플래쉬
+    // 로그인 / 회원가입 / 스플래쉬 / 카테고리 / 개인 정보 동의
     final isLoggin = gState.fullPath == '/login';
     final isSignup = gState.fullPath == '/signup';
     final isSplash = gState.fullPath == '/splash';
     final isCategory = gState.fullPath == '/category';
+    final isPolicy = gState.fullPath == '/policy/policy_info/:index';
 
     // 유저 정보가 없고 로그인 중이라면
     // 로그인 화면로 이동
@@ -356,7 +374,9 @@ class AuthNotifier extends ChangeNotifier {
     // 만약 유저가 앱내에서 회원가입이 진행되지 않은 회원이라면
     // 회원가입 화면으로 이동
     if (user is UserModelSignup) {
-      return isCategory ? null : '/signup';
+      print("회원가입유저");
+      print(gState.fullPath);
+      return isCategory || isPolicy || isSignup ? null : '/policy';
     }
 
     // 괸라지가 로그인했을 경우,

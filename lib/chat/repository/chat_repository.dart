@@ -95,4 +95,14 @@ class ChatRepository {
       yield* Stream.error(e);
     }
   }
+
+  // 채팅방 나가기
+  Future<void> deleteChat({
+    required DeleteChat data,
+  }) async {
+    final url = baseUrl + '/chatroom/delete/${data.userId}/${data.roomId}';
+    final resp = await dio.get(url, data: data.toJson());
+    print("채팅방 나가기의 resp.statusCode : ${resp.statusCode}");
+    print("채팅방 나가기의 resp.data : ${resp.data}");
+  }
 }

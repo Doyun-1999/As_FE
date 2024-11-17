@@ -49,12 +49,14 @@ Message _$MessageFromJson(Map<String, dynamic> json) => Message(
       roomId: (json['roomId'] as num).toInt(),
       userId: (json['userId'] as num).toInt(),
       message: json['message'] as String,
+      yourId: (json['yourId'] as num).toInt(),
     );
 
 Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
       'roomId': instance.roomId,
       'userId': instance.userId,
       'message': instance.message,
+      'yourId': instance.yourId,
     };
 
 MakeRoom _$MakeRoomFromJson(Map<String, dynamic> json) => MakeRoom(
@@ -118,4 +120,15 @@ ChatInfo _$ChatInfoFromJson(Map<String, dynamic> json) => ChatInfo(
 Map<String, dynamic> _$ChatInfoToJson(ChatInfo instance) => <String, dynamic>{
       'currentPrice': instance.currentPrice,
       'title': instance.title,
+    };
+
+DeleteChat _$DeleteChatFromJson(Map<String, dynamic> json) => DeleteChat(
+      userId: (json['userId'] as num).toInt(),
+      roomId: (json['roomId'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$DeleteChatToJson(DeleteChat instance) =>
+    <String, dynamic>{
+      'userId': instance.userId,
+      'roomId': instance.roomId,
     };

@@ -44,4 +44,14 @@ class ChatRoomNotifier extends StateNotifier<List<ChattingRoom>> {
     final exist = state.firstWhere((e) => (e.roomId == roomId));
     return exist;
   }
+
+  // 채팅방 제거
+  // 같은 roomId 제거
+  Future<void> deleteRoom({
+    required DeleteChat data,
+  }) async {
+    await repo.deleteChat(data: data);
+    final nState = state.where((e) => e.roomId != data.roomId).toList();
+    state = nState;
+  }
 }

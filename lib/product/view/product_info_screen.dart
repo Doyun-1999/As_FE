@@ -499,10 +499,9 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                                 CancelText: "취소",
                                 OkText: "확인",
                                 func: () async {
-                                  await ref
-                                      .read(blockProvider.notifier)
-                                      .blockUser(data.memberId);
+                                  await ref.read(blockProvider.notifier).blockUser(data.memberId);
                                   context.pop();
+                                  flutterToast("차단되었습니다.");
                                 },
                               );
                               return;
@@ -516,10 +515,9 @@ class _ProductInfoScreenState extends ConsumerState<ProductInfoScreen>
                                   final report = Report(
                                       reportedId: data.memberId,
                                       content: "임시 신고");
-                                  await ref
-                                      .read(reportProvider.notifier)
-                                      .reportUser(report);
+                                  await ref.read(reportProvider.notifier).reportUser(report);
                                   context.pop();
+                                  flutterToast("신고되었습니다.");
                                 },
                               );
                               return;

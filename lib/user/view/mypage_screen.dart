@@ -6,7 +6,6 @@ import 'package:auction_shop/common/layout/default_layout.dart';
 import 'package:auction_shop/common/variable/color.dart';
 import 'package:auction_shop/user/provider/Q&A_provider.dart';
 import 'package:auction_shop/user/provider/block_provider.dart';
-import 'package:auction_shop/user/provider/my_like_provider.dart';
 import 'package:auction_shop/user/provider/user_provider.dart';
 import 'package:auction_shop/user/view/mypage_inner/address_screen.dart';
 import 'package:auction_shop/user/view/mypage_inner/block_screen.dart';
@@ -147,34 +146,34 @@ class MyPageScreen extends ConsumerWidget {
                   context.pushNamed(AnswerScreen.routeName);
                 },
               ),
-              IconText(
-                imgName: 'notice',
-                text: "공지사항",
-                func: () {
-                  final resp = ref.watch(MyLikeProvider);
-                  print(resp);
-                },
-              ),
+              // IconText(
+              //   imgName: 'notice',
+              //   text: "공지사항",
+              //   func: () {
+              //     final resp = ref.watch(MyLikeProvider);
+              //     print(resp);
+              //   },
+              // ),
               Divider(
                 color: auctionColor.subGreyColorE2,
               ),
-              Text(
-                "자주 묻는 질문",
-                style: tsNotoSansKR(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-              SizedBox(
-                height: 12,
-              ),
-              Text(
-                "약관 및 정책",
-                style: tsNotoSansKR(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
+              // Text(
+              //   "자주 묻는 질문",
+              //   style: tsNotoSansKR(
+              //     fontSize: 16,
+              //     fontWeight: FontWeight.w400,
+              //   ),
+              // ),
+              // SizedBox(
+              //   height: 12,
+              // ),
+              // Text(
+              //   "약관 및 정책",
+              //   style: tsNotoSansKR(
+              //     fontSize: 16,
+              //     fontWeight: FontWeight.w400,
+              //   ),
+              // ),
             ],
           ),
         ),

@@ -63,15 +63,13 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(userProvider);
-    print("최종 화면에서의 상태 : ${state}");
     return DefaultLayout(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: Colors.white,
         leading: IconButton(
           onPressed: () {
-            ref.read(userProvider.notifier).logout();
-            context.goNamed(LoginScreen.routeName);
+            context.pop();
           },
           icon: Icon(
             Icons.arrow_back_ios,

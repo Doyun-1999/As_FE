@@ -5,6 +5,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:auction_shop/common/variable/data.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 // ScrollController 이동 함수
 void scrollToEnd(ScrollController controller) {
@@ -182,4 +183,16 @@ String getProductType(String text){
     return "하향식";
   }
   return "상향식";
+}
+
+void flutterToast(String text) {
+  Fluttertoast.showToast(
+    msg: text,
+    toastLength: Toast.LENGTH_SHORT,  // 토스트 뜨는 시간 얼마나 길게 할 지 (Android)
+    gravity: ToastGravity.BOTTOM,  // 토스트 위치 어디에 할 것인지
+    timeInSecForIosWeb: 1,  // 토스트 뜨는 시간 얼마나 길게 할 지 (iOS & Web)
+    backgroundColor: Color(0xFFFFFFFF),
+    textColor: Color(0xFF000000),
+    fontSize: 20.0,
+  );
 }

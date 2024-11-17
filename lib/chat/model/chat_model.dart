@@ -94,11 +94,13 @@ class Message{
   final int roomId;
   final int userId;
   final String message;
+  final int yourId;
 
   Message({
     required this.roomId,
     required this.userId,
     required this.message,
+    required this.yourId,
   });
 
   factory Message.fromJson(Map<String, dynamic> json) => _$MessageFromJson(json);
@@ -200,4 +202,17 @@ class ChatInfo {
 
   factory ChatInfo.fromJson(Map<String, dynamic> json) => _$ChatInfoFromJson(json);
 
+}
+
+@JsonSerializable()
+class DeleteChat{
+  final int userId;
+  final int roomId;
+
+  DeleteChat({
+    required this.userId,
+    required this.roomId,
+  });
+
+  Map<String, dynamic> toJson() => _$DeleteChatToJson(this);
 }

@@ -1,9 +1,12 @@
 import 'dart:convert';
+import 'package:auction_shop/chat/provider/chatroom_provider.dart';
 import 'package:auction_shop/common/export/route_export.dart';
 import 'package:auction_shop/common/export/variable_export.dart';
 import 'package:auction_shop/main.dart';
+import 'package:auction_shop/user/model/report_model.dart';
 import 'package:auction_shop/user/provider/block_provider.dart';
 import 'package:auction_shop/chat/provider/chatting_provider.dart';
+import 'package:auction_shop/user/provider/report_provider.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 
 class ChatInfoScreen extends ConsumerStatefulWidget {
@@ -86,11 +89,13 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
   // 메시지 데이터 보내기
   void publishMessage() async {
     final roomId = widget.data.roomId;
+    final yourId = widget.data.yourId;
     if (_textController.text.isNotEmpty) {
       final msg = Message(
         roomId: roomId,
         userId: myId,
         message: _textController.text,
+        yourId: yourId,
       );
       // STOMP 클라이언트의 send 메서드를 사용하여 메시지를 발행합니다.
       client.send(
@@ -121,14 +126,21 @@ class _ChatInfoScreenState extends ConsumerState<ChatInfoScreen> {
         popupItem(text: "계정 차단하기"),
         PopupMenuDivider(),
         popupItem(text: "계정 신고하기"),
-      ], vertFunc: (val){
+      ], vertFunc: (val) {
         switch(val){
           case "채팅방 나가기":
+            ref.read(chatRoomProvider.notifier).deleteRoom(data: DeleteChat(userId: myId, roomId: widget.data.roomId));
+            context.pop();
           return;
           case "계정 차단하기":
-          ref.read(blockProvider.notifier).blockUser(widget.data.userId);
+           ref.read(blockProvider.notifier).blockUser(widget.data.userId);
+           flutterToast("차단되었습니다.");
           return;
           case "계정 신고하기":
+          final report = Report(reportedId: myId,content: "임시 신고");
+          ref.read(reportProvider.notifier).reportUser(report);
+          context.pop();
+          flutterToast("신고되었습니다.");
           return;
         }
       }, title: widget.data.nickname, context: context,),
